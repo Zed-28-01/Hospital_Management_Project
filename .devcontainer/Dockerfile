@@ -10,9 +10,21 @@ RUN if [ "${REINSTALL_CMAKE_VERSION_FROM_SOURCE}" != "none" ]; then \
     fi \
     && rm -f /tmp/reinstall-cmake.sh
 
-# [Optional] Uncomment this section to install additional vcpkg ports.
-# RUN su vscode -c "${VCPKG_ROOT}/vcpkg install <your-port-name-here>"
-
-# [Optional] Uncomment this section to install additional packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
+# Cài đặt g++-14 và gtest
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends \
+        software-properties-common \
+    && add-apt-repository -y ppa:ubuntu-toolchain-r/test \
+    && apt-get update \
+    && apt-get -y install --no-install-recommends \
+        g++-14 \
+        libgtest-dev \
+        cmake \
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100 \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 \
+    && cd /usr/src/gtest \
+    && cmake CMakeLists.txt \
+    && make \
+    && cp lib/*.a /usr/lib \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
