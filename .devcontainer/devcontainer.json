@@ -17,7 +17,7 @@
 			],
 			"settings": {
 				"C_Cpp.default.cppStandard": "c++23",
-				"C_Cpp.default.compilerPath": "/usr/bin/g++-13"
+				"C_Cpp.default.compilerPath": "/usr/bin/g++-14"
 			}
 		}
 	}
