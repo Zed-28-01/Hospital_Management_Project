@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/cpp:1-debian-11
+FROM mcr.microsoft.com/devcontainers/cpp:1-ubuntu-22.04
 
 ARG REINSTALL_CMAKE_VERSION_FROM_SOURCE="none"
 
@@ -18,6 +18,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get -y install --no-install-recommends \
         g++-14 \
+        gcc-14 \
         libgtest-dev \
         cmake \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100 \
