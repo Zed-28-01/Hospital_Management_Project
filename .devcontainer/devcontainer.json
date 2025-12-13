@@ -12,7 +12,8 @@
 				"ms-vscode.cpptools-extension-pack",
 				"Gruntfuggly.todo-tree",
 				"ms-azuretools.vscode-containers",
-				"dracula-theme.theme-dracula"
+				"dracula-theme.theme-dracula",
+				"mhutchie.git-graph"
 			]
 		}
 	}
