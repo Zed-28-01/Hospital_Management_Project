@@ -3,6 +3,8 @@
 
 int main() {
     Doctor doc("Nhat"); // Tạo bác sĩ tên Nhật
-    doc.introduce();    // Yêu cầu bác sĩ giới thiệu
+    Doctor doc2("Ket");
+    doc.introduce();
+    doc2.introduce();    // Yêu cầu bác sĩ giới thiệu
     return 0;
 }
