@@ -1,0 +1,19 @@
+{
+    // Git settings
+    "git.autofetch": true,
+    "git.autofetchPeriod": 300,
+    "git.confirmSync": false,
+    
+    // CMake settings
+    "cmake.buildBeforeRun": true,
+    "cmake.configureOnOpen": true,
+    
+    // C++ settings
+    "C_Cpp.default.cppStandard": "c++23",
+    "C_Cpp.default.compilerPath": "/usr/bin/g++-14",
+    
+    // Editor settings
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+    "files.trimTrailingWhitespace": true
+}

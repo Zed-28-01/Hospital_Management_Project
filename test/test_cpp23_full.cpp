@@ -87,5 +87,5 @@ int main() {
 /*
 Go cau lenh sau day vao terminal bash de xem lieu co cai thanh cong g++14 va c++23 hay chua
 
-g++ -std=c++23 test/test_cpp23_full.cpp -o test_cpp23_full && ./test_cpp23_full
+cd build && make HospitalTests && ./HospitalTests
 */
