@@ -1,0 +1,9 @@
+# Hospital Management System - Sample Appointment Data
+# Format: appointmentID|patientUsername|doctorID|date|time|disease|price|isPaid|status|notes
+# Status: scheduled, completed, cancelled, no_show
+
+APT001|patient001|D001|2024-03-15|09:00|Chest pain and shortness of breath|500000|1|completed|Regular checkup, ECG normal
+APT002|patient002|D002|2024-03-16|10:30|Child fever and cough|400000|1|completed|Prescribed antibiotics
+APT003|patient001|D001|2024-03-20|14:00|Follow-up checkup|500000|0|scheduled|
+APT004|patient003|D001|2024-03-18|11:00|Routine heart checkup|500000|0|cancelled|Patient rescheduled
+APT005|patient002|D002|2024-03-22|09:30|Vaccination|400000|0|scheduled|Annual flu shot
