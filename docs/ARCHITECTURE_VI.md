@@ -56,6 +56,13 @@
 
 ## 2. Thiết Kế Kiến Trúc 3 Tầng
 
+### Architecture Diagrams
+
+For visual representation of the architecture:
+- **[Overview Diagram](diagrams/architecture-overview.md)** - Simple, high-level view (recommended for README.md)
+- **[Detailed Diagram](diagrams/architecture-detailed.md)** - Complete dependencies and class diagrams
+
+
 ### Trách Nhiệm Các Tầng
 
 | Tầng | Trách Nhiệm | Các Thành Phần |

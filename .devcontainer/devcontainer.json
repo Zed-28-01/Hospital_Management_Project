@@ -13,7 +13,8 @@
 				"Gruntfuggly.todo-tree",
 				"ms-azuretools.vscode-containers",
 				"dracula-theme.theme-dracula",
-				"mhutchie.git-graph"
+				"mhutchie.git-graph",
+				"bierner.markdown-mermaid"
 			],
 			"settings": {
 				"C_Cpp.default.cppStandard": "c++23",

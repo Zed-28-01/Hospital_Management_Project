@@ -57,6 +57,12 @@
 
 ## 2. 3-Tier Architecture Design
 
+### Architecture Diagrams
+
+For visual representation of the architecture:
+- **[Overview Diagram](diagrams/architecture-overview.md)** - Simple, high-level view (recommended for README.md)
+- **[Detailed Diagram](diagrams/architecture-detailed.md)** - Complete dependencies and class diagrams
+
 
 ### Layer Responsibilities
 
