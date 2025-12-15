@@ -1,4 +1,4 @@
-# Hospital Management System - Quick Reference
+# Hospital Management System - Essential Git Commands
 
 ## 📋 MỤC LỤC
 
@@ -94,39 +94,6 @@ make
 cd build
 make HospitalApp
 ./HospitalApp
-```
-
-### Build riêng HospitalTests
-```bash
-cd build
-make HospitalTests
-./HospitalTests
-```
-
-### Build và chạy trong 1 lệnh
-```bash
-# Build và chạy HospitalApp
-cd build && make HospitalApp && ./HospitalApp
-
-# Build và chạy HospitalTests
-cd build && make HospitalTests && ./HospitalTests
-```
-
-### Clean build (xóa files build cũ)
-```bash
-cd build
-make clean
-cmake ..
-make
-```
-
-### Rebuild từ đầu
-```bash
-rm -rf build
-mkdir build
-cd build
-cmake ..
-make
 ```
 
 ---

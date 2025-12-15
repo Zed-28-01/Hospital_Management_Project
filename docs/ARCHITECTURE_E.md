@@ -13,7 +13,7 @@
 
 ## 1. Class Diagram Review & Optimization
 
-### Issues Found in Original Design
+### Issues Found in Original Design POC
 
 #### Problem 1: Violation of Single Responsibility Principle (SRP)
 **Original:** `Patient`, `Doctor`, `Admin` classes contain both data AND business logic methods.
