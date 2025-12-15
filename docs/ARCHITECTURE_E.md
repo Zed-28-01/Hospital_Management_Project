@@ -57,57 +57,6 @@
 
 ## 2. 3-Tier Architecture Design
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    PRESENTATION LAYER (UI)                          │
-│  ┌─────────────┐  ┌───────────────┐  ┌─────────────────┐           │
-│  │  ConsoleUI  │  │ InputValidator│  │  DisplayHelper  │           │
-│  └──────┬──────┘  └───────────────┘  └─────────────────┘           │
-│         │                                                           │
-│         ▼                                                           │
-│  ┌─────────────────────────────────────────────────────┐           │
-│  │                    HMSFacade                         │           │
-│  │  (Single entry point for all UI operations)          │           │
-│  └──────────────────────┬──────────────────────────────┘           │
-└─────────────────────────┼───────────────────────────────────────────┘
-                          │
-┌─────────────────────────┼───────────────────────────────────────────┐
-│                         ▼        BUSINESS LOGIC LAYER               │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌────────────┐ │
-│  │ AuthService │  │PatientService│ │DoctorService│  │AdminService│ │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └─────┬──────┘ │
-│         │                │                │                │        │
-│         │         ┌──────┴────────────────┴────────────────┘        │
-│         │         │                                                 │
-│         │         ▼                                                 │
-│         │  ┌─────────────────┐                                      │
-│         │  │AppointmentService│                                     │
-│         │  └────────┬────────┘                                      │
-│         │           │                                               │
-└─────────┼───────────┼───────────────────────────────────────────────┘
-          │           │
-┌─────────┼───────────┼───────────────────────────────────────────────┐
-│         ▼           ▼            DATA ACCESS LAYER                  │
-│  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────────┐│
-│  │ AccountRepo│  │ PatientRepo│  │ DoctorRepo │  │AppointmentRepo ││
-│  └──────┬─────┘  └──────┬─────┘  └──────┬─────┘  └───────┬────────┘│
-│         │               │               │                │          │
-│         └───────────────┴───────────────┴────────────────┘          │
-│                                  │                                  │
-│                                  ▼                                  │
-│                          ┌─────────────┐                            │
-│                          │ FileHelper  │                            │
-│                          └──────┬──────┘                            │
-│                                 │                                   │
-└─────────────────────────────────┼───────────────────────────────────┘
-                                  │
-                                  ▼
-                    ┌─────────────────────────────┐
-                    │     DATA FILES (.txt/csv)   │
-                    │  Account.txt | Patient.txt  │
-                    │  Doctor.txt | Appointment.txt│
-                    └─────────────────────────────┘
-```
 
 ### Layer Responsibilities
 
@@ -506,7 +455,7 @@ make clean
 | **I**nterface Segregation | IRepository provides focused interface; Services have specific methods |
 | **D**ependency Inversion | Services depend on Repository interfaces, not concrete implementations |
 
-## Appendix B: Future Extensions Integration
+## Appendix B: Advanced Extensions Integration (If the time is abundant)
 
 When adding new features:
 
