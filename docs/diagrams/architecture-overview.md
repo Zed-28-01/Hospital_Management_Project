@@ -281,5 +281,3 @@ AdminService
 - **Build guide:** Xem [../BUILD_vi.md](../BUILD_vi.md)
 
 ---
-
-**💡 TIP:** Dùng sơ đồ này trong README.md để giới thiệu project!
