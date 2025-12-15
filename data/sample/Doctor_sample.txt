@@ -1,0 +1,5 @@
+# Hospital Management System - Sample Doctor Data
+# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee
+
+D001|doctor001|Dr. Pham Van Duc|0934567890|Male|1975-03-10|Cardiology|Mon-Fri 08:00-17:00|500000
+D002|doctor002|Dr. Le Thi Em|0945678901|Female|1980-11-25|Pediatrics|Mon-Sat 09:00-16:00|400000
