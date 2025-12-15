@@ -17,7 +17,7 @@ graph TB
         ConsoleUI -.uses.-> InputValidator
         ConsoleUI -.uses.-> DisplayHelper
 
-        Facade[HMSFacade<br/>Facade Pattern]
+        Facade[HMSFacade<br/>Facade + Singleton]
         ConsoleUI --> Facade
     end
 
@@ -100,12 +100,12 @@ graph TB
 
 | Component | Vai trò |
 |-----------|---------|
-| **ConsoleUI** | Hiển thị menu, nhận input từ user |
-| **HMSFacade** | Điểm truy cập duy nhất, che giấu độ phức tạp của BLL |
-| **InputValidator** | Validate input (username, password, phone...) |
-| **DisplayHelper** | Format output (tables, colors, pagination) |
+| **ConsoleUI** | Hiển thị menu, nhận input từ user, điều khiển luồng ứng dụng |
+| **HMSFacade** | Điểm truy cập duy nhất (Facade + Singleton), che giấu độ phức tạp của BLL |
+| **InputValidator** | Validate input (username, password, phone, date, time, ID formats) |
+| **DisplayHelper** | Format output (tables, colors, headers, messages, entity display) |
 
-**Luồng:** User → ConsoleUI → Facade
+**Luồng:** User → ConsoleUI → Facade → Services
 
 ---
 
@@ -115,13 +115,13 @@ graph TB
 
 | Service | Vai trò |
 |---------|---------|
-| **AuthService** | Login, logout, change password |
-| **PatientService** | CRUD patients, view appointments, calculate bills |
-| **DoctorService** | CRUD doctors, manage schedule |
-| **AppointmentService** | Book, cancel, check slots |
-| **AdminService** | Statistics, reports (aggregate data) |
+| **AuthService** | Login, logout, register, change password, authorization checks |
+| **PatientService** | CRUD patients, appointment history, billing calculation |
+| **DoctorService** | CRUD doctors, schedule management, activity tracking |
+| **AppointmentService** | Booking, cancellation, status management, slot availability |
+| **AdminService** | Statistics aggregation, reports generation, system health |
 
-**Đặc điểm:** Tất cả đều là **Singleton** (1 instance duy nhất)
+**Đặc điểm:** Tất cả đều là **Singleton** với thread-safe `std::mutex`
 
 ---
 
@@ -129,15 +129,18 @@ graph TB
 
 **Trách nhiệm:** Lưu trữ và truy xuất dữ liệu từ file
 
-| Repository | File tương ứng |
-|-----------|---------------|
-| **AccountRepository** | Account.txt |
-| **PatientRepository** | Patient.txt |
-| **DoctorRepository** | Doctor.txt |
-| **AppointmentRepository** | Appointment.txt |
-| **FileHelper** | Utility cho I/O operations |
+| Repository | File tương ứng | Key Features |
+|-----------|---------------|--------------|
+| **AccountRepository** | Account.txt | Role filtering, credential validation |
+| **PatientRepository** | Patient.txt | Search by name/phone/keyword |
+| **DoctorRepository** | Doctor.txt | Filter by specialization |
+| **AppointmentRepository** | Appointment.txt | Rich queries (by patient/doctor/date/status) |
+| **FileHelper** | All files | Static utility for I/O, backup/restore |
 
-**Đặc điểm:** Tất cả đều là **Singleton**, dùng **IRepository<T>** interface
+**Đặc điểm:**
+- Tất cả repositories đều là **Singleton** với thread-safe `std::mutex`
+- Implement **IRepository<T>** interface với CRUD + `count()`, `exists()`, `clear()`
+- Auto-generate IDs với `getNextId()`
 
 ---
 
@@ -148,7 +151,7 @@ data/
 ├── Account.txt        # username|passwordHash|role|isActive|createdDate
 ├── Patient.txt        # patientID|username|name|phone|gender|dob|address|history
 ├── Doctor.txt         # doctorID|username|name|phone|gender|dob|spec|schedule|fee
-└── Appointment.txt    # appointmentID|patientUsername|doctorID|date|time|disease|...
+└── Appointment.txt    # appointmentID|patientUsername|doctorID|date|time|disease|price|isPaid|status|notes
 ```
 
 ---
@@ -162,13 +165,15 @@ User input
     ↓
 ConsoleUI (hiển thị menu, nhận input)
     ↓
-HMSFacade (điều phối)
+InputValidator (validate format)
+    ↓
+HMSFacade (điều phối, check authorization)
     ↓
 Service (business logic, validation)
     ↓
 Repository (CRUD operations)
     ↓
-FileHelper (read/write file)
+FileHelper (serialize, write file)
     ↓
 Data File (.txt)
 ```
@@ -178,13 +183,15 @@ Data File (.txt)
 ```
 Data File (.txt)
     ↓
-FileHelper (parse data)
+FileHelper (read, parse lines)
     ↓
-Repository (trả về entities)
+Repository (deserialize → entities)
     ↓
-Service (tính toán, aggregate)
+Service (filter, calculate, aggregate)
     ↓
 HMSFacade (format response)
+    ↓
+DisplayHelper (format tables, messages)
     ↓
 ConsoleUI (display to user)
     ↓
@@ -201,33 +208,34 @@ User sees output
 AppointmentService
 ├── AppointmentRepository (CRUD appointments)
 ├── PatientRepository (validate patient exists)
-└── DoctorRepository (get consultation fee)
+└── DoctorRepository (validate doctor, get consultation fee)
 ```
 
 **Lý do:** Khi book appointment, cần:
 1. Check patient tồn tại (PatientRepo)
 2. Check doctor tồn tại và lấy fee (DoctorRepo)
-3. Lưu appointment (AppointmentRepo)
+3. Check slot availability (AppointmentRepo)
+4. Lưu appointment (AppointmentRepo)
 
 ### PatientService Dependencies
 
 ```
 PatientService
 ├── PatientRepository (CRUD patients)
-└── AppointmentRepository (get patient's appointments)
+└── AppointmentRepository (get patient's appointments, calculate bills)
 ```
 
-**Lý do:** Patient cần xem lịch hẹn của mình
+**Lý do:** Patient cần xem lịch hẹn và tính tiền
 
 ### DoctorService Dependencies
 
 ```
 DoctorService
 ├── DoctorRepository (CRUD doctors)
-└── AppointmentRepository (get doctor's schedule)
+└── AppointmentRepository (get doctor's schedule, activity tracking)
 ```
 
-**Lý do:** Doctor cần xem lịch làm việc
+**Lý do:** Doctor cần xem lịch làm việc và thống kê
 
 ### AdminService Dependencies
 
@@ -235,10 +243,10 @@ DoctorService
 AdminService
 ├── PatientService (get patient stats)
 ├── DoctorService (get doctor stats)
-└── AppointmentService (get appointment stats)
+└── AppointmentService (get appointment stats, revenue)
 ```
 
-**Lý do:** Admin aggregate data từ các services
+**Lý do:** Admin aggregate data từ các services (không trực tiếp dùng Repos)
 
 ---
 
@@ -246,9 +254,10 @@ AdminService
 
 | Pattern | Áp dụng | Mục đích |
 |---------|---------|----------|
-| **Singleton** | Repositories, Services | Đảm bảo 1 instance duy nhất |
+| **Singleton** | Repositories, Services, HMSFacade | Đảm bảo 1 instance duy nhất, thread-safe với mutex |
 | **Facade** | HMSFacade | Đơn giản hóa interface cho UI |
 | **Repository** | IRepository<T> | Abstraction cho data access |
+| **Factory Method** | `deserialize()` static methods | Parse string → Entity |
 
 ---
 
@@ -256,11 +265,26 @@ AdminService
 
 | Nguyên tắc | Áp dụng |
 |-----------|---------|
-| **S**RP | Entities chỉ chứa data, Services chứa logic, Repos chứa I/O |
+| **S**RP | Entities chứa data + serialize, Services chứa logic, Repos chứa I/O |
 | **O**CP | IRepository cho phép thêm data sources mới |
 | **L**SP | Patient/Doctor/Admin thay thế Person |
 | **I**SP | Services có methods cụ thể, không phải god class |
 | **D**IP | Services phụ thuộc Repository interfaces |
+
+---
+
+## 🔑 Key Types (from common/Types.h)
+
+### Enums
+- **Role**: `PATIENT`, `DOCTOR`, `ADMIN`, `UNKNOWN`
+- **AppointmentStatus**: `SCHEDULED`, `COMPLETED`, `CANCELLED`, `NO_SHOW`, `UNKNOWN`
+- **Gender**: `MALE`, `FEMALE`, `OTHER`, `UNKNOWN`
+
+### Type Aliases
+- `Result<T>` = `std::optional<T>` (for deserialize results)
+- `List<T>` = `std::vector<T>`
+- `ID`, `Username`, `PasswordHash`, `Date`, `Time`, `Phone` = `std::string`
+- `Money` = `double`
 
 ---
 
@@ -271,13 +295,14 @@ AdminService
 ✅ **Maintainability:** Dễ sửa và mở rộng
 ✅ **Reusability:** Services có thể dùng cho nhiều UI khác nhau
 ✅ **Scalability:** Dễ thêm features mới (Department, Medicine...)
+✅ **Thread Safety:** Mutex protection cho Singleton instances
 
 ---
 
 ## 📚 Đọc Thêm
 
 - **Chi tiết hơn:** Xem [architecture-detailed.md](architecture-detailed.md)
-- **Implementation:** Xem [../ARCHITECTURE_vi.md](../ARCHITECTURE_vi.md)
-- **Build guide:** Xem [../BUILD_vi.md](../BUILD_vi.md)
+- **Implementation:** Xem [../ARCHITECTURE.md](../ARCHITECTURE.md)
+- **Build guide:** Xem [../BUILD.md](../BUILD.md)
 
 ---

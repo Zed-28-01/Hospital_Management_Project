@@ -3,7 +3,7 @@
 ## 📋 MỤC LỤC
 
 - [Git Workflow](#git-workflow)
-- [Build & Run](#build--run)
+- [Git Merge](#git-merge)
 - [Troubleshooting](#troubleshooting)
 - [Branch Management](#branch-management)
 
@@ -80,21 +80,59 @@ git log --oneline --graph --all
 
 ---
 
-## 🏗️ BUILD & RUN
+## 🔀 GIT MERGE
 
-### Build toàn bộ project
+### Merge thông thường
 ```bash
-cd build
-cmake ..
-make
+# Checkout về branch đích
+git checkout main
+
+# Merge từ branch nguồn
+git merge feature-branch
 ```
 
-### Build riêng HospitalApp
+### Merge với --no-ff (luôn tạo merge commit)
 ```bash
-cd build
-make HospitalApp
-./HospitalApp
+git checkout main
+git merge --no-ff feature-branch
 ```
+
+### Merge với --squash (gộp tất cả commits thành 1)
+```bash
+git checkout main
+git merge --squash feature-branch
+
+# Phải commit thủ công
+git commit -m "Add feature X with all changes"
+```
+
+### Hủy merge (khi đang merge)
+```bash
+git merge --abort
+```
+
+### Tiếp tục merge (sau khi resolve conflicts)
+```bash
+# Resolve conflicts xong
+git add .
+
+# Tiếp tục merge
+git merge --continue
+
+# Hoặc
+git commit -m "Merge feature-branch"
+```
+
+### So sánh merge strategies
+
+| Lệnh | Kết quả | Khi nào dùng |
+|------|---------|-------------|
+| `git merge` | Fast-forward hoặc merge commit | Default |
+| `git merge --no-ff` | Luôn tạo merge commit | Merge feature vào main |
+| `git merge --squash` | Gộp commits thành 1 | Feature có nhiều commits nhỏ |
+| `git merge --abort` | Hủy merge | Conflict quá phức tạp |
+| `git merge --continue` | Tiếp tục merge | Đã resolve conflicts |
+
 
 ---
 
@@ -152,7 +190,21 @@ git push origin main
 ```
 
 ### Undo commit gần nhất (giữ changes)
+# Trường hợp chưa Stage
+```bash
+git restore .
+```
+# Trường hợp đã staged
+```bash
+# Chỉ muốn hủy Stage vẫn muốn giữ code
+git restore --staged .
 
+#Muốn xóa sạch code + hủy stage thì gồm 2 bước
+git restore --staged .
+git restore .
+```
+
+# Trường hợp đã commit
 ```bash
 # Undo commit, giữ changes ở staged
 git reset --soft HEAD~1
@@ -193,6 +245,12 @@ git diff --staged
 git diff src/Doctor.cpp
 ```
 
+### Merge conflict "Cannot merge unrelated histories"
+
+```bash
+git merge --allow-unrelated-histories feature-branch
+```
+# Cần báo cáo kĩ lại trường hợp này
 ---
 
 ## 🌿 BRANCH MANAGEMENT
@@ -335,15 +393,6 @@ git commit -m "Refactor <what> for <reason>"
 
 ---
 
-## 📞 HỖ TRỢ
-
-Nếu gặp vấn đề:
-
-1. Kiểm tra lại các lệnh trong file này
-2. Xem file `Cam_nang_lam_viec_Codespaces.docx`
-3. Hỏi nhóm trưởng hoặc thành viên khác
-
----
 
 ## 🔗 LIÊN KẾT HỮU ÍCH
 
