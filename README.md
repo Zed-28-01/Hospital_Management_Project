@@ -385,7 +385,3 @@ Nếu gặp vấn đề:
 - [CMake Tutorial](https://cmake.org/cmake/help/latest/guide/tutorial/index.html)
 
 ---
-
-**Cập nhật lần cuối:** $(date +"%d/%m/%Y")
-
-#1
