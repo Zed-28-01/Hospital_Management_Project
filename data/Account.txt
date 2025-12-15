@@ -1,0 +1,3 @@
+# Hospital Management System - Account Data
+# Format: username|passwordHash|role|isActive|createdDate
+# Roles: patient, doctor, admin

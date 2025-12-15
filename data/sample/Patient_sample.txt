@@ -1,0 +1,6 @@
+# Hospital Management System - Sample Patient Data
+# Format: patientID|username|name|phone|gender|dateOfBirth|address|medicalHistory
+
+P001|patient001|Nguyen Van An|0901234567|Male|1990-05-15|123 Le Loi, District 1, Ho Chi Minh City|Hypertension diagnosed 2022; Regular checkups
+P002|patient002|Tran Thi Binh|0912345678|Female|1985-08-20|456 Nguyen Hue, District 1, Ho Chi Minh City|Type 2 Diabetes since 2019; Controlled with medication
+P003|patient003|Le Van Cuong|0923456789|Male|1978-12-03|789 Hai Ba Trung, District 3, Ho Chi Minh City|No significant medical history

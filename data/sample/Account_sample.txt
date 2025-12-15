@@ -1,0 +1,12 @@
+# Hospital Management System - Sample Account Data
+# Format: username|passwordHash|role|isActive|createdDate
+# Roles: patient, doctor, admin
+# Password for all accounts: "password123" (hashed)
+# Note: In production, use proper password hashing (bcrypt, argon2)
+
+admin|5f4dcc3b5aa765d61d8327deb882cf99|admin|1|2024-01-01
+doctor001|5f4dcc3b5aa765d61d8327deb882cf99|doctor|1|2024-01-15
+doctor002|5f4dcc3b5aa765d61d8327deb882cf99|doctor|1|2024-01-20
+patient001|5f4dcc3b5aa765d61d8327deb882cf99|patient|1|2024-02-01
+patient002|5f4dcc3b5aa765d61d8327deb882cf99|patient|1|2024-02-05
+patient003|5f4dcc3b5aa765d61d8327deb882cf99|patient|1|2024-02-10
