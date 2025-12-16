@@ -18,7 +18,7 @@ AccountRepository::AccountRepository()
 // ==================== Destructor ====================
 
 AccountRepository::~AccountRepository() {
-    save();
+    //do nothing
 }
 
 // ==================== Singleton ====================
@@ -57,6 +57,7 @@ bool AccountRepository::add(const Model::Account& account) {
         return false;
 
     m_accounts.push_back(account);
+    save();
     return true;
 }
 
@@ -64,6 +65,7 @@ bool AccountRepository::update(const Model::Account& account) {
     for (auto& acc : m_accounts) {
         if (acc.getUsername() == account.getUsername()) {
             acc = account;
+            save();
             return true;
         }
     }
@@ -79,6 +81,7 @@ bool AccountRepository::remove(const std::string& id) {
 
     if (it == m_accounts.end()) return false;
     m_accounts.erase(it, m_accounts.end());
+    save();
     return true;
 }
 
@@ -114,10 +117,18 @@ bool AccountRepository::save() {
 // ==================== Queries ====================
 
 size_t AccountRepository::count() const {
+    if (!m_isLoaded) {
+        const_cast<AccountRepository*>(this)->load();
+    }
+
     return m_accounts.size();
 }
 
 bool AccountRepository::exists(const std::string& id) const {
+    if (!m_isLoaded) {
+        const_cast<AccountRepository*>(this)->load();
+    }
+
     return std::any_of(
         m_accounts.begin(), m_accounts.end(),
         [&](const Model::Account& acc) {

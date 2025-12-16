@@ -1,5 +1,6 @@
 #include "bll/AuthService.h"
 #include "common/Types.h"
+#include "common/Utils.h"
 
 namespace HMS {
 namespace BLL {
@@ -82,13 +83,14 @@ bool AuthService::registerAccount(const std::string& username,
                                   Role role) {
     if (!isUsernameAvailable(username)) return false;
     if (!validatePassword(password)) return false;
+    if (!validateUsername(username)) return false;
 
     Model::Account acc(
         username,
         hashPassword(password),
         role,
         true,
-        "2025-01-01"
+        Utils::getCurrentDate()
     );
 
     return m_accountRepo->add(acc);
@@ -142,11 +144,21 @@ bool AuthService::isUsernameAvailable(const std::string& username) {
 }
 
 bool AuthService::validatePassword(const std::string& password) {
-    return password.length() >= 6;
+    if (password.length() < 6) return false;
+
+    if (HMS::Utils::split(password, '|').size() != 1)
+        return false;
+
+    return true;
 }
 
 bool AuthService::validateUsername(const std::string& username) {
-    return !username.empty();
+    if (username.empty()) return false;
+
+    if (HMS::Utils::split(username, '|').size() != 1)
+        return false;
+
+    return true;
 }
 
 // ==================== Authorization ====================
