@@ -1,6 +1,10 @@
-#include "../include/dal/AppointmentRepository.h"
+#include "dal/AppointmentRepository.h"
 #include <fstream>
 #include <iostream>
+#include <algorithm>
+#include <format>
+#include <algorithm>
+#include <format>
 
 namespace HMS
 {
@@ -41,7 +45,7 @@ namespace HMS
             std::ifstream file(m_filePath);
             if (!file.is_open())
             {
-                std::cerr << "Appointment file not found, starting empty.\n";
+                std::cerr << std::format("Appointment file '{}' not found, starting empty.\n", m_filePath);
                 m_isLoaded = true;
                 return true;
             }
@@ -49,10 +53,17 @@ namespace HMS
             std::string line;
             while (std::getline(file, line))
             {
+                if (line.empty())
+                    continue; // skip blank lines
+
                 auto result = Model::Appointment::deserialize(line);
                 if (result.has_value())
                 {
                     m_appointments.push_back(*result);
+                }
+                else
+                {
+                    std::cerr << std::format("Warning: failed to parse appointment line, skipping: '{}'\n", line);
                 }
             }
 
@@ -66,7 +77,7 @@ namespace HMS
             std::ofstream file(m_filePath);
             if (!file.is_open())
             {
-                std::cerr << "Failed to open appointment file for writing.\n";
+                std::cerr << std::format("Failed to open appointment file '{}' for writing.\n", m_filePath);
                 return false;
             }
 
@@ -97,26 +108,97 @@ namespace HMS
             return m_appointments;
         }
 
+        std::optional<Model::Appointment> AppointmentRepository::getById(const std::string &id)
+        {
+            load();
+            auto it = std::find_if(m_appointments.begin(), m_appointments.end(),
+                                   [&id](const Model::Appointment &a)
+                                   { return a.getAppointmentID() == id; });
+            if (it != m_appointments.end())
+                return *it;
+            return std::nullopt;
+        }
+
         bool AppointmentRepository::add(const Model::Appointment &appointment)
         {
             load();
+            // Do not add duplicate appointment IDs
+            if (exists(appointment.getAppointmentID()))
+            {
+                std::cerr << std::format("Attempted to add appointment with duplicate ID: {}\n", appointment.getAppointmentID());
+                return false;
+            }
+
             m_appointments.push_back(appointment);
+            // persist immediately and report success of persistence
+            if (!save())
+            {
+                std::cerr << std::format("Warning: failed to save after adding appointment {}\n", appointment.getAppointmentID());
+                return false;
+            }
+            return true;
+        }
+
+        bool AppointmentRepository::update(const Model::Appointment &appointment)
+        {
+            load();
+            for (auto &a : m_appointments)
+            {
+                if (a.getAppointmentID() == appointment.getAppointmentID())
+                {
+                    a = appointment;
+                    if (!save())
+                    {
+                        std::cerr << std::format("Warning: failed to save after updating appointment {}\n", appointment.getAppointmentID());
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            std::cerr << std::format("Appointment not found for update: {}\n", appointment.getAppointmentID());
+            return false;
+        }
+
+        bool AppointmentRepository::remove(const std::string &id)
+        {
+            load();
+            auto it = std::find_if(m_appointments.begin(), m_appointments.end(),
+                                   [&id](const Model::Appointment &a)
+                                   { return a.getAppointmentID() == id; });
+            if (it == m_appointments.end())
+            {
+                std::cerr << std::format("Appointment not found for removal: {}\n", id);
+                return false;
+            }
+            m_appointments.erase(it);
+            if (!save())
+            {
+                std::cerr << std::format("Warning: failed to save after removing appointment {}\n", id);
+                return false;
+            }
             return true;
         }
 
         bool AppointmentRepository::clear()
         {
             m_appointments.clear();
+            if (!save())
+            {
+                std::cerr << std::format("Warning: failed to save after clearing appointments\n");
+                return false;
+            }
             return true;
         }
 
         size_t AppointmentRepository::count() const
         {
+            const_cast<AppointmentRepository *>(this)->load();
             return m_appointments.size();
         }
 
         bool AppointmentRepository::exists(const std::string &id) const
         {
+            const_cast<AppointmentRepository *>(this)->load();
             for (const auto &a : m_appointments)
             {
                 if (a.getAppointmentID() == id)

@@ -1,5 +1,5 @@
 // src/model/Appointment.cpp
-#include "../include/model/Appointment.h"
+#include "model/Appointment.h"
 #include <sstream>
 #include <iomanip>
 #include <chrono>
