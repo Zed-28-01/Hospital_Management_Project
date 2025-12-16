@@ -94,6 +94,7 @@ namespace HMS
         void AppointmentRepository::setFilePath(const std::string &filePath)
         {
             m_filePath = filePath;
+            m_isLoaded = false; // force reload on next operation
         }
 
         std::string AppointmentRepository::getFilePath() const
