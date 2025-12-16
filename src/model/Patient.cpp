@@ -1,10 +1,9 @@
-#include "../include/model/Patient.h"
+#include "model/Patient.h"
 
 #include <sstream>
 #include <format>
 #include <iostream>
-
-using std::cout;
+#include <vector>
 
 // ==================== Constructor ====================
 HMS::Model::Patient::Patient(const std::string& patientID,
@@ -14,16 +13,12 @@ HMS::Model::Patient::Patient(const std::string& patientID,
             Gender gender,
             const std::string& dateOfBirth,
             const std::string& address,
-            const std::string& medicalHistory) {
-    this->m_patientID = patientID;
-    this->m_username = username;
-    this->m_name = name;
-    this->m_phone = phone;
-    this->m_gender = gender;
-    this->m_dateOfBirth = dateOfBirth;
-    this->m_address = address;
-    this->m_medicalHistory = medicalHistory;
-}
+            const std::string& medicalHistory)
+    : Person(name, phone, gender, dateOfBirth),
+      m_patientID(patientID),
+      m_username(username),
+      m_address(address),
+      m_medicalHistory(medicalHistory) {}
 
 // ==================== Getters ====================
 std::string HMS::Model::Patient::getID() const {
@@ -49,11 +44,11 @@ std::string HMS::Model::Patient::getMedicalHistory() const {
 // ==================== Setters ====================
 
 void HMS::Model::Patient::setAddress(const std::string& address) {
-    this->m_address = address;
+    m_address = address;
 }
 
 void HMS::Model::Patient::setMedicalHistory(const std::string& medicalHistory) {
-    this->m_medicalHistory = medicalHistory;
+    m_medicalHistory = medicalHistory;
 }
 
 void HMS::Model::Patient::appendMedicalHistory(const std::string& entry) {
@@ -106,6 +101,12 @@ HMS::Result<HMS::Model::Patient> HMS::Model::Patient::deserialize(const std::str
         fields.push_back(token);
     }
 
+    // Handle trailing empty field (e.g., line ends with "|")
+    // getline won't capture empty string after last delimiter
+    if (!line.empty() && line.back() == '|') {
+        fields.push_back("");
+    }
+
     // Validate field count
     if (fields.size() != 8) {
         std::cerr << std::format("Invalid patient data format: expected 8 fields, got {}\n",
@@ -132,5 +133,5 @@ HMS::Result<HMS::Model::Patient> HMS::Model::Patient::deserialize(const std::str
         fields[7]   // medicalHistory
     );
 
-    return HMS::Result<Patient>{ patient };
+    return patient;
 }

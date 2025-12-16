@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../../include/model/Patient.h"
+#include "model/Patient.h"
 
 using namespace HMS;
 using namespace HMS::Model;
@@ -149,4 +149,106 @@ TEST(PatientTest, DeserializeInvalidGender)
 
     auto result = Patient::deserialize(invalidGender);
     EXPECT_FALSE(result.has_value());
+}
+
+// ==================== Person Base Class Getters ====================
+
+TEST(PatientTest, PersonBaseClassGetters)
+{
+    Patient p(
+        "P010",
+        "user10",
+        "Nguyen Van Test",
+        "0123456789",
+        Gender::MALE,
+        "2000-01-01",
+        "Ha Noi",
+        "None");
+
+    // Test inherited Person getters
+    EXPECT_EQ(p.getName(), "Nguyen Van Test");
+    EXPECT_EQ(p.getPhone(), "0123456789");
+    EXPECT_EQ(p.getGender(), Gender::MALE);
+    EXPECT_EQ(p.getGenderString(), "Male");
+    EXPECT_EQ(p.getDateOfBirth(), "2000-01-01");
+}
+
+TEST(PatientTest, PersonBaseClassSetters)
+{
+    Patient p(
+        "P011",
+        "user11",
+        "Original Name",
+        "0123456789",
+        Gender::MALE,
+        "2000-01-01",
+        "Address",
+        "History");
+
+    p.setName("New Name");
+    p.setPhone("9999999999");
+    p.setGender(Gender::FEMALE);
+    p.setDateOfBirth("1999-12-31");
+
+    EXPECT_EQ(p.getName(), "New Name");
+    EXPECT_EQ(p.getPhone(), "9999999999");
+    EXPECT_EQ(p.getGender(), Gender::FEMALE);
+    EXPECT_EQ(p.getDateOfBirth(), "1999-12-31");
+}
+
+// ==================== Empty Field Edge Cases ====================
+
+TEST(PatientTest, SerializeEmptyMedicalHistory)
+{
+    Patient p(
+        "P012",
+        "user12",
+        "Test Name",
+        "0123456789",
+        Gender::MALE,
+        "2000-01-01",
+        "Address",
+        "");
+
+    std::string serialized = p.serialize();
+    EXPECT_EQ(serialized,
+        "P012|user12|Test Name|0123456789|Male|2000-01-01|Address|");
+}
+
+TEST(PatientTest, DeserializeEmptyMedicalHistory)
+{
+    std::string data = "P013|user13|Test Name|0123456789|Male|2000-01-01|Address|";
+
+    auto result = Patient::deserialize(data);
+
+    ASSERT_TRUE(result.has_value());
+
+    Patient p = result.value();
+    EXPECT_EQ(p.getPatientID(), "P013");
+    EXPECT_EQ(p.getMedicalHistory(), "");
+}
+
+// ==================== Deserialize Full Validation ====================
+
+TEST(PatientTest, DeserializeValidatesAllFields)
+{
+    std::string data =
+        "P014|user14|Full Test|0777888999|Female|1995-05-15|Full Address|Complete History";
+
+    auto result = Patient::deserialize(data);
+
+    ASSERT_TRUE(result.has_value());
+
+    Patient p = result.value();
+
+    // Validate all fields are correctly parsed
+    EXPECT_EQ(p.getPatientID(), "P014");
+    EXPECT_EQ(p.getUsername(), "user14");
+    EXPECT_EQ(p.getName(), "Full Test");
+    EXPECT_EQ(p.getPhone(), "0777888999");
+    EXPECT_EQ(p.getGender(), Gender::FEMALE);
+    EXPECT_EQ(p.getGenderString(), "Female");
+    EXPECT_EQ(p.getDateOfBirth(), "1995-05-15");
+    EXPECT_EQ(p.getAddress(), "Full Address");
+    EXPECT_EQ(p.getMedicalHistory(), "Complete History");
 }
