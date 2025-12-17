@@ -17,7 +17,8 @@
 #include <exception>
 
 // Temporary placeholder until full implementation
-int main() {
+int main()
+{
     std::cout << "========================================" << std::endl;
     std::cout << "   Hospital Management System v1.0     " << std::endl;
     std::cout << "========================================" << std::endl;
@@ -31,7 +32,7 @@ int main() {
     std::cout << "    bll/     - Business Logic Layer (Services)" << std::endl;
     std::cout << "    ui/      - Presentation Layer (Console UI, Facade)" << std::endl;
     std::cout << "    common/  - Shared utilities and constants" << std::endl;
-    std::cout << "    future/  - Placeholders for future features" << std::endl;
+    std::cout << "    advance/  - Placeholders for future features" << std::endl;
     std::cout << std::endl;
     std::cout << "  src/       - Implementation files (.cpp)" << std::endl;
     std::cout << "  test/      - Unit and integration tests" << std::endl;

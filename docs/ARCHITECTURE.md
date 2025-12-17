@@ -225,7 +225,7 @@ Hospital_Management_Project/
 │   │   ├── Types.h                 # Type aliases and enums
 │   │   └── Utils.h                 # Utility functions
 │   │
-│   └── future/                     # Future extensions (placeholders)
+│   └── advance/                     # Future extensions (placeholders)
 │       ├── Department.h
 │       ├── Medicine.h
 │       ├── Prescription.h
