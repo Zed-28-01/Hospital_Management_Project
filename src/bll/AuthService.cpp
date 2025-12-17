@@ -5,7 +5,7 @@
 namespace HMS {
 namespace BLL {
 
-AuthService* AuthService::s_instance = nullptr;
+std::unique_ptr<AuthService> AuthService::s_instance = nullptr;
 std::mutex AuthService::s_mutex;
 
 // ==================== Constructor ====================
@@ -22,9 +22,14 @@ AuthService::AuthService()
 AuthService* AuthService::getInstance() {
     std::lock_guard<std::mutex> lock(s_mutex);
     if (!s_instance) {
-        s_instance = new AuthService();
+        s_instance = std::unique_ptr<AuthService>(new AuthService());
     }
-    return s_instance;
+    return s_instance.get();
+}
+
+void AuthService::resetInstance() {
+    std::lock_guard<std::mutex> lock(s_mutex);
+    s_instance.reset();
 }
 
 AuthService::~AuthService() = default;
@@ -33,12 +38,17 @@ AuthService::~AuthService() = default;
 
 bool AuthService::login(const std::string& username,
                         const std::string& password) {
+    std::lock_guard<std::mutex> lock(s_mutex);
+
     std::string hash = hashPassword(password);
     if (!m_accountRepo->validateCredentials(username, hash))
         return false;
 
     auto acc = m_accountRepo->getByUsername(username);
     if (!acc) return false;
+
+    // Check if account is active
+    if (!acc->isActive()) return false;
 
     m_currentUsername = username;
     m_currentRole = acc->getRole();
@@ -47,6 +57,8 @@ bool AuthService::login(const std::string& username,
 }
 
 void AuthService::logout() {
+    std::lock_guard<std::mutex> lock(s_mutex);
+
     m_isLoggedIn = false;
     m_currentUsername.clear();
     m_currentRole = Role::UNKNOWN;
@@ -81,9 +93,12 @@ AuthService::getCurrentAccount() const {
 bool AuthService::registerAccount(const std::string& username,
                                   const std::string& password,
                                   Role role) {
-    if (!isUsernameAvailable(username)) return false;
-    if (!validatePassword(password)) return false;
+    // Validate format first (cheap operations)
     if (!validateUsername(username)) return false;
+    if (!validatePassword(password)) return false;
+
+    // Then check availability (requires DB lookup)
+    if (!isUsernameAvailable(username)) return false;
 
     Model::Account acc(
         username,
@@ -99,6 +114,7 @@ bool AuthService::registerAccount(const std::string& username,
 bool AuthService::changePassword(const std::string& oldPassword,
                                  const std::string& newPassword) {
     if (!m_isLoggedIn) return false;
+    if (!validatePassword(newPassword)) return false;
 
     auto accOpt = getCurrentAccount();
     if (!accOpt) return false;
@@ -113,6 +129,7 @@ bool AuthService::changePassword(const std::string& oldPassword,
 bool AuthService::resetPassword(const std::string& username,
                                 const std::string& newPassword) {
     if (!isAdmin()) return false;
+    if (!validatePassword(newPassword)) return false;
 
     auto accOpt = m_accountRepo->getByUsername(username);
     if (!accOpt) return false;
@@ -122,6 +139,8 @@ bool AuthService::resetPassword(const std::string& username,
 }
 
 bool AuthService::deactivateAccount(const std::string& username) {
+    if (!isAdmin()) return false;
+
     auto accOpt = m_accountRepo->getByUsername(username);
     if (!accOpt) return false;
 
@@ -130,6 +149,8 @@ bool AuthService::deactivateAccount(const std::string& username) {
 }
 
 bool AuthService::activateAccount(const std::string& username) {
+    if (!isAdmin()) return false;
+
     auto accOpt = m_accountRepo->getByUsername(username);
     if (!accOpt) return false;
 
