@@ -252,3 +252,8 @@ TEST(PatientTest, DeserializeValidatesAllFields)
     EXPECT_EQ(p.getAddress(), "Full Address");
     EXPECT_EQ(p.getMedicalHistory(), "Complete History");
 }
+
+
+/*
+cd build && ./HospitalTests --gtest_filter="PatientTest.*"
+*/
