@@ -88,7 +88,7 @@ std::string getCurrentDateTime() {
 }
 
 bool isValidDate(const std::string& date) {
-    if (date.length() != 10) return false;
+    if (date.length() != 10) return false; // YYYY-MM-DD
     if (date[4] != '-' || date[7] != '-') return false;
 
     for (int i = 0; i < 10; ++i) {
@@ -108,7 +108,7 @@ bool isValidDate(const std::string& date) {
 }
 
 bool isValidTime(const std::string& time) {
-    if (time.length() != 5) return false;
+    if (time.length() != 5) return false; // HH:MM
     if (time[2] != ':') return false;
 
     for (int i = 0; i < 5; ++i) {
