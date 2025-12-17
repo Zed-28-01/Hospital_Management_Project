@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 #include <mutex>
+#include <memory>
 
 namespace HMS {
 namespace DAL {
@@ -21,13 +22,14 @@ namespace DAL {
 class AccountRepository : public IRepository<Model::Account> {
 private:
     // ==================== Singleton ====================
-    static AccountRepository* s_instance;
+    static std::unique_ptr<AccountRepository> s_instance;
     static std::mutex s_mutex;
 
     // ==================== Data ====================
+    mutable std::mutex m_dataMutex;
     std::vector<Model::Account> m_accounts;
     std::string m_filePath;
-    bool m_isLoaded;
+    mutable bool m_isLoaded;
 
     // ==================== Private Constructor ====================
     AccountRepository();
@@ -40,6 +42,12 @@ public:
      * @return Pointer to the singleton instance
      */
     static AccountRepository* getInstance();
+
+    /**
+     * @brief Reset the singleton instance (for testing)
+     * Memory is automatically freed when program exits
+     */
+    static void resetInstance();
 
     /**
      * @brief Delete copy constructor
@@ -171,6 +179,24 @@ public:
      * @return File path string
      */
     std::string getFilePath() const;
+
+private:
+    // ==================== Private Helpers ====================
+
+    /**
+     * @brief Ensure data is loaded (lazy loading)
+     */
+    void ensureLoaded() const;
+
+    /**
+     * @brief Internal load without mutex (called from locked context)
+     */
+    bool loadInternal();
+
+    /**
+     * @brief Internal save without mutex (called from locked context)
+     */
+    bool saveInternal();
 };
 
 } // namespace DAL
