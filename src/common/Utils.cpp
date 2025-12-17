@@ -193,7 +193,18 @@ bool isValidUsername(const std::string& username) {
 }
 
 bool isValidPassword(const std::string& password) {
-    return password.length() >= 6 && password.length() <= 100;
+    if (password.length() < 6 || password.length() > 100) {
+        return false;
+    }
+
+    // Reject pipe character (field delimiter) to prevent data corruption
+    for (char c : password) {
+        if (c == '|') {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 bool isNumeric(const std::string& str) {

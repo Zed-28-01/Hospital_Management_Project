@@ -114,6 +114,16 @@ Result<Admin> Admin::deserialize(const std::string& line) {
         return std::nullopt;
     }
 
+    // Validate username format
+    if (!Utils::isValidUsername(username)) {
+        std::cerr << std::format(
+            "Error: Invalid username '{}' for admin {}\n",
+            username,
+            adminID
+        );
+        return std::nullopt;
+    }
+
     // Validate phone number
     if (!Utils::isValidPhone(phone)) {
         std::cerr << std::format(
