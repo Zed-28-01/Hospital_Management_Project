@@ -33,15 +33,38 @@ std::string Admin::getUsername() const {
     return m_username;
 }
 
+// ==================== Helper Methods ====================
+std::string Admin::truncateField(const std::string& field, size_t maxLen) const {
+    if (field.length() <= maxLen) {
+        return field;
+    }
+    return field.substr(0, maxLen - 3) + "...";
+}
+
+std::string Admin::sanitizeField(const std::string& field) const {
+    std::string result;
+    result.reserve(field.size());
+    for (char c : field) {
+        if (c == Constants::FIELD_DELIMITER) {
+            result += ' ';  // Replace delimiter with space
+        } else {
+            result += c;
+        }
+    }
+    return result;
+}
+
 // ==================== Override Methods ====================
 void Admin::displayInfo() const {
+    constexpr size_t MAX_FIELD_WIDTH = 43;
+
     std::cout << "╔════════════════════════════════════════════════════════════╗\n";
     std::cout << "║                    ADMIN INFORMATION                       ║\n";
     std::cout << "╠════════════════════════════════════════════════════════════╣\n";
-    std::cout << std::format("║ Admin ID      : {:<43} ║\n", m_adminID);
-    std::cout << std::format("║ Username      : {:<43} ║\n", m_username);
-    std::cout << std::format("║ Name          : {:<43} ║\n", m_name);
-    std::cout << std::format("║ Phone         : {:<43} ║\n", m_phone);
+    std::cout << std::format("║ Admin ID      : {:<43} ║\n", truncateField(m_adminID, MAX_FIELD_WIDTH));
+    std::cout << std::format("║ Username      : {:<43} ║\n", truncateField(m_username, MAX_FIELD_WIDTH));
+    std::cout << std::format("║ Name          : {:<43} ║\n", truncateField(m_name, MAX_FIELD_WIDTH));
+    std::cout << std::format("║ Phone         : {:<43} ║\n", truncateField(m_phone, MAX_FIELD_WIDTH));
     std::cout << std::format("║ Gender        : {:<43} ║\n", genderToString(m_gender));
     std::cout << std::format("║ Date of Birth : {:<43} ║\n",
                             Utils::formatDateDisplay(m_dateOfBirth));
@@ -50,10 +73,10 @@ void Admin::displayInfo() const {
 
 std::string Admin::serialize() const {
     return std::format("{}|{}|{}|{}|{}|{}",
-                       m_adminID,
-                       m_username,
-                       m_name,
-                       m_phone,
+                       sanitizeField(m_adminID),
+                       sanitizeField(m_username),
+                       sanitizeField(m_name),
+                       sanitizeField(m_phone),
                        genderToString(m_gender),
                        m_dateOfBirth);
 }
@@ -113,11 +136,9 @@ Result<Admin> Admin::deserialize(const std::string& line) {
 
     // Parse gender
     Gender gender = stringToGender(genderStr);
-    if (gender == Gender::UNKNOWN
-        && !genderStr.empty()
-    ) {
+    if (gender == Gender::UNKNOWN) {
         std::cerr << std::format(
-            "Warning: Unknown gender '{}' for admin {}\n",
+            "Warning: Unknown or empty gender '{}' for admin {}, defaulting to UNKNOWN\n",
             genderStr,
             adminID
         );

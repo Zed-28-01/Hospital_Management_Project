@@ -460,15 +460,14 @@ TEST_F(AdminTest, Deserialize_GenderCaseSensitive_HandlesCorrectly) {
     );
 }
 
-TEST_F(AdminTest, Serialize_NameWithPipe_BreaksFormat) {
+TEST_F(AdminTest, Serialize_NameWithPipe_SanitizedCorrectly) {
     Admin admin = createTestAdmin("A001", "user", "Name|WithPipe", "0123456789");
     std::string serialized = admin.serialize();
 
-    // Verify serialization contains the pipe (but breaks format)
-    EXPECT_TRUE(serialized.find("|") != std::string::npos);
-
+    // Verify pipe in name is sanitized (replaced with space)
     auto result = Admin::deserialize(serialized);
-    EXPECT_FALSE(result.has_value());
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result->getName(), "Name WithPipe");  // Pipe replaced with space
 }
 
 TEST_F(AdminTest, Deserialize_SpacesInFields_TrimmedCorrectly) {
