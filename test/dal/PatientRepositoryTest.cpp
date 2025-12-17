@@ -762,3 +762,10 @@ TEST_F(PatientRepositoryTest, ConcurrentAccess_SingletonWorks) {
     EXPECT_EQ(repo2->count(), 1u);
     EXPECT_TRUE(repo2->exists("P001"));
 }
+
+
+/*
+Build va run tests:
+cd build && ./HospitalTests --gtest_filter="PatientRepositoryTest.*"
+
+*/

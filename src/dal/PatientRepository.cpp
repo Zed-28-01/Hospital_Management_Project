@@ -8,6 +8,7 @@
 #include <format>
 #include <cctype>
 #include <iomanip>
+#include <filesystem>
 
 namespace HMS {
     namespace DAL {
@@ -49,12 +50,14 @@ namespace HMS {
                 load();
             }
 
-            for (const auto& p : m_patients) {
-                if (p.getPatientID() == id) {
-                    return p;
-                }
-            }
+            auto it = std::find_if(m_patients.begin(), m_patients.end(),
+                [&id](const Model::Patient& p) {
+                    return p.getPatientID() == id;
+                });
 
+            if (it != m_patients.end()) {
+                return *it;
+            }
             return std::nullopt;
         }
 
@@ -82,13 +85,15 @@ namespace HMS {
                 load();
             }
 
-            for (auto& p : m_patients) {
-                if (p.getPatientID() == patient.getPatientID()) {
-                    p = patient;
-                    return save();
-                }
-            }
+            auto it = std::find_if(m_patients.begin(), m_patients.end(),
+                [&patient](const Model::Patient& p) {
+                    return p.getPatientID() == patient.getPatientID();
+                });
 
+            if (it != m_patients.end()) {
+                *it = patient;
+                return save();
+            }
             return false;
         }
 
@@ -97,7 +102,7 @@ namespace HMS {
                 load();
             }
 
-            auto it = std::remove_if(
+            auto it = std::find_if(
                 m_patients.begin(),
                 m_patients.end(),
                 [&id](const Model::Patient& p) {
@@ -108,15 +113,18 @@ namespace HMS {
                 return false;  // Not found
             }
 
-            m_patients.erase(it, m_patients.end());
+            m_patients.erase(it);
             return save();
         }
 
         // ==================== Persistence ====================
         bool PatientRepository::save() {
-            std::ofstream file(m_filePath, std::ios::trunc);
+            // Atomic write using temporary file to prevent data corruption
+            std::string tempPath = m_filePath + ".tmp";
+
+            std::ofstream file(tempPath, std::ios::trunc);
             if (!file.is_open()) {
-                std::cerr << "Failed to open file for writing: " << m_filePath << "\n";
+                std::cerr << "Failed to open file for writing: " << tempPath << "\n";
                 return false;
             }
 
@@ -130,13 +138,28 @@ namespace HMS {
                 if (file.fail()) {
                     std::cerr << "Failed to write patient data\n";
                     file.close();
+                    std::filesystem::remove(tempPath);  // Clean up temp file
                     return false;
                 }
             }
 
             file.flush();
+            if (file.fail()) {
+                file.close();
+                std::filesystem::remove(tempPath);
+                return false;
+            }
             file.close();
-            return !file.fail();
+
+            try {
+                std::filesystem::rename(tempPath, m_filePath);
+            } catch (const std::filesystem::filesystem_error& e) {
+                std::cerr << "Failed to rename temp file: " << e.what() << "\n";
+                std::filesystem::remove(tempPath);
+                return false;
+            }
+
+            return true;
         }
 
         bool PatientRepository::load() {
@@ -150,12 +173,9 @@ namespace HMS {
             m_patients.clear();
             std::string line;
 
-            // Skip header line
-            std::getline(file, line);
-
             // Read and deserialize each line
             while (std::getline(file, line)) {
-                // Skip empty lines
+                // Skip empty lines and comments (including header)
                 if (line.empty() || line[0] == '#') {
                     continue;
                 }
@@ -187,14 +207,11 @@ namespace HMS {
             if (!m_isLoaded) {
                 const_cast<PatientRepository*>(this)->load();
             }
-            
-            for (const auto& p : m_patients) {
-                if (p.getPatientID() == id) {
-                    return true;
-                }
-            }
 
-            return false;
+            return std::any_of(m_patients.begin(), m_patients.end(),
+                [&id](const Model::Patient& p) {
+                    return p.getPatientID() == id;
+                });
         }
 
         bool PatientRepository::clear() {
@@ -209,12 +226,14 @@ namespace HMS {
                 load();
             }
 
-            for (const auto& p : m_patients) {
-                if (p.getUsername() == username) {
-                    return p;
-                }
-            }
+            auto it = std::find_if(m_patients.begin(), m_patients.end(),
+                [&username](const Model::Patient& p) {
+                    return p.getUsername() == username;
+                });
 
+            if (it != m_patients.end()) {
+                return *it;
+            }
             return std::nullopt;
         }
 
@@ -318,7 +337,7 @@ namespace HMS {
 
             int maxID = 0;
             for (const auto& patient : m_patients) {
-                std::string patientID = patient.getPatientID();
+                const std::string& patientID = patient.getPatientID();
 
                 // Only process valid format: P + digits
                 if (patientID.length() > 1 && patientID[0] == 'P') {
@@ -329,18 +348,15 @@ namespace HMS {
                     if (allDigits && !numPart.empty()) {
                         try {
                             int idNum = std::stoi(numPart);
-                            if (idNum > maxID) {
-                                maxID = idNum;
-                            }
-                        } catch (const std::exception& e) {
-                            std::cerr << "Error parsing patient ID: " << patientID << "\n";
+                            maxID = std::max(maxID, idNum);
+                        } catch (const std::exception&) {
+                            // Ignore parse errors
                         }
                     }
                 }
             }
 
-            int nextId = maxID + 1;
-            return std::format("P{:03d}", nextId);
+            return std::format("P{:03d}", maxID + 1);
         }
 
         // ==================== File Path ====================
