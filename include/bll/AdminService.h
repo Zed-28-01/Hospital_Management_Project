@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <mutex>
+#include <memory>
 
 namespace HMS {
 namespace BLL {
@@ -22,7 +23,7 @@ namespace BLL {
 class AdminService {
 private:
     // ==================== Singleton ====================
-    static AdminService* s_instance;
+    static std::unique_ptr<AdminService> s_instance;
     static std::mutex s_mutex;
 
     // ==================== Dependencies ====================
@@ -41,6 +42,11 @@ public:
      * @return Pointer to the singleton instance
      */
     static AdminService* getInstance();
+
+    /**
+     * @brief Reset the singleton instance (for testing)
+     */
+    static void resetInstance();
 
     /**
      * @brief Delete copy constructor

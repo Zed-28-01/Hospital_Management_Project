@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <mutex>
+#include <memory>
 
 namespace HMS {
 namespace DAL {
@@ -22,7 +23,7 @@ namespace DAL {
 class AppointmentRepository : public IRepository<Model::Appointment> {
 private:
     // ==================== Singleton ====================
-    static AppointmentRepository* s_instance;
+    static std::unique_ptr<AppointmentRepository> s_instance;
     static std::mutex s_mutex;
 
     // ==================== Data ====================
@@ -41,6 +42,11 @@ public:
      * @return Pointer to the singleton instance
      */
     static AppointmentRepository* getInstance();
+
+    /**
+     * @brief Reset the singleton instance (for testing)
+     */
+    static void resetInstance();
 
     /**
      * @brief Delete copy constructor
