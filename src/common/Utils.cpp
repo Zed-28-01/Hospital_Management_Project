@@ -186,6 +186,9 @@ bool isValidUsername(const std::string& username) {
     if (username.length() < 3 || username.length() > 50) return false;
 
     for (char c : username) {
+        // Explicitly reject pipe character (field delimiter) to prevent data corruption
+        if (c == '|') return false;
+        // Only allow alphanumeric, underscore, and dot
         if (!std::isalnum(c) && c != '_' && c != '.') return false;
     }
 
