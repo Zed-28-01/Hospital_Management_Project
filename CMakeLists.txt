@@ -27,7 +27,7 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/include/bll
     ${PROJECT_SOURCE_DIR}/include/ui
     ${PROJECT_SOURCE_DIR}/include/common
-    ${PROJECT_SOURCE_DIR}/include/future
+    ${PROJECT_SOURCE_DIR}/include/advance
 )
 
 # ============================================================================

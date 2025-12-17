@@ -2,10 +2,10 @@
 
 /**
  * @file Prescription.h
- * @brief Placeholder for future Prescription feature
+ * @brief Placeholder for advance Prescription feature
  *
  * This file is a placeholder for the Prescription management
- * feature planned for future implementation. When implemented,
+ * feature planned for advance implementation. When implemented,
  * this will link appointments with prescribed medicines.
  *
  * Planned features:
@@ -37,7 +37,7 @@ struct PrescriptionItem {
 
 /**
  * @class Prescription
- * @brief Represents a medical prescription (FUTURE IMPLEMENTATION)
+ * @brief Represents a medical prescription (ADVANCE IMPLEMENTATION)
  *
  * @note This is a placeholder. Implementation pending.
  */
@@ -104,7 +104,7 @@ public:
 } // namespace HMS
 
 /**
- * @note Future files to create when implementing Prescription feature:
+ * @note Advance files to create when implementing Prescription feature:
  *
  * Data Access Layer:
  * - include/dal/PrescriptionRepository.h
