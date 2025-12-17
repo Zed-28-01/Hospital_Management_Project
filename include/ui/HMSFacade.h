@@ -14,6 +14,7 @@
 #include <vector>
 #include <optional>
 #include <mutex>
+#include <memory>
 
 namespace HMS {
 namespace UI {
@@ -31,7 +32,7 @@ namespace UI {
 class HMSFacade {
 private:
     // ==================== Singleton ====================
-    static HMSFacade* s_instance;
+    static std::unique_ptr<HMSFacade> s_instance;
     static std::mutex s_mutex;
 
     // ==================== Services ====================
@@ -55,6 +56,11 @@ public:
      * @return Pointer to the singleton instance
      */
     static HMSFacade* getInstance();
+
+    /**
+     * @brief Reset the singleton instance (for testing)
+     */
+    static void resetInstance();
 
     /**
      * @brief Delete copy constructor

@@ -20,7 +20,7 @@ namespace BLL {
 class AuthService {
 private:
     // ==================== Singleton ====================
-    static AuthService* s_instance;
+    static std::unique_ptr<AuthService> s_instance;
     static std::mutex s_mutex;
 
     // ==================== Dependencies ====================
@@ -42,6 +42,12 @@ public:
      * @return Pointer to the singleton instance
      */
     static AuthService* getInstance();
+
+    /**
+     * @brief Reset the singleton instance (optional, for testing)
+     * Memory is automatically freed when program exits
+     */
+    static void resetInstance();
 
     /**
      * @brief Delete copy constructor
