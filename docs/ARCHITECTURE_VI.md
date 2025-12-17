@@ -226,7 +226,7 @@ Hospital_Management_Project/
 │   │   ├── Types.h                 # Type aliases và enums
 │   │   └── Utils.h                 # Các hàm tiện ích
 │   │
-│   └── future/                     # Các tính năng tương lai
+│   └── advance/                     # Các tính năng tương lai
 │       ├── Department.h
 │       ├── Medicine.h
 │       ├── Prescription.h
