@@ -9,6 +9,7 @@
 #include <vector>
 #include <optional>
 #include <mutex>
+#include <memory>
 
 namespace HMS {
 namespace BLL {
@@ -23,7 +24,7 @@ namespace BLL {
 class DoctorService {
 private:
     // ==================== Singleton ====================
-    static DoctorService* s_instance;
+    static std::unique_ptr<DoctorService> s_instance;
     static std::mutex s_mutex;
 
     // ==================== Dependencies ====================
@@ -41,6 +42,11 @@ public:
      * @return Pointer to the singleton instance
      */
     static DoctorService* getInstance();
+
+    /**
+     * @brief Reset the singleton instance (for testing)
+     */
+    static void resetInstance();
 
     /**
      * @brief Delete copy constructor
