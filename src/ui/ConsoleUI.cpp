@@ -1,4 +1,6 @@
 #include "ui/ConsoleUI.h"
+#include <ctime>
+#include <cstdio>
 
 namespace HMS
 {
@@ -873,7 +875,7 @@ namespace HMS
             {
                 time_t now = time(nullptr);
                 tm *ltm = localtime(&now);
-                char buffer[11];
+                char buffer[40];  // Large enough for worst case
                 snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d",
                          1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday);
                 today = buffer;
@@ -1257,7 +1259,7 @@ namespace HMS
             if (choice == 0)
                 return "";
 
-            return doctors[choice - 1].getId();
+            return doctors[choice - 1].getID();
         }
 
         std::string ConsoleUI::selectPatient()
@@ -1289,7 +1291,7 @@ namespace HMS
             if (choice == 0)
                 return "";
 
-            return patients[choice - 1].getId();
+            return patients[choice - 1].getID();
         }
 
         std::string ConsoleUI::selectAppointment(const std::vector<Model::Appointment> &appointments)
@@ -1320,7 +1322,7 @@ namespace HMS
             if (choice == 0)
                 return "";
 
-            return appointments[choice - 1].getId();
+            return appointments[choice - 1].getAppointmentID();
         }
 
         std::string ConsoleUI::selectDate()
