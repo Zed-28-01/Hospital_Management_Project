@@ -88,7 +88,7 @@ std::string getCurrentDateTime() {
 }
 
 bool isValidDate(const std::string& date) {
-    if (date.length() != 10) return false;
+    if (date.length() != 10) return false; // YYYY-MM-DD
     if (date[4] != '-' || date[7] != '-') return false;
 
     for (int i = 0; i < 10; ++i) {
@@ -108,7 +108,7 @@ bool isValidDate(const std::string& date) {
 }
 
 bool isValidTime(const std::string& time) {
-    if (time.length() != 5) return false;
+    if (time.length() != 5) return false; // HH:MM
     if (time[2] != ':') return false;
 
     for (int i = 0; i < 5; ++i) {
@@ -186,6 +186,9 @@ bool isValidUsername(const std::string& username) {
     if (username.length() < 3 || username.length() > 50) return false;
 
     for (char c : username) {
+        // Explicitly reject pipe character (field delimiter) to prevent data corruption
+        if (c == '|') return false;
+        // Only allow alphanumeric, underscore, and dot
         if (!std::isalnum(c) && c != '_' && c != '.') return false;
     }
 
@@ -193,7 +196,18 @@ bool isValidUsername(const std::string& username) {
 }
 
 bool isValidPassword(const std::string& password) {
-    return password.length() >= 6 && password.length() <= 100;
+    if (password.length() < 6 || password.length() > 100) {
+        return false;
+    }
+
+    // Reject pipe character (field delimiter) to prevent data corruption
+    for (char c : password) {
+        if (c == '|') {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 bool isNumeric(const std::string& str) {
