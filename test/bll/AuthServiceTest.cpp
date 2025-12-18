@@ -218,8 +218,15 @@ TEST_F(AuthServiceTest, ValidatePassword_PipeAtEnd_ReturnsFalse) {
 // ==================== Long Input Tests ====================
 
 TEST_F(AuthServiceTest, ValidateUsername_LongUsername_ReturnsTrue) {
-    std::string longUsername(100, 'a');
+    // Username max length is 50 characters
+    std::string longUsername(50, 'a');
     EXPECT_TRUE(authService->validateUsername(longUsername));
+}
+
+TEST_F(AuthServiceTest, ValidateUsername_TooLongUsername_ReturnsFalse) {
+    // Username over 50 characters should fail
+    std::string tooLongUsername(51, 'a');
+    EXPECT_FALSE(authService->validateUsername(tooLongUsername));
 }
 
 TEST_F(AuthServiceTest, ValidatePassword_LongPassword_ReturnsTrue) {
@@ -229,9 +236,19 @@ TEST_F(AuthServiceTest, ValidatePassword_LongPassword_ReturnsTrue) {
 
 // ==================== Special Character Tests ====================
 
-TEST_F(AuthServiceTest, ValidateUsername_WithSpaces_ReturnsTrue) {
-    // Spaces are allowed (only pipe is forbidden)
-    EXPECT_TRUE(authService->validateUsername("user name"));
+TEST_F(AuthServiceTest, ValidateUsername_WithSpaces_ReturnsFalse) {
+    // Spaces are NOT allowed - only alphanumeric, underscore, and dot
+    EXPECT_FALSE(authService->validateUsername("user name"));
+}
+
+TEST_F(AuthServiceTest, ValidateUsername_WithUnderscore_ReturnsTrue) {
+    // Underscores are allowed
+    EXPECT_TRUE(authService->validateUsername("user_name"));
+}
+
+TEST_F(AuthServiceTest, ValidateUsername_WithDot_ReturnsTrue) {
+    // Dots are allowed
+    EXPECT_TRUE(authService->validateUsername("user.name"));
 }
 
 TEST_F(AuthServiceTest, ValidatePassword_WithSpecialChars_ReturnsTrue) {

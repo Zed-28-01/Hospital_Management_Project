@@ -1,7 +1,10 @@
 #include "model/Account.h"
 #include "common/Types.h"
+#include "common/Utils.h"
 #include <sstream>
 #include <vector>
+#include <iostream>
+#include <format>
 
 namespace HMS {
 namespace Model {
@@ -87,8 +90,14 @@ Result<Account> Account::deserialize(const std::string& line) {
         parts.push_back(token);
     }
 
-    //Sai format → thất bại
+    // Invalid format
     if (parts.size() != 5) {
+        return std::nullopt;
+    }
+
+    // Validate username format
+    if (!Utils::isValidUsername(parts[0])) {
+        std::cerr << std::format("Error: Invalid username '{}'\n", parts[0]);
         return std::nullopt;
     }
 
