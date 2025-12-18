@@ -13,13 +13,9 @@ namespace HMS {
            const std::string& name, const std::string& phone,
            Gender gender, const std::string& dateOfBirth,
            const std::string& specialization, const std::string& schedule,
-           double consultationFee) : Person (name, phone, gender, dateOfBirth){
-            m_doctorID = doctorID;
-            m_username = username;
-            m_specialization = specialization;
-            m_schedule = schedule;
-            m_consultationFee = consultationFee;
-
+           double consultationFee) : Person (name, phone, gender, dateOfBirth), m_doctorID(doctorID),
+           m_username(username), m_specialization(specialization),
+           m_schedule(schedule), m_consultationFee(consultationFee) {
            }
 // =============================== GETTERS ===========================
 
