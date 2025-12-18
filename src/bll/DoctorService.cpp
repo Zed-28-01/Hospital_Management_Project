@@ -148,7 +148,7 @@ namespace HMS {
                 if (app.getDoctorID() == doctorID &&
                     app.getStatus() != AppointmentStatus::CANCELLED &&
                     app.getStatus() != AppointmentStatus::COMPLETED &&
-                    app. getDate() > today || (app.getDate() == today && app.getTime() > nowTime)) {
+                    (app. getDate() > today || (app.getDate() == today && app.getTime() > nowTime))) {
                         result.push_back(app);
                     }
             }
