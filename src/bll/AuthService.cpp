@@ -165,21 +165,11 @@ bool AuthService::isUsernameAvailable(const std::string& username) {
 }
 
 bool AuthService::validatePassword(const std::string& password) {
-    if (password.length() < 6) return false;
-
-    if (HMS::Utils::split(password, '|').size() != 1)
-        return false;
-
-    return true;
+    return Utils::isValidPassword(password);
 }
 
 bool AuthService::validateUsername(const std::string& username) {
-    if (username.empty()) return false;
-
-    if (HMS::Utils::split(username, '|').size() != 1)
-        return false;
-
-    return true;
+    return Utils::isValidUsername(username);
 }
 
 // ==================== Authorization ====================
