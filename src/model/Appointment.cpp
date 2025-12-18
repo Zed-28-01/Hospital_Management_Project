@@ -3,7 +3,7 @@
 #include "common/Constants.h"
 #include <iostream>
 #include <iomanip>
-
+#include <format>
 namespace HMS
 {
     namespace Model
@@ -232,7 +232,7 @@ namespace HMS
             result += Constants::FIELD_DELIMITER;
             result += m_disease;
             result += Constants::FIELD_DELIMITER;
-            result += std::to_string(m_price);
+            result += std::format("{:.2f}", m_price); // Dùng format, gọn hơn nhiều!
             result += Constants::FIELD_DELIMITER;
             result += (m_isPaid ? "1" : "0");
             result += Constants::FIELD_DELIMITER;
@@ -246,7 +246,6 @@ namespace HMS
 
         Result<Appointment> Appointment::deserialize(const std::string &line)
         {
-            // Skip comments and empty lines
             if (line.empty() || line[0] == Constants::COMMENT_CHAR)
             {
                 return std::nullopt;
@@ -263,16 +262,17 @@ namespace HMS
 
             try
             {
-                std::string appointmentID = parts[0];
-                std::string patientUsername = parts[1];
-                std::string doctorID = parts[2];
-                std::string date = parts[3];
-                std::string time = parts[4];
-                std::string disease = parts[5];
-                double price = std::stod(parts[6]);
-                bool isPaid = (parts[7] == "1");
-                AppointmentStatus status = stringToStatus(parts[8]);
-                std::string notes = parts[9];
+                // Trim all parts to remove leading/trailing whitespace
+                std::string appointmentID = Utils::trim(parts[0]);
+                std::string patientUsername = Utils::trim(parts[1]);
+                std::string doctorID = Utils::trim(parts[2]);
+                std::string date = Utils::trim(parts[3]);
+                std::string time = Utils::trim(parts[4]);
+                std::string disease = Utils::trim(parts[5]);
+                double price = std::stod(Utils::trim(parts[6]));
+                bool isPaid = (Utils::trim(parts[7]) == "1");
+                AppointmentStatus status = stringToStatus(Utils::trim(parts[8]));
+                std::string notes = Utils::trim(parts[9]);
 
                 // Validate date and time formats
                 if (!Utils::isValidDate(date) || !Utils::isValidTime(time))
@@ -287,13 +287,12 @@ namespace HMS
                 }
 
                 return Appointment(appointmentID, patientUsername, doctorID,
-                                   date, time, disease, price, isPaid, status, notes);
+                                date, time, disease, price, isPaid, status, notes);
             }
             catch (const std::exception &e)
             {
                 return std::nullopt;
             }
         }
-
     } // namespace Model
 } // namespace HMS
