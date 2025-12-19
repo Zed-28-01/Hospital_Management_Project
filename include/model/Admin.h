@@ -18,6 +18,10 @@ private:
     std::string m_adminID;
     std::string m_username;     // Links to Account
 
+    // Helper methods
+    std::string truncateField(const std::string& field, size_t maxLen) const;
+    std::string sanitizeField(const std::string& field) const;
+
 public:
     // ==================== Constructors ====================
 
