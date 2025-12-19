@@ -40,10 +40,7 @@ namespace HMS
             s_instance.reset();
         }
 
-        AppointmentRepository::~AppointmentRepository()
-        {
-            save();
-        }
+        AppointmentRepository::~AppointmentRepository() = default;
 
         // ==================== CRUD Operations ====================
         std::vector<Model::Appointment> AppointmentRepository::getAll()
@@ -198,8 +195,7 @@ namespace HMS
 
         // ==================== Query Operations ====================
 
-        // SỬA ĐỔI QUAN TRỌNG: Sử dụng const_cast để hỗ trợ Lazy Loading trong hàm const
-        // Điều này đảm bảo count() luôn trả về đúng số lượng kể cả khi chưa gọi getAll() trước đó.
+    
         size_t AppointmentRepository::count() const
         {
             if (!m_isLoaded)

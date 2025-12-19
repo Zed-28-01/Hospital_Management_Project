@@ -4,6 +4,7 @@
 #include "model/Appointment.h"
 #include "common/Types.h"
 #include "common/Utils.h"
+#include "dal/FileHelper.h"
 
 #include <filesystem>
 #include <fstream>
@@ -272,3 +273,6 @@ TEST_F(AppointmentRepositoryTest, EmptyRepositoryQueriesReturnEmpty)
     EXPECT_TRUE(repo->getScheduled().empty());
     EXPECT_TRUE(repo->getCompleted().empty());
 }
+
+/* Build va run tests:
+cd build && ./HospitalTests --gtest_filter="PatientRepositoryTest.*" */

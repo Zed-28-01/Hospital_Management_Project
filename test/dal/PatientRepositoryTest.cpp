@@ -767,5 +767,4 @@ TEST_F(PatientRepositoryTest, ConcurrentAccess_SingletonWorks) {
 /*
 Build va run tests:
 cd build && ./HospitalTests --gtest_filter="PatientRepositoryTest.*"
-
 */
