@@ -75,3 +75,8 @@ TEST(StatisticsTest, ReportGenerationDoesNotCrash)
     EXPECT_NE(report.find("THONG KE HE THONG"), std::string::npos);
     EXPECT_NE(report.find("Tong doanh thu"), std::string::npos);
 }
+
+
+/*
+cd build && ./HospitalTests --gtest_filter="StatisticsTest.*"
+*/
