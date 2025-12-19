@@ -275,4 +275,5 @@ TEST_F(AppointmentRepositoryTest, EmptyRepositoryQueriesReturnEmpty)
 }
 
 /* Build va run tests:
-cd build && ./HospitalTests --gtest_filter="PatientRepositoryTest.*" */
+cd build && ./HospitalTests --gtest_filter="PatientRepositoryTest.*"
+*/
