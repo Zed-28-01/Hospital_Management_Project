@@ -1,13 +1,12 @@
 #include "dal/DoctorRepository.h"
+#include "dal/FileHelper.h"
 #include "common/Utils.h"
 #include "common/Constants.h"
 
-#include <fstream>
 #include <iostream>
 #include <algorithm>
 #include <set>
 #include <format>
-#include <filesystem>
 
 namespace HMS {
 namespace DAL {
@@ -136,43 +135,24 @@ bool DoctorRepository::remove(const std::string& id) {
 
 // ==================== Persistence ====================
 bool DoctorRepository::save() {
-    // Atomic write using temporary file to prevent data corruption
-    std::string tempPath = m_filePath + ".tmp";
-
-    std::ofstream file(tempPath, std::ios::trunc);
-    if (!file.is_open()) {
-        std::cerr << "Failed to open file for writing: " << tempPath << "\n";
-        return false;
-    }
-
-    // Write header
-    file << "# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee\n";
-
-    // Write data
-    for (const auto& doctor : m_doctors) {
-        file << doctor.serialize() << "\n";
-
-        if (file.fail()) {
-            std::cerr << "Failed to write doctor data\n";
-            file.close();
-            std::filesystem::remove(tempPath);  // Clean up temp file
-            return false;
+    if (FileHelper::fileExists(m_filePath)) {
+        if (!FileHelper::createBackup(m_filePath)) {
+            std::cerr << "Warning: Failed to create backup for: " << m_filePath << "\n";
+            // Continue anyway - backup failure không nên block save
         }
     }
 
-    file.flush();
-    if (file.fail()) {
-        file.close();
-        std::filesystem::remove(tempPath);
-        return false;
-    }
-    file.close();
+    // Prepare lines to write
+    std::vector<std::string> lines;
+    lines.push_back(FileHelper::getFileHeader("Doctor"));
 
-    try {
-        std::filesystem::rename(tempPath, m_filePath);
-    } catch (const std::filesystem::filesystem_error& e) {
-        std::cerr << "Failed to rename temp file: " << e.what() << "\n";
-        std::filesystem::remove(tempPath);
+    // Write data
+    for (const auto& doctor : m_doctors) {
+        lines.push_back(doctor.serialize());
+    }
+
+    if (!FileHelper::writeLines(m_filePath, lines)) {
+        std::cerr << "Failed to write doctor data to file: " << m_filePath << "\n";
         return false;
     }
 
@@ -180,24 +160,19 @@ bool DoctorRepository::save() {
 }
 
 bool DoctorRepository::load() {
-    std::ifstream file(m_filePath);
-    if (!file.is_open()) {
+    if (!FileHelper::fileExists(m_filePath)) {
         m_doctors.clear();
         m_isLoaded = true;
         return false;
     }
 
+    auto lines = FileHelper::readLines(m_filePath);
+
     m_doctors.clear();
-    std::string line;
 
-    // Read and deserialize each line
-    while (std::getline(file, line)) {
-        // Skip empty lines and comments (including header)
-        if (line.empty() || line[0] == '#') {
-            continue;
-        }
-
+    for (const auto& line : lines) {
         auto result = Model::Doctor::deserialize(line);
+
         if (result.has_value()) {
             m_doctors.push_back(result.value());
         } else {
@@ -205,9 +180,7 @@ bool DoctorRepository::load() {
         }
     }
 
-    file.close();
     m_isLoaded = true;
-
     return true;
 }
 
@@ -263,24 +236,8 @@ std::vector<Model::Doctor> DoctorRepository::getBySpecialization(const std::stri
 
     std::vector<Model::Doctor> results;
 
-    std::string lowerSpec = specialization;
-    std::transform(
-        lowerSpec.begin(),
-        lowerSpec.end(),
-        lowerSpec.begin(),
-        ::tolower
-    );
-
     for (const auto& doctor : m_doctors) {
-        std::string docSpec = doctor.getSpecialization();
-        std::transform(
-            docSpec.begin(),
-            docSpec.end(),
-            docSpec.begin(),
-            ::tolower
-        );
-
-        if (docSpec.find(lowerSpec) != std::string::npos) {
+        if (Utils::containsIgnoreCase(doctor.getSpecialization(), specialization)) {
             results.push_back(doctor);
         }
     }
@@ -295,24 +252,8 @@ std::vector<Model::Doctor> DoctorRepository::searchByName(const std::string& nam
 
     std::vector<Model::Doctor> results;
 
-    std::string lowerName = name;
-    std::transform(
-        lowerName.begin(),
-        lowerName.end(),
-        lowerName.begin(),
-        ::tolower
-    );
-
     for (const auto& doctor : m_doctors) {
-        std::string doctorName = doctor.getName();
-        std::transform(
-            doctorName.begin(),
-            doctorName.end(),
-            doctorName.begin(),
-            ::tolower
-        );
-
-        if (doctorName.find(lowerName) != std::string::npos) {
+        if (Utils::containsIgnoreCase(doctor.getName(), name)) {
             results.push_back(doctor);
         }
     }
@@ -327,44 +268,10 @@ std::vector<Model::Doctor> DoctorRepository::search(const std::string& keyword) 
 
     std::vector<Model::Doctor> results;
 
-    std::string lowerKeyword = keyword;
-    std::transform(
-        lowerKeyword.begin(),
-        lowerKeyword.end(),
-        lowerKeyword.begin(),
-        ::tolower
-    );
-
     for (const auto& doctor : m_doctors) {
-        std::string name = doctor.getName();
-        std::string spec = doctor.getSpecialization();
-        std::string doctorID = doctor.getDoctorID();
-
-        std::transform(
-            name.begin(),
-            name.end(),
-            name.begin(),
-            ::tolower
-        );
-
-        std::transform(
-            spec.begin(),
-            spec.end(),
-            spec.begin(),
-            ::tolower
-        );
-
-        std::transform(
-            doctorID.begin(),
-            doctorID.end(),
-            doctorID.begin(),
-            ::tolower
-        );
-
-        if (name.find(lowerKeyword) != std::string::npos
-            || spec.find(lowerKeyword) != std::string::npos
-            || doctorID.find(lowerKeyword) != std::string::npos
-        ) {
+        if (Utils::containsIgnoreCase(doctor.getName(), keyword) ||
+            Utils::containsIgnoreCase(doctor.getSpecialization(), keyword) ||
+            Utils::containsIgnoreCase(doctor.getDoctorID(), keyword)) {
             results.push_back(doctor);
         }
     }
@@ -380,16 +287,9 @@ std::vector<std::string> DoctorRepository::getAllSpecializations() {
     std::set<std::string> specializations;
 
     for (const auto& doctor : m_doctors) {
-        std::string spec = doctor.getSpecialization();
-        // Simple trim - remove leading/trailing spaces
-        size_t start = spec.find_first_not_of(" \t\n\r");
-        size_t end = spec.find_last_not_of(" \t\n\r");
-
-        if (start != std::string::npos && end != std::string::npos) {
-            spec = spec.substr(start, end - start + 1);
-            if (!spec.empty()) {
-                specializations.insert(spec);
-            }
+        std::string spec = Utils::trim(doctor.getSpecialization());
+        if (!spec.empty()) {
+            specializations.insert(spec);
         }
     }
 
@@ -408,10 +308,8 @@ std::string DoctorRepository::getNextId() {
         // Only process valid format: D + digits
         if (doctorID.length() > 1 && doctorID[0] == 'D') {
             std::string numPart = doctorID.substr(1);
-            // Check if all characters are digits
-            bool allDigits = std::all_of(numPart.begin(), numPart.end(), ::isdigit);
 
-            if (allDigits && !numPart.empty()) {
+            if (Utils::isNumeric(numPart)) {
                 try {
                     int idNum = std::stoi(numPart);
                     maxID = std::max(maxID, idNum);
