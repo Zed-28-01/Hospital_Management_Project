@@ -1,4 +1,5 @@
 #include "model/Patient.h"
+#include "common/Utils.h"
 
 #include <sstream>
 #include <format>
@@ -111,6 +112,13 @@ HMS::Result<HMS::Model::Patient> HMS::Model::Patient::deserialize(const std::str
     if (fields.size() != 8) {
         std::cerr << std::format("Invalid patient data format: expected 8 fields, got {}\n",
                                 fields.size());
+        return std::nullopt;
+    }
+
+    // Validate username format
+    if (!Utils::isValidUsername(fields[1])) {
+        std::cerr << std::format("Error: Invalid username '{}' for patient {}\n",
+                                fields[1], fields[0]);
         return std::nullopt;
     }
 
