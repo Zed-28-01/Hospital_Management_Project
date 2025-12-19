@@ -177,20 +177,34 @@ namespace HMS
 
         bool Appointment::isUpcoming() const
         {
-            return m_status == AppointmentStatus::SCHEDULED &&
-                   Utils::isFutureDate(m_appointmentDate);
+            if (m_status != AppointmentStatus::SCHEDULED)
+            {
+                return false;
+            }
+
+            std::string currentDate = Utils::getCurrentDate();
+            int dateCompare = Utils::compareDates(m_appointmentDate, currentDate);
+
+            if (dateCompare > 0)
+            {
+                return true; // Future date
+            }
+            if (dateCompare < 0)
+            {
+                return false; // Past date
+            }
+            // Same day - compare time
+            return m_appointmentTime > Utils::getCurrentTime();
         }
 
         bool Appointment::canCancel() const
         {
-            return m_status == AppointmentStatus::SCHEDULED &&
-                   Utils::isFutureDate(m_appointmentDate);
+            return isUpcoming();
         }
 
         bool Appointment::canEdit() const
         {
-            return m_status == AppointmentStatus::SCHEDULED &&
-                   Utils::isFutureDate(m_appointmentDate);
+            return isUpcoming();
         }
 
         // ==================== Serialization ====================
@@ -219,27 +233,17 @@ namespace HMS
 
         std::string Appointment::serialize() const
         {
-            std::string result;
-            result += m_appointmentID;
-            result += Constants::FIELD_DELIMITER;
-            result += m_patientUsername;
-            result += Constants::FIELD_DELIMITER;
-            result += m_doctorID;
-            result += Constants::FIELD_DELIMITER;
-            result += m_appointmentDate;
-            result += Constants::FIELD_DELIMITER;
-            result += m_appointmentTime;
-            result += Constants::FIELD_DELIMITER;
-            result += m_disease;
-            result += Constants::FIELD_DELIMITER;
-            result += std::format("{:.2f}", m_price); // Dùng format, gọn hơn nhiều!
-            result += Constants::FIELD_DELIMITER;
-            result += (m_isPaid ? "1" : "0");
-            result += Constants::FIELD_DELIMITER;
-            result += statusToString(m_status);
-            result += Constants::FIELD_DELIMITER;
-            result += m_notes;
-            return result;
+            return std::format("{}|{}|{}|{}|{}|{}|{:.2f}|{}|{}|{}",
+                m_appointmentID,
+                m_patientUsername,
+                m_doctorID,
+                m_appointmentDate,
+                m_appointmentTime,
+                m_disease,
+                m_price,
+                (m_isPaid ? "1" : "0"),
+                statusToString(m_status),
+                m_notes);
         }
 
         // ==================== Static Factory Method ====================
@@ -274,6 +278,12 @@ namespace HMS
                 AppointmentStatus status = stringToStatus(Utils::trim(parts[8]));
                 std::string notes = Utils::trim(parts[9]);
 
+                // Validate required fields are not empty
+                if (appointmentID.empty() || patientUsername.empty() || doctorID.empty())
+                {
+                    return std::nullopt;
+                }
+
                 // Validate date and time formats
                 if (!Utils::isValidDate(date) || !Utils::isValidTime(time))
                 {
@@ -282,6 +292,12 @@ namespace HMS
 
                 // Validate price
                 if (price < 0)
+                {
+                    return std::nullopt;
+                }
+
+                // Validate status is not unknown
+                if (status == AppointmentStatus::UNKNOWN)
                 {
                     return std::nullopt;
                 }

@@ -828,3 +828,7 @@ TEST(AppointmentTest, RoundTripSerializationWithDecimals)
     Appointment restored = deserialized.value();
     EXPECT_DOUBLE_EQ(restored.getPrice(), 12345.67);
 }
+
+/*
+cd build && ./HospitalTests --gtest_filter="AppointmentTest.*"
+*/

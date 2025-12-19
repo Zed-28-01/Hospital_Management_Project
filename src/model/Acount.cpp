@@ -1,8 +1,7 @@
 #include "model/Account.h"
 #include "common/Types.h"
 #include "common/Utils.h"
-#include <sstream>
-#include <vector>
+#include "common/Constants.h"
 #include <iostream>
 #include <format>
 
@@ -70,46 +69,60 @@ bool Account::verifyPassword(const std::string& password) const {
 }
 
 std::string Account::serialize() const {
-    std::ostringstream oss;
-    oss << m_username << "|"
-        << m_passwordHash << "|"
-        << roleToString(m_role) << "|"
-        << (m_isActive ? "1" : "0") << "|"
-        << m_createdDate;
-    return oss.str();
+    return std::format("{}|{}|{}|{}|{}",
+        m_username,
+        m_passwordHash,
+        roleToString(m_role),
+        (m_isActive ? "1" : "0"),
+        m_createdDate);
 }
 
 // ==================== Deserialize ====================
 
 Result<Account> Account::deserialize(const std::string& line) {
-    std::stringstream ss(line);
-    std::string token;
-    std::vector<std::string> parts;
-
-    while (std::getline(ss, token, '|')) {
-        parts.push_back(token);
+    // Skip empty lines and comments
+    if (line.empty() || line[0] == Constants::COMMENT_CHAR) {
+        return std::nullopt;
     }
 
-    // Invalid format
+    // Split by delimiter
+    auto parts = Utils::split(line, Constants::FIELD_DELIMITER);
+
+    // Validate field count
     if (parts.size() != 5) {
+        std::cerr << std::format("Error: Invalid account format. Expected 5 fields, got {}\n",
+                                parts.size());
+        return std::nullopt;
+    }
+
+    // Extract and trim fields
+    std::string username = Utils::trim(parts[0]);
+    std::string passwordHash = Utils::trim(parts[1]);
+    std::string roleStr = Utils::trim(parts[2]);
+    std::string activeStr = Utils::trim(parts[3]);
+    std::string createdDate = Utils::trim(parts[4]);
+
+    // Validate required fields are not empty
+    if (username.empty() || passwordHash.empty()) {
+        std::cerr << "Error: Account record has empty required fields\n";
         return std::nullopt;
     }
 
     // Validate username format
-    if (!Utils::isValidUsername(parts[0])) {
-        std::cerr << std::format("Error: Invalid username '{}'\n", parts[0]);
+    if (!Utils::isValidUsername(username)) {
+        std::cerr << std::format("Error: Invalid username '{}'\n", username);
         return std::nullopt;
     }
 
-    Account acc(
-        parts[0],                     // username
-        parts[1],                     // password hash
-        stringToRole(parts[2]),        // role
-        parts[3] == "1",               // isActive
-        parts[4]                      // createdDate
-    );
+    // Parse role
+    Role role = stringToRole(roleStr);
+    if (role == Role::UNKNOWN) {
+        std::cerr << std::format("Error: Invalid role '{}' for account {}\n",
+                                roleStr, username);
+        return std::nullopt;
+    }
 
-    return acc;
+    return Account(username, passwordHash, role, activeStr == "1", createdDate);
 }
 
 } // namespace Model
