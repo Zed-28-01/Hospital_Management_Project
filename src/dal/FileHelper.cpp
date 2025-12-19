@@ -1,12 +1,12 @@
 #include "dal/FileHelper.h"
 #include "common/Constants.h"
+#include "common/Utils.h"
 
 #include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <chrono>
 #include <iomanip>
-#include <cctype>
 
 namespace fs = std::filesystem;
 
@@ -109,8 +109,12 @@ bool FileHelper::createFileIfNotExists(const std::string& filePath) {
 }
 
 bool FileHelper::createDirectoryIfNotExists(const std::string& dirPath) {
-    if (fs::exists(dirPath)) return true;
-    return fs::create_directories(dirPath);
+    try {
+        if (fs::exists(dirPath)) return true;
+        return fs::create_directories(dirPath);
+    } catch (const fs::filesystem_error&) {
+        return false;
+    }
 }
 
 bool FileHelper::deleteFile(const std::string& filePath) {
@@ -120,14 +124,17 @@ bool FileHelper::deleteFile(const std::string& filePath) {
 
 bool FileHelper::copyFile(const std::string& sourcePath,
                            const std::string& destPath) {
-    if (!fileExists(sourcePath)) return false;
-
-    fs::copy_file(
-        sourcePath,
-        destPath,
-        fs::copy_options::overwrite_existing
-    );
-    return true;
+    try {
+        if (!fileExists(sourcePath)) return false;
+        fs::copy_file(
+            sourcePath,
+            destPath,
+            fs::copy_options::overwrite_existing
+        );
+        return true;
+    } catch (const fs::filesystem_error&) {
+        return false;
+    }
 }
 
 // ==================== Backup Operations ====================
