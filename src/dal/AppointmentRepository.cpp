@@ -191,6 +191,7 @@ namespace HMS
             }
             catch (...)
             {
+                m_isLoaded = false;
                 return false;
             }
         }

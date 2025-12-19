@@ -1,7 +1,10 @@
 #include "dal/AccountRepository.h"
+#include "dal/FileHelper.h"
 #include "common/Types.h"
-#include <fstream>
+#include "common/Constants.h"
+
 #include <algorithm>
+#include <sstream>
 
 namespace HMS {
 namespace DAL {
@@ -12,7 +15,7 @@ std::mutex AccountRepository::s_mutex;
 // ==================== Constructor ====================
 
 AccountRepository::AccountRepository()
-    : m_filePath("data/Account.txt"),
+    : m_filePath(Constants::ACCOUNT_FILE),
       m_isLoaded(false) {}
 
 // ==================== Destructor ====================
@@ -115,24 +118,27 @@ bool AccountRepository::load() {
 }
 
 bool AccountRepository::loadInternal() {
-    m_accounts.clear();
-    std::ifstream in(m_filePath);
-    if (!in.is_open()) {
-        m_isLoaded = true;  // Mark as loaded even if file doesn't exist
+    try {
+        FileHelper::createDirectoryIfNotExists(Constants::DATA_DIR);
+        FileHelper::createFileIfNotExists(m_filePath);
+
+        std::vector<std::string> lines = FileHelper::readLines(m_filePath);
+
+        m_accounts.clear();
+
+        for (const auto& line : lines) {
+            auto account = Model::Account::deserialize(line);
+            if (account) {
+                m_accounts.push_back(account.value());
+            }
+        }
+
+        m_isLoaded = true;
+        return true;
+    } catch (...) {
+        m_isLoaded = false;
         return false;
     }
-
-    std::string line;
-    while (std::getline(in, line)) {
-        if (line.empty() || line[0] == '#') continue;  // Skip empty lines and comments
-        auto accOpt = Model::Account::deserialize(line);
-        if (accOpt) {
-            m_accounts.push_back(*accOpt);
-        }
-    }
-
-    m_isLoaded = true;
-    return true;
 }
 
 bool AccountRepository::save() {
@@ -141,16 +147,29 @@ bool AccountRepository::save() {
 }
 
 bool AccountRepository::saveInternal() {
-    std::ofstream out(m_filePath, std::ios::trunc);
-    if (!out.is_open()) return false;
+    try {
+        std::vector<std::string> lines;
 
-    for (const auto& acc : m_accounts) {
-        out << acc.serialize() << "\n";
-        if (out.fail()) return false;  // Check write errors
+        // Add header
+        auto header = FileHelper::getFileHeader("Account");
+        std::stringstream hss(header);
+        std::string headerLine;
+        while (std::getline(hss, headerLine)) {
+            if (!headerLine.empty()) {
+                lines.push_back(headerLine);
+            }
+        }
+
+        // Add data
+        for (const auto& acc : m_accounts) {
+            lines.push_back(acc.serialize());
+        }
+
+        FileHelper::createBackup(m_filePath);
+        return FileHelper::writeLines(m_filePath, lines);
+    } catch (...) {
+        return false;
     }
-
-    out.flush();
-    return !out.fail();
 }
 
 // ==================== Queries ====================
@@ -176,7 +195,7 @@ bool AccountRepository::clear() {
     std::lock_guard<std::mutex> lock(m_dataMutex);
     m_accounts.clear();
     m_isLoaded = true;
-    return true;
+    return saveInternal();
 }
 
 // ==================== Account-specific ====================
