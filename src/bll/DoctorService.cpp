@@ -2,9 +2,13 @@
 #include "common/Utils.h"
 #include "common/Types.h"
 #include <set>
+
+
 namespace HMS {
     namespace BLL {
+
 // ========================== CONSTRUCTOR ================================
+
         DoctorService::DoctorService() {
             m_doctorRepo = DAL::DoctorRepository::getInstance();
             m_appointmentRepo = DAL::AppointmentRepository::getInstance();
@@ -13,6 +17,7 @@ namespace HMS {
         DoctorService::~DoctorService() = default;
 
 // =========================== SINGLETON ACCESS ========================
+
         DoctorService* DoctorService::getInstance() {
             std::lock_guard<std::mutex> lock(s_mutex);
             if (!s_instance) {
@@ -24,8 +29,11 @@ namespace HMS {
             std::lock_guard<std::mutex> lock(s_mutex);
             s_instance.reset();
         }
+
 // ============================= CRUD Operations ===============================
+
         bool DoctorService::createDoctor(const Model::Doctor& doctor) {
+
             if (!validateDoctor(doctor)) {
                 return false;
             }
@@ -34,38 +42,60 @@ namespace HMS {
             }
             return m_doctorRepo->add(doctor);
         }
-        std::optional<Model::Doctor> DoctorService::createDoctor(
-            const std::string& username, const std::string& name,
-            const std::string& phone, Gender gender,
-            const std::string& dateOfBirth, const std::string& specialization,
-            const std::string& schedule, double consultationFee
-        ) {
-            std::string id = "D" + std::to_string(std::time(nullptr));
-            Model::Doctor newDoc(id, username, name, phone,
-                                gender, dateOfBirth, specialization,
-                            schedule, consultationFee);
+
+        std::optional<Model::Doctor> DoctorService::createDoctor(const std::string& username,
+                                                                const std::string& name,
+                                                                const std::string& phone,
+                                                                Gender gender,
+                                                                const std::string& dateOfBirth,
+                                                                const std::string& specialization,
+                                                                const std::string& schedule,
+                                                                double consultationFee) {
+            std::string id = Utils::generateDoctorID();
+            Model::Doctor newDoc(id,
+                                username,
+                                name,
+                                phone,
+                                gender,
+                                dateOfBirth,
+                                specialization,
+                                schedule,
+                                consultationFee
+                            );
+
             if (createDoctor(newDoc)) {
                 return newDoc;
             }
+
             return std::nullopt;
         }
+
         bool DoctorService::updateDoctor(const Model::Doctor& doctor) {
+
             if (!doctorExists(doctor.getID())) {
                 return false;
             }
+
             if (!validateDoctor(doctor)) {
                 return false;
             }
+
             return m_doctorRepo->update(doctor);
         }
+
         bool DoctorService::deleteDoctor(const std::string& doctorID) {
+
             if (!doctorExists(doctorID)) {
                 return false;
             }
+
             return m_doctorRepo->remove(doctorID);
         }
+
 // ============================== QUERY OPERATIONS ===========================
+
         std::optional<Model::Doctor> DoctorService::getDoctorByID(const std::string& doctorID) {
+
             auto doctors = m_doctorRepo->getAll();
             for (const auto& doc: doctors) {
                 if (doc.getID() == doctorID) {
@@ -73,36 +103,43 @@ namespace HMS {
                 }
             }
             return std::nullopt;
+
         }
+
         std::optional<Model::Doctor> DoctorService::getDoctorByUsername(const std::string& username) {
+
             auto doctors = m_doctorRepo->getAll();
             for (const auto& doc : doctors) {
                 if (doc.getUsername() == username) {
                     return doc;
                 }
             }
+
             return std::nullopt;
         }
+
         std::vector<Model::Doctor> DoctorService::getAllDoctors() {
             return m_doctorRepo->getAll();
         }
+
         std::vector<Model::Doctor> DoctorService::searchDoctors(const std::string& keyword) {
+
             auto doctors = m_doctorRepo->getAll();
             std::vector<Model::Doctor> result;
-            std::string lowerKeyword = Utils::toLower(keyword);
             for (auto const& doc : doctors) {
-                if (Utils::toLower(doc.getID()).find(keyword) != std::string::npos ||
-                    Utils::toLower(doc.getName()).find(keyword) != std::string::npos ||
-                    Utils::toLower(doc.getSpecialization()).find(keyword) != std::string::npos) {
+                if (Utils::containsIgnoreCase(doc.getID(), keyword) ||
+                    Utils::containsIgnoreCase(doc.getName(), keyword) ||
+                    Utils::containsIgnoreCase(doc.getSpecialization(), keyword)) {
                     result.push_back(doc);
                 }
             }
             return result;
         }
+
         std::vector<Model::Doctor> DoctorService::getDoctorsBySpecialization(const std::string& specialization) {
             std::vector<Model::Doctor> result;
-            std::string target = Utils::toLower(specialization);
             auto doctors = m_doctorRepo->getAll();
+            std::string target = Utils::toLower(specialization);
             for (auto const& doc : doctors) {
                 if (Utils::toLower(doc.getSpecialization()) == target) {
                     result.push_back(doc);
@@ -110,7 +147,9 @@ namespace HMS {
             }
             return result;
         }
+
         std::vector<std::string> DoctorService::getAllSpecializations() {
+
             std::set<std::string> specSet;
             auto doctors = m_doctorRepo->getAll();
             for (const auto& doc : doctors) {
@@ -120,10 +159,13 @@ namespace HMS {
             }
             return std::vector<std::string>(specSet.begin(), specSet.end());
         }
+
         size_t DoctorService::getDoctorCount() const {
             return m_doctorRepo->getAll().size();
         }
+
 // ========================== SCHEDULE MANAGEMENT =============================
+
         std::vector<Model::Appointment> DoctorService::getDoctorSchedule(const std::string& doctorID, const std::string& date) {
             auto appointments = m_appointmentRepo->getAll();
             std::vector<Model::Appointment> result;
@@ -133,11 +175,14 @@ namespace HMS {
                     result.push_back(app);
                 }
             }
+
             std::sort(result.begin(), result.end(), [](const Model::Appointment& a, const Model::Appointment& b) {
                     return a.getTime() < b.getTime();
             });
+
             return result;
         }
+
         std::vector<Model::Appointment> DoctorService::getUpcomingAppointments(const std::string& doctorID) {
             auto allApp = m_appointmentRepo->getAll();
             std::vector<Model::Appointment> result;
@@ -152,11 +197,14 @@ namespace HMS {
                         result.push_back(app);
                     }
             }
+
             std::sort(result.begin(), result.end(), [](const Model::Appointment& a, const Model::Appointment& b) {
                     return a.getTime() < b.getTime();
             });
+
             return result;
         }
+
         std::vector<std::string> DoctorService::getAvailableSlots(const std::string& doctorID, const std::string& date) {
             std::vector<std::string> availableSlots;
 
@@ -166,11 +214,13 @@ namespace HMS {
                 "13:00", "14:00",
                 "15:00", "16:00"
             };
+
             auto exitingSchedule = m_appointmentRepo->getBookedSlots(doctorID, date);
             std::set<std::string> occupiedTime;
             for (const auto& schedule : exitingSchedule) {
                 occupiedTime.insert(schedule);
             }
+
             for (auto const& slot : standardSlots) {
                 if (occupiedTime.find(slot) == occupiedTime.end()) {
                     if (date == Utils::getCurrentDate()) {
@@ -187,21 +237,29 @@ namespace HMS {
         }
 
         bool DoctorService::isSlotAvailable(const std::string& doctorID, const std::string& time, const std::string& date) {
+
             auto slot = getAvailableSlots(doctorID, date);
             return std::find(slot.begin(), slot.end(), time) != slot.end();
         }
+
 // ============================= ACTIVITY TRACKING ===============================
+
         std::vector<Model::Appointment> DoctorService::getDoctorActivity(const std::string& doctorID) {
+
             auto allAppointments = m_appointmentRepo->getAll();
             std::vector<Model::Appointment> result;
+
             for (auto const& app : allAppointments) {
                 if (app.getDoctorID() == doctorID) {
                     result.push_back(app);
                 }
             }
+
             return result;
         }
+
         std::vector<Model::Appointment> DoctorService::getCompletedAppointments(const std::string& doctorID) {
+
             auto allAppointments = m_appointmentRepo->getAll();
             std::vector<Model::Appointment> result;
             for (auto const& app : allAppointments) {
@@ -211,8 +269,10 @@ namespace HMS {
             }
             return result;
         }
+
         std::vector<Model::Appointment> DoctorService::getAppointmentsInRange(const std::string& doctorID,
-                                                    const std::string& startDate, const std::string& endDate) {
+                                                                              const std::string& startDate,
+                                                                              const std::string& endDate) {
             auto activities = getDoctorActivity(doctorID);
             std::vector<Model::Appointment> result;
             for (auto const& a : activities) {
@@ -222,10 +282,13 @@ namespace HMS {
             }
             return result;
         }
+
         std::vector<Model::Appointment> DoctorService::getTodayAppointments(const std::string& doctorID) {
             return getDoctorSchedule(doctorID, Utils::getCurrentDate());
         }
+
 // ============================ STATISTICS ================================
+
         double DoctorService::getDoctorRevenue(const std::string& doctorID) {
             auto completed = getCompletedAppointments(doctorID);
             double total = 0.0;
@@ -234,9 +297,11 @@ namespace HMS {
             }
             return total;
         }
+
         size_t DoctorService::getDoctorAppointmentCount(const std::string& doctorID)  {
             return getDoctorActivity(doctorID).size();
         }
+
         size_t DoctorService::getDoctorPatientCount(const std::string& doctorID) {
             auto activity = getDoctorActivity(doctorID);
             std::set<std::string> uniquePatients;
@@ -248,7 +313,9 @@ namespace HMS {
             }
             return uniquePatients.size();
         }
+
 // ================================ VALIDATION & PERSISTENCE ==============================
+
         bool DoctorService::validateDoctor(const Model::Doctor& doctor) {
             if (doctor.getID().empty() || doctor.getName().empty() ||
                 doctor.getPhone().empty() || doctor.getSpecialization().empty() ||
@@ -259,15 +326,19 @@ namespace HMS {
             if (doctor.getConsultationFee() < 0) return false;
             return true;
         }
+
         bool DoctorService::doctorExists(const std::string& doctorID){
             auto doc = getDoctorByID(doctorID);
             return doc.has_value();
         }
+
         bool DoctorService::saveData() {
             return m_doctorRepo->save();
         }
+
         bool DoctorService::loadData() {
             return m_doctorRepo->load();
         }
+
     }
 }
