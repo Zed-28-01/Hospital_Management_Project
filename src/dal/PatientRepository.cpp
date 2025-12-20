@@ -1,14 +1,11 @@
 #include "dal/PatientRepository.h"
+#include "dal/FileHelper.h"
 #include "common/Utils.h"
+#include "common/Constants.h"
 
-#include <fstream>
-#include <iostream>
-#include <sstream>
 #include <algorithm>
+#include <sstream>
 #include <format>
-#include <cctype>
-#include <iomanip>
-#include <filesystem>
 
 namespace HMS {
     namespace DAL {
@@ -17,7 +14,7 @@ namespace HMS {
 
         // ==================== Private Constructor ====================
         PatientRepository::PatientRepository()
-            :   m_filePath("data/Patient.txt"),
+            :   m_filePath(Constants::PATIENT_FILE),
                 m_isLoaded(false) {}
 
         // ==================== Singleton Access ====================
@@ -119,79 +116,53 @@ namespace HMS {
 
         // ==================== Persistence ====================
         bool PatientRepository::save() {
-            // Atomic write using temporary file to prevent data corruption
-            std::string tempPath = m_filePath + ".tmp";
-
-            std::ofstream file(tempPath, std::ios::trunc);
-            if (!file.is_open()) {
-                std::cerr << "Failed to open file for writing: " << tempPath << "\n";
-                return false;
-            }
-
-            // Write header
-            file << "# Format: patientID|username|name|phone|gender|dateOfBirth|address|medicalHistory\n";
-
-            // Write data
-            for (const auto& patient : m_patients) {
-                file << patient.serialize() << "\n";
-
-                if (file.fail()) {
-                    std::cerr << "Failed to write patient data\n";
-                    file.close();
-                    std::filesystem::remove(tempPath);  // Clean up temp file
-                    return false;
-                }
-            }
-
-            file.flush();
-            if (file.fail()) {
-                file.close();
-                std::filesystem::remove(tempPath);
-                return false;
-            }
-            file.close();
-
             try {
-                std::filesystem::rename(tempPath, m_filePath);
-            } catch (const std::filesystem::filesystem_error& e) {
-                std::cerr << "Failed to rename temp file: " << e.what() << "\n";
-                std::filesystem::remove(tempPath);
+                std::vector<std::string> lines;
+
+                // Add header
+                auto header = FileHelper::getFileHeader("Patient");
+                std::stringstream hss(header);
+                std::string headerLine;
+                while (std::getline(hss, headerLine)) {
+                    if (!headerLine.empty()) {
+                        lines.push_back(headerLine);
+                    }
+                }
+
+                // Add data
+                for (const auto& patient : m_patients) {
+                    lines.push_back(patient.serialize());
+                }
+
+                FileHelper::createBackup(m_filePath);
+                return FileHelper::writeLines(m_filePath, lines);
+            } catch (...) {
                 return false;
             }
-
-            return true;
         }
 
         bool PatientRepository::load() {
-            std::ifstream file(m_filePath);
-            if (!file.is_open()) {
+            try {
+                FileHelper::createDirectoryIfNotExists(Constants::DATA_DIR);
+                FileHelper::createFileIfNotExists(m_filePath);
+
+                std::vector<std::string> lines = FileHelper::readLines(m_filePath);
+
                 m_patients.clear();
+
+                for (const auto& line : lines) {
+                    auto patient = Model::Patient::deserialize(line);
+                    if (patient) {
+                        m_patients.push_back(patient.value());
+                    }
+                }
+
                 m_isLoaded = true;
+                return true;
+            } catch (...) {
+                m_isLoaded = false;
                 return false;
             }
-
-            m_patients.clear();
-            std::string line;
-
-            // Read and deserialize each line
-            while (std::getline(file, line)) {
-                // Skip empty lines and comments (including header)
-                if (line.empty() || line[0] == '#') {
-                    continue;
-                }
-
-                auto result = Model::Patient::deserialize(line);
-                if (result.has_value()) {
-                    m_patients.push_back(result.value());
-                } else {
-                    std::cerr << "Failed to deserialize patient from line: " << line << "\n";
-                }
-            }
-
-            file.close();
-            m_isLoaded = true;
-
-            return true;
         }
 
         // ==================== Query Operations ====================
@@ -217,7 +188,7 @@ namespace HMS {
         bool PatientRepository::clear() {
             m_patients.clear();
             m_isLoaded = true;
-            return true;
+            return save();
         }
 
         // ==================== Patient-Specific Queries ====================
@@ -244,24 +215,8 @@ namespace HMS {
 
             std::vector<Model::Patient> results;
 
-            std::string lowerName = name;
-            std::transform(
-                lowerName.begin(),
-                lowerName.end(),
-                lowerName.begin(),
-                ::tolower
-            );
-
             for (const auto& p : m_patients) {
-                std::string patientName = p.getName();
-                std::transform(
-                    patientName.begin(),
-                    patientName.end(),
-                    patientName.begin(),
-                    ::tolower
-                );
-
-                if (patientName.find(lowerName) != std::string::npos) {
+                if (Utils::containsIgnoreCase(p.getName(), name)) {
                     results.push_back(p);
                 }
             }
@@ -292,37 +247,10 @@ namespace HMS {
 
             std::vector<Model::Patient> results;
 
-            std::string lowerKeyword = keyword;
-            std::transform(
-                lowerKeyword.begin(),
-                lowerKeyword.end(),
-                lowerKeyword.begin(),
-                ::tolower
-            );
-
             for (const auto& p : m_patients) {
-                std::string name = p.getName();
-                std::string phone = p.getPhone();
-                std::string address = p.getAddress();
-
-                std::transform(
-                    name.begin(),
-                    name.end(),
-                    name.begin(),
-                    ::tolower
-                );
-
-                std::transform(
-                    address.begin(),
-                    address.end(),
-                    address.begin(),
-                    ::tolower
-                );
-
-                if (name.find(lowerKeyword) != std::string::npos
-                    || phone.find(lowerKeyword) != std::string::npos
-                    || address.find(lowerKeyword) != std::string::npos
-                ) {
+                if (Utils::containsIgnoreCase(p.getName(), keyword) ||
+                    Utils::containsIgnoreCase(p.getPhone(), keyword) ||
+                    Utils::containsIgnoreCase(p.getAddress(), keyword)) {
                     results.push_back(p);
                 }
             }
