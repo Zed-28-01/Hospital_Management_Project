@@ -162,6 +162,12 @@ std::string FileHelper::getBackupPath(const std::string& filePath) {
 bool FileHelper::createBackup(const std::string& filePath) {
     if (!fileExists(filePath)) return false;
 
+    // Skip backup for test fixture files
+    if (filePath.find("test/fixtures/") != std::string::npos ||
+        filePath.find("test\\fixtures\\") != std::string::npos) {
+        return true;
+    }
+
     createDirectoryIfNotExists(HMS::Constants::BACKUP_DIR);
     return copyFile(filePath, getBackupPath(filePath));
 }

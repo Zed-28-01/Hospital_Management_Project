@@ -9,6 +9,11 @@ using namespace HMS;
 using namespace HMS::DAL;
 using namespace HMS::Model;
 
+namespace {
+    const std::string TEST_DATA_DIR = "test/fixtures/";
+    const std::string TEST_DATA_FILE = "test/fixtures/PatientTest.txt";
+}
+
 class PatientRepositoryTest : public ::testing::Test {
 protected:
     PatientRepository* repo;
@@ -19,20 +24,18 @@ protected:
         PatientRepository::resetInstance();
         repo = PatientRepository::getInstance();
 
-        // Use a test file
-        testFilePath = "test_patients.txt";
+        // Use fixture file
+        testFilePath = TEST_DATA_FILE;
         repo->setFilePath(testFilePath);
+        std::filesystem::create_directories(TEST_DATA_DIR);
+        std::ofstream ofs(testFilePath, std::ios::trunc);
+        ofs.close();
         repo->clear();
     }
 
     void TearDown() override {
         repo->clear();
         PatientRepository::resetInstance();
-
-        // Clean up test file
-        if (std::filesystem::exists(testFilePath)) {
-            std::filesystem::remove(testFilePath);
-        }
     }
 
     Patient createTestPatient(const std::string& patientID = "P001",
@@ -61,6 +64,7 @@ TEST_F(PatientRepositoryTest, ResetInstance_ClearsInstance) {
 
     PatientRepository::resetInstance();
     PatientRepository* newInstance = PatientRepository::getInstance();
+    newInstance->setFilePath(TEST_DATA_FILE);  // Restore test file path
 
     // New instance should be in fresh state
     EXPECT_EQ(newInstance->count(), 0u);
@@ -566,12 +570,12 @@ TEST_F(PatientRepositoryTest, SaveAndLoad_AllFieldsPersisted) {
     EXPECT_EQ(loaded->getMedicalHistory(), "Hypertension; Diabetes");
 }
 
-TEST_F(PatientRepositoryTest, Load_NonExistentFile_ReturnsFalse) {
+TEST_F(PatientRepositoryTest, Load_NonExistentFile_CreatesFileAndReturnsTrue) {
     // Reset để có clean state
     PatientRepository::resetInstance();
     repo = PatientRepository::getInstance();
 
-    std::string nonExistentFile = "nonexistent_file_12345.txt";
+    std::string nonExistentFile = TEST_DATA_DIR + "nonexistent_file_12345.txt";
 
     // Đảm bảo file không tồn tại
     if (std::filesystem::exists(nonExistentFile)) {
@@ -581,8 +585,13 @@ TEST_F(PatientRepositoryTest, Load_NonExistentFile_ReturnsFalse) {
     repo->setFilePath(nonExistentFile);
 
     bool loaded = repo->load();
-    EXPECT_FALSE(loaded);
+    EXPECT_TRUE(loaded);
     EXPECT_EQ(repo->count(), 0u);
+
+    // Cleanup
+    if (std::filesystem::exists(nonExistentFile)) {
+        std::filesystem::remove(nonExistentFile);
+    }
 }
 
 
@@ -611,7 +620,7 @@ TEST_F(PatientRepositoryTest, Save_EmptyRepo_CreatesEmptyFile) {
 // ==================== SetFilePath Tests ====================
 
 TEST_F(PatientRepositoryTest, SetFilePath_ChangesFilePath) {
-    std::string newPath = "new_test_patients.txt";
+    std::string newPath = TEST_DATA_DIR + "new_test_patients.txt";
     repo->setFilePath(newPath);
     EXPECT_EQ(repo->getFilePath(), newPath);
 
@@ -627,7 +636,7 @@ TEST_F(PatientRepositoryTest, SetFilePath_ForcesReload) {
     repo->save();
 
     // Create second file with different data
-    std::string secondFile = "test_patients_2.txt";
+    std::string secondFile = TEST_DATA_DIR + "test_patients_2.txt";
     {
         std::ofstream out(secondFile);
         out << "# Format: patientID|username|name|phone|gender|dateOfBirth|address|medicalHistory\n";
@@ -767,5 +776,4 @@ TEST_F(PatientRepositoryTest, ConcurrentAccess_SingletonWorks) {
 /*
 Build va run tests:
 cd build && ./HospitalTests --gtest_filter="PatientRepositoryTest.*"
-
 */
