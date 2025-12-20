@@ -2,215 +2,258 @@
 #include "common/Types.h"
 #include "common/Utils.h"
 
-namespace HMS {
-namespace BLL {
-
-std::unique_ptr<AuthService> AuthService::s_instance = nullptr;
-std::mutex AuthService::s_mutex;
-
-// ==================== Constructor ====================
-
-AuthService::AuthService()
-    : m_currentUsername(""),
-      m_currentRole(Role::UNKNOWN),
-      m_isLoggedIn(false)
+namespace HMS
 {
-    m_accountRepo = DAL::AccountRepository::getInstance();
-}
-// ==================== Singleton ====================
+    namespace BLL
+    {
 
-AuthService* AuthService::getInstance() {
-    std::lock_guard<std::mutex> lock(s_mutex);
-    if (!s_instance) {
-        s_instance = std::unique_ptr<AuthService>(new AuthService());
-    }
-    return s_instance.get();
-}
+        std::unique_ptr<AuthService> AuthService::s_instance = nullptr;
+        std::mutex AuthService::s_mutex;
 
-void AuthService::resetInstance() {
-    std::lock_guard<std::mutex> lock(s_mutex);
-    s_instance.reset();
-}
+        // ==================== Constructor ====================
 
-AuthService::~AuthService() = default;
+        AuthService::AuthService()
+            : m_currentUsername(""),
+              m_currentRole(Role::UNKNOWN),
+              m_isLoggedIn(false)
+        {
+            m_accountRepo = DAL::AccountRepository::getInstance();
+        }
+        // ==================== Singleton ====================
 
-// ==================== Authentication ====================
+        AuthService *AuthService::getInstance()
+        {
+            std::lock_guard<std::mutex> lock(s_mutex);
+            if (!s_instance)
+            {
+                s_instance = std::unique_ptr<AuthService>(new AuthService());
+            }
+            return s_instance.get();
+        }
 
-bool AuthService::login(const std::string& username,
-                        const std::string& password) {
-    std::lock_guard<std::mutex> lock(s_mutex);
+        void AuthService::resetInstance()
+        {
+            std::lock_guard<std::mutex> lock(s_mutex);
+            s_instance.reset();
+        }
 
-    std::string hash = hashPassword(password);
-    if (!m_accountRepo->validateCredentials(username, hash))
-        return false;
+        AuthService::~AuthService() = default;
 
-    auto acc = m_accountRepo->getByUsername(username);
-    if (!acc) return false;
+        // ==================== Authentication ====================
 
-    // Check if account is active
-    if (!acc->isActive()) return false;
+        bool AuthService::login(const std::string &username,
+                                const std::string &password)
+        {
+            std::lock_guard<std::mutex> lock(s_mutex);
 
-    m_currentUsername = username;
-    m_currentRole = acc->getRole();
-    m_isLoggedIn = true;
-    return true;
-}
+            std::string hash = hashPassword(password);
+            if (!m_accountRepo->validateCredentials(username, hash))
+                return false;
 
-void AuthService::logout() {
-    std::lock_guard<std::mutex> lock(s_mutex);
+            auto acc = m_accountRepo->getByUsername(username);
+            if (!acc)
+                return false;
 
-    m_isLoggedIn = false;
-    m_currentUsername.clear();
-    m_currentRole = Role::UNKNOWN;
-}
+            // Check if account is active
+            if (!acc->isActive())
+                return false;
 
-bool AuthService::isLoggedIn() const {
-    return m_isLoggedIn;
-}
+            m_currentUsername = username;
+            m_currentRole = acc->getRole();
+            m_isLoggedIn = true;
+            return true;
+        }
 
-// ==================== Session ====================
+        void AuthService::logout()
+        {
+            std::lock_guard<std::mutex> lock(s_mutex);
 
-std::string AuthService::getCurrentUsername() const {
-    return m_currentUsername;
-}
+            m_isLoggedIn = false;
+            m_currentUsername.clear();
+            m_currentRole = Role::UNKNOWN;
+        }
 
-Role AuthService::getCurrentRole() const {
-    return m_currentRole;
-}
+        bool AuthService::isLoggedIn() const
+        {
+            return m_isLoggedIn;
+        }
 
-std::string AuthService::getCurrentRoleString() const {
-    return roleToString(m_currentRole);
-}
+        // ==================== Session ====================
 
-std::optional<Model::Account>
-AuthService::getCurrentAccount() const {
-    if (!m_isLoggedIn) return std::nullopt;
-    return m_accountRepo->getByUsername(m_currentUsername);
-}
+        std::string AuthService::getCurrentUsername() const
+        {
+            return m_currentUsername;
+        }
 
-// ==================== Account Management ====================
+        Role AuthService::getCurrentRole() const
+        {
+            return m_currentRole;
+        }
 
-bool AuthService::registerAccount(const std::string& username,
-                                  const std::string& password,
-                                  Role role) {
-    // Validate format first (cheap operations)
-    if (!validateUsername(username)) return false;
-    if (!validatePassword(password)) return false;
+        std::string AuthService::getCurrentRoleString() const
+        {
+            return roleToString(m_currentRole);
+        }
 
-    // Then check availability (requires DB lookup)
-    if (!isUsernameAvailable(username)) return false;
+        std::optional<Model::Account>
+        AuthService::getCurrentAccount() const
+        {
+            if (!m_isLoggedIn)
+                return std::nullopt;
+            return m_accountRepo->getByUsername(m_currentUsername);
+        }
 
-    Model::Account acc(
-        username,
-        hashPassword(password),
-        role,
-        true,
-        Utils::getCurrentDate()
-    );
+        // ==================== Account Management ====================
 
-    return m_accountRepo->add(acc);
-}
+        bool AuthService::registerAccount(const std::string &username,
+                                          const std::string &password,
+                                          Role role)
+        {
+            // Validate format first (cheap operations)
+            if (!validateUsername(username))
+                return false;
+            if (!validatePassword(password))
+                return false;
 
-bool AuthService::changePassword(const std::string& oldPassword,
-                                 const std::string& newPassword) {
-    if (!m_isLoggedIn) return false;
-    if (!validatePassword(newPassword)) return false;
+            // Then check availability (requires DB lookup)
+            if (!isUsernameAvailable(username))
+                return false;
 
-    auto accOpt = getCurrentAccount();
-    if (!accOpt) return false;
+            Model::Account acc(
+                username,
+                hashPassword(password),
+                role,
+                true,
+                Utils::getCurrentDate());
 
-    if (!verifyPassword(oldPassword, accOpt->getPasswordHash()))
-        return false;
+            return m_accountRepo->add(acc);
+        }
 
-    accOpt->setPasswordHash(hashPassword(newPassword));
-    return m_accountRepo->update(*accOpt);
-}
+        bool AuthService::changePassword(const std::string &oldPassword,
+                                         const std::string &newPassword)
+        {
+            if (!m_isLoggedIn)
+                return false;
+            if (!validatePassword(newPassword))
+                return false;
 
-bool AuthService::resetPassword(const std::string& username,
-                                const std::string& newPassword) {
-    if (!isAdmin()) return false;
-    if (!validatePassword(newPassword)) return false;
+            auto accOpt = getCurrentAccount();
+            if (!accOpt)
+                return false;
 
-    auto accOpt = m_accountRepo->getByUsername(username);
-    if (!accOpt) return false;
+            if (!verifyPassword(oldPassword, accOpt->getPasswordHash()))
+                return false;
 
-    accOpt->setPasswordHash(hashPassword(newPassword));
-    return m_accountRepo->update(*accOpt);
-}
+            accOpt->setPasswordHash(hashPassword(newPassword));
+            return m_accountRepo->update(*accOpt);
+        }
 
-bool AuthService::deactivateAccount(const std::string& username) {
-    if (!isAdmin()) return false;
+        bool AuthService::resetPassword(const std::string &username,
+                                        const std::string &newPassword)
+        {
+            if (!isAdmin())
+                return false;
+            if (!validatePassword(newPassword))
+                return false;
 
-    auto accOpt = m_accountRepo->getByUsername(username);
-    if (!accOpt) return false;
+            auto accOpt = m_accountRepo->getByUsername(username);
+            if (!accOpt)
+                return false;
 
-    accOpt->setActive(false);
-    return m_accountRepo->update(*accOpt);
-}
+            accOpt->setPasswordHash(hashPassword(newPassword));
+            return m_accountRepo->update(*accOpt);
+        }
 
-bool AuthService::activateAccount(const std::string& username) {
-    if (!isAdmin()) return false;
+        bool AuthService::deactivateAccount(const std::string &username)
+        {
+            if (!isAdmin())
+                return false;
 
-    auto accOpt = m_accountRepo->getByUsername(username);
-    if (!accOpt) return false;
+            auto accOpt = m_accountRepo->getByUsername(username);
+            if (!accOpt)
+                return false;
 
-    accOpt->setActive(true);
-    return m_accountRepo->update(*accOpt);
-}
+            accOpt->setActive(false);
+            return m_accountRepo->update(*accOpt);
+        }
 
-// ==================== Validation ====================
+        bool AuthService::activateAccount(const std::string &username)
+        {
+            if (!isAdmin())
+                return false;
 
-bool AuthService::isUsernameAvailable(const std::string& username) {
-    return !m_accountRepo->exists(username);
-}
+            auto accOpt = m_accountRepo->getByUsername(username);
+            if (!accOpt)
+                return false;
 
-bool AuthService::validatePassword(const std::string& password) {
-    return Utils::isValidPassword(password);
-}
+            accOpt->setActive(true);
+            return m_accountRepo->update(*accOpt);
+        }
 
-bool AuthService::validateUsername(const std::string& username) {
-    return Utils::isValidUsername(username);
-}
+        // ==================== Validation ====================
 
-// ==================== Authorization ====================
+        bool AuthService::isUsernameAvailable(const std::string &username)
+        {
+            return !m_accountRepo->exists(username);
+        }
 
-bool AuthService::isPatient() const {
-    return m_currentRole == Role::PATIENT;
-}
+        bool AuthService::validatePassword(const std::string &password)
+        {
+            return Utils::isValidPassword(password);
+        }
 
-bool AuthService::isDoctor() const {
-    return m_currentRole == Role::DOCTOR;
-}
+        bool AuthService::validateUsername(const std::string &username)
+        {
+            return Utils::isValidUsername(username);
+        }
 
-bool AuthService::isAdmin() const {
-    return m_currentRole == Role::ADMIN;
-}
+        // ==================== Authorization ====================
 
-bool AuthService::canPerformAdminActions() const {
-    return isAdmin();
-}
+        bool AuthService::isPatient() const
+        {
+            return m_currentRole == Role::PATIENT;
+        }
 
-// ==================== Persistence ====================
+        bool AuthService::isDoctor() const
+        {
+            return m_currentRole == Role::DOCTOR;
+        }
 
-bool AuthService::saveData() {
-    return m_accountRepo->save();
-}
+        bool AuthService::isAdmin() const
+        {
+            return m_currentRole == Role::ADMIN;
+        }
 
-bool AuthService::loadData() {
-    return m_accountRepo->load();
-}
+        bool AuthService::canPerformAdminActions() const
+        {
+            return isAdmin();
+        }
 
-// ==================== Helpers ====================
+        // ==================== Persistence ====================
 
-std::string AuthService::hashPassword(const std::string& password) {
-    // demo hash (sẽ thay bằng bcrypt / sha256 sau)
-    return "HASH_" + password;
-}
+        bool AuthService::saveData()
+        {
+            return m_accountRepo->save();
+        }
 
-bool AuthService::verifyPassword(const std::string& password,
-                                 const std::string& hash) {
-    return hashPassword(password) == hash;
-}
+        bool AuthService::loadData()
+        {
+            return m_accountRepo->load();
+        }
 
-} // namespace BLL
+        // ==================== Helpers ====================
+
+        std::string AuthService::hashPassword(const std::string &password)
+        {
+            // demo hash (sẽ thay bằng bcrypt / sha256 sau)
+            return "HASH_" + password;
+        }
+
+        bool AuthService::verifyPassword(const std::string &password,
+                                         const std::string &hash)
+        {
+            return hashPassword(password) == hash;
+        }
+
+    } // namespace BLL
 } // namespace HMS
