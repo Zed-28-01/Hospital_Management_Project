@@ -1,10 +1,9 @@
 #include "model/Patient.h"
 #include "common/Utils.h"
+#include "common/Constants.h"
 
-#include <sstream>
 #include <format>
 #include <iostream>
-#include <vector>
 
 // ==================== Constructor ====================
 HMS::Model::Patient::Patient(const std::string& patientID,
@@ -93,53 +92,52 @@ std::string HMS::Model::Patient::serialize() const {
 // ==================== Static Factory Method ====================
 
 HMS::Result<HMS::Model::Patient> HMS::Model::Patient::deserialize(const std::string& line) {
-    std::istringstream iss(line);
-    std::string token;
-    std::vector<std::string> fields;
-
-    // Split by pipe delimiter
-    while (std::getline(iss, token, '|')) {
-        fields.push_back(token);
+    // Skip empty lines and comments
+    if (line.empty() || line[0] == Constants::COMMENT_CHAR) {
+        return std::nullopt;
     }
 
-    // Handle trailing empty field (e.g., line ends with "|")
-    // getline won't capture empty string after last delimiter
-    if (!line.empty() && line.back() == '|') {
-        fields.push_back("");
-    }
+    // Split by delimiter
+    auto fields = Utils::split(line, Constants::FIELD_DELIMITER);
 
     // Validate field count
     if (fields.size() != 8) {
-        std::cerr << std::format("Invalid patient data format: expected 8 fields, got {}\n",
+        std::cerr << std::format("Error: Invalid patient format. Expected 8 fields, got {}\n",
                                 fields.size());
         return std::nullopt;
     }
 
+    // Extract and trim fields
+    std::string patientID = Utils::trim(fields[0]);
+    std::string username = Utils::trim(fields[1]);
+    std::string name = Utils::trim(fields[2]);
+    std::string phone = Utils::trim(fields[3]);
+    std::string genderStr = Utils::trim(fields[4]);
+    std::string dateOfBirth = Utils::trim(fields[5]);
+    std::string address = Utils::trim(fields[6]);
+    std::string medicalHistory = Utils::trim(fields[7]);
+
+    // Validate required fields are not empty
+    if (patientID.empty() || username.empty() || name.empty()) {
+        std::cerr << "Error: Patient record has empty required fields\n";
+        return std::nullopt;
+    }
+
     // Validate username format
-    if (!Utils::isValidUsername(fields[1])) {
+    if (!Utils::isValidUsername(username)) {
         std::cerr << std::format("Error: Invalid username '{}' for patient {}\n",
-                                fields[1], fields[0]);
+                                username, patientID);
         return std::nullopt;
     }
 
     // Parse gender
-    Gender gender = stringToGender(fields[4]);
+    Gender gender = stringToGender(genderStr);
     if (gender == Gender::UNKNOWN) {
-        std::cerr << std::format("Invalid gender value: {}\n", fields[4]);
+        std::cerr << std::format("Error: Invalid gender '{}' for patient {}\n",
+                                genderStr, patientID);
         return std::nullopt;
     }
 
-    // Create Patient object
-    Patient patient(
-        fields[0],  // patientID
-        fields[1],  // username
-        fields[2],  // name
-        fields[3],  // phone
-        gender,     // gender
-        fields[5],  // dateOfBirth
-        fields[6],  // address
-        fields[7]   // medicalHistory
-    );
-
-    return patient;
+    return Patient(patientID, username, name, phone, gender,
+                   dateOfBirth, address, medicalHistory);
 }
