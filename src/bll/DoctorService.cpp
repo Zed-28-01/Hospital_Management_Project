@@ -308,7 +308,7 @@ namespace HMS {
 
             for (const auto& act : activity) {
                 if (act.getStatus() == AppointmentStatus::COMPLETED) {
-                    uniquePatients.insert(act.getPatientUsername()); // Chỉ thêm ID bệnh nhân vào
+                    uniquePatients.insert(act.getPatientUsername()); 
                 }
             }
             return uniquePatients.size();
