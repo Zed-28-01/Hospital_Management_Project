@@ -74,7 +74,6 @@ namespace HMS
 
         bool AppointmentRepository::add(const Model::Appointment &appointment)
         {
-            // Load trước để đảm bảo check exists chính xác
             if (!m_isLoaded)
             {
                 load();
@@ -195,22 +194,20 @@ namespace HMS
 
         // ==================== Query Operations ====================
 
-    
         size_t AppointmentRepository::count() const
         {
             if (!m_isLoaded)
             {
-                const_cast<AppointmentRepository*>(this)->load();
+                const_cast<AppointmentRepository *>(this)->load();
             }
             return m_appointments.size();
         }
 
-        // SỬA ĐỔI QUAN TRỌNG: Tương tự count(), lazy load nếu cần thiết.
         bool AppointmentRepository::exists(const std::string &id) const
         {
             if (!m_isLoaded)
             {
-                const_cast<AppointmentRepository*>(this)->load();
+                const_cast<AppointmentRepository *>(this)->load();
             }
 
             return std::any_of(m_appointments.begin(), m_appointments.end(),
@@ -223,7 +220,6 @@ namespace HMS
         bool AppointmentRepository::clear()
         {
             m_appointments.clear();
-            // Khi clear, ta coi như đã load (dữ liệu rỗng) để tránh load lại từ file cũ
             m_isLoaded = true;
             return save();
         }
@@ -231,7 +227,10 @@ namespace HMS
         // ==================== Patient-Related Queries ====================
         std::vector<Model::Appointment> AppointmentRepository::getByPatient(const std::string &patientUsername)
         {
-            if (!m_isLoaded) load();
+            if (!m_isLoaded)
+            {
+                load();
+            }
 
             std::vector<Model::Appointment> result;
             std::copy_if(m_appointments.begin(), m_appointments.end(),
@@ -245,7 +244,10 @@ namespace HMS
 
         std::vector<Model::Appointment> AppointmentRepository::getUpcomingByPatient(const std::string &patientUsername)
         {
-            if (!m_isLoaded) load();
+            if (!m_isLoaded)
+            {
+                load();
+            }
 
             std::vector<Model::Appointment> result;
             std::string today = Utils::getCurrentDate();
@@ -274,7 +276,8 @@ namespace HMS
 
         std::vector<Model::Appointment> AppointmentRepository::getHistoryByPatient(const std::string &patientUsername)
         {
-            if (!m_isLoaded) load();
+            if (!m_isLoaded)
+                load();
 
             std::vector<Model::Appointment> result;
 
@@ -303,7 +306,8 @@ namespace HMS
 
         std::vector<Model::Appointment> AppointmentRepository::getUnpaidByPatient(const std::string &patientUsername)
         {
-            if (!m_isLoaded) load();
+            if (!m_isLoaded)
+                load();
 
             std::vector<Model::Appointment> result;
 
@@ -320,7 +324,8 @@ namespace HMS
         // ==================== Doctor-Related Queries ====================
         std::vector<Model::Appointment> AppointmentRepository::getByDoctor(const std::string &doctorID)
         {
-            if (!m_isLoaded) load();
+            if (!m_isLoaded)
+                load();
 
             std::vector<Model::Appointment> result;
 
@@ -337,7 +342,8 @@ namespace HMS
         std::vector<Model::Appointment> AppointmentRepository::getByDoctorAndDate(const std::string &doctorID,
                                                                                   const std::string &date)
         {
-            if (!m_isLoaded) load();
+            if (!m_isLoaded)
+                load();
 
             std::vector<Model::Appointment> result;
 
@@ -359,7 +365,8 @@ namespace HMS
 
         std::vector<Model::Appointment> AppointmentRepository::getUpcomingByDoctor(const std::string &doctorID)
         {
-            if (!m_isLoaded) load();
+            if (!m_isLoaded)
+                load();
 
             std::vector<Model::Appointment> result;
             std::string today = Utils::getCurrentDate();
@@ -389,7 +396,8 @@ namespace HMS
         // ==================== Date-Based Queries ====================
         std::vector<Model::Appointment> AppointmentRepository::getByDate(const std::string &date)
         {
-            if (!m_isLoaded) load();
+            if (!m_isLoaded)
+                load();
 
             std::vector<Model::Appointment> result;
 
@@ -412,7 +420,8 @@ namespace HMS
         std::vector<Model::Appointment> AppointmentRepository::getByDateRange(const std::string &startDate,
                                                                               const std::string &endDate)
         {
-            if (!m_isLoaded) load();
+            if (!m_isLoaded)
+                load();
 
             std::vector<Model::Appointment> result;
 
@@ -446,7 +455,8 @@ namespace HMS
         // ==================== Status-Based Queries ====================
         std::vector<Model::Appointment> AppointmentRepository::getByStatus(AppointmentStatus status)
         {
-            if (!m_isLoaded) load();
+            if (!m_isLoaded)
+                load();
 
             std::vector<Model::Appointment> result;
 
@@ -480,7 +490,8 @@ namespace HMS
                                                     const std::string &date,
                                                     const std::string &time)
         {
-            if (!m_isLoaded) load();
+            if (!m_isLoaded)
+                load();
 
             return std::none_of(m_appointments.begin(), m_appointments.end(),
                                 [&doctorID, &date, &time](const Model::Appointment &apt)
@@ -495,7 +506,8 @@ namespace HMS
         std::vector<std::string> AppointmentRepository::getBookedSlots(const std::string &doctorID,
                                                                        const std::string &date)
         {
-            if (!m_isLoaded) load();
+            if (!m_isLoaded)
+                load();
 
             std::vector<std::string> slots;
 
