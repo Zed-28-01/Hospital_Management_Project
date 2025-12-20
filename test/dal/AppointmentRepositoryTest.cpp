@@ -57,20 +57,13 @@ protected:
 
     void SetUp() override
     {
-        // 1. Reset singleton để đảm bảo môi trường sạch
         AppointmentRepository::resetInstance();
         repo = AppointmentRepository::getInstance();
 
-        // 2. Thiết lập đường dẫn file test
         repo->setFilePath(TEST_DATA_FILE);
-
-        // 3. Chuẩn bị file vật lý (Xóa trắng)
         std::filesystem::create_directories(TEST_DATA_DIR);
         std::ofstream ofs(TEST_DATA_FILE, std::ios::trunc);
         ofs.close();
-
-        // 4. Clear dữ liệu trong bộ nhớ (và đồng bộ với file rỗng)
-        // Việc này cũng kích hoạt load() nội bộ nếu cần thiết
         repo->clear();
     }
 
@@ -275,5 +268,5 @@ TEST_F(AppointmentRepositoryTest, EmptyRepositoryQueriesReturnEmpty)
 }
 
 /* Build va run tests:
-cd build && ./HospitalTests --gtest_filter="PatientRepositoryTest.*"
+cd build && ./HospitalTests --gtest_filter="AppointmentRepositoryTest.*"
 */

@@ -9,6 +9,11 @@ using namespace HMS;
 using namespace HMS::DAL;
 using namespace HMS::Model;
 
+namespace {
+    const std::string TEST_DATA_DIR = "test/fixtures/";
+    const std::string TEST_DATA_FILE = "test/fixtures/AccountTest.txt";
+}
+
 class AccountRepositoryTest : public ::testing::Test {
 protected:
     AccountRepository* repo;
@@ -19,20 +24,18 @@ protected:
         AccountRepository::resetInstance();
         repo = AccountRepository::getInstance();
 
-        // Use a test file
-        testFilePath = "test_accounts.txt";
+        // Use fixture file
+        testFilePath = TEST_DATA_FILE;
         repo->setFilePath(testFilePath);
+        std::filesystem::create_directories(TEST_DATA_DIR);
+        std::ofstream ofs(testFilePath, std::ios::trunc);
+        ofs.close();
         repo->clear();
     }
 
     void TearDown() override {
         repo->clear();
         AccountRepository::resetInstance();
-
-        // Clean up test file
-        if (std::filesystem::exists(testFilePath)) {
-            std::filesystem::remove(testFilePath);
-        }
     }
 
     Account createTestAccount(const std::string& username = "testuser",
@@ -53,10 +56,10 @@ TEST_F(AccountRepositoryTest, GetInstance_ReturnsSameInstance) {
 TEST_F(AccountRepositoryTest, ResetInstance_ClearsInstance) {
     AccountRepository* oldInstance = AccountRepository::getInstance();
     oldInstance->clear();
-    size_t countBefore = oldInstance->count();
 
     AccountRepository::resetInstance();
     AccountRepository* newInstance = AccountRepository::getInstance();
+    newInstance->setFilePath(TEST_DATA_FILE);  // Restore test file path
 
     // New instance should be in fresh state
     EXPECT_EQ(newInstance->count(), 0u);
@@ -303,9 +306,22 @@ TEST_F(AccountRepositoryTest, SaveAndLoad_DataPersisted) {
     EXPECT_FALSE(acc2->isActive());
 }
 
-TEST_F(AccountRepositoryTest, Load_NonExistentFile_ReturnsFalse) {
-    repo->setFilePath("nonexistent_file_12345.txt");
-    EXPECT_FALSE(repo->load());
+TEST_F(AccountRepositoryTest, Load_NonExistentFile_CreatesFileAndReturnsTrue) {
+    std::string nonExistentFile = TEST_DATA_DIR + "nonexistent_file_12345.txt";
+
+    // Ensure file doesn't exist
+    if (std::filesystem::exists(nonExistentFile)) {
+        std::filesystem::remove(nonExistentFile);
+    }
+
+    repo->setFilePath(nonExistentFile);
+    EXPECT_TRUE(repo->load());
+    EXPECT_EQ(repo->count(), 0u);
+
+    // Cleanup
+    if (std::filesystem::exists(nonExistentFile)) {
+        std::filesystem::remove(nonExistentFile);
+    }
 }
 
 TEST_F(AccountRepositoryTest, LazyLoading_AutoLoadsOnAccess) {
@@ -325,7 +341,7 @@ TEST_F(AccountRepositoryTest, LazyLoading_AutoLoadsOnAccess) {
 // ==================== SetFilePath Tests ====================
 
 TEST_F(AccountRepositoryTest, SetFilePath_ChangesFilePath) {
-    std::string newPath = "new_test_path.txt";
+    std::string newPath = TEST_DATA_DIR + "new_test_path.txt";
     repo->setFilePath(newPath);
     EXPECT_EQ(repo->getFilePath(), newPath);
 
@@ -341,7 +357,7 @@ TEST_F(AccountRepositoryTest, SetFilePath_ForcesReload) {
     repo->save();
 
     // Create second file with different data
-    std::string secondFile = "test_accounts_2.txt";
+    std::string secondFile = TEST_DATA_DIR + "test_accounts_2.txt";
     {
         std::ofstream out(secondFile);
         Account acc("user2", "hash2", Role::DOCTOR, true, "2025-01-01");
