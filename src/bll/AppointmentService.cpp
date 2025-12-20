@@ -1,3 +1,4 @@
+// SỬA: Dùng đường dẫn chuẩn dựa trên include_directories trong CMake
 #include "bll/AppointmentService.h"
 #include "common/Utils.h"
 #include "common/Constants.h"
@@ -6,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <set> // Thêm thư viện set cho logic available slots
 
 namespace HMS
 {
@@ -55,14 +57,18 @@ namespace HMS
             const std::string &time,
             const std::string &disease)
         {
+            // 1. Validate inputs
             if (!validateBooking(patientUsername, doctorID, date, time))
             {
                 return std::nullopt;
             }
 
+            // 2. Get data needed for creation
             double fee = getDoctorFee(doctorID);
             std::string id = generateAppointmentID();
 
+            // 3. Create Model object
+            // Constructor: ID, PatientUser, DocID, Date, Time, Disease, Price, isPaid, Status, Notes
             Model::Appointment newAppt(
                 id,
                 patientUsername,
@@ -71,10 +77,12 @@ namespace HMS
                 time,
                 disease,
                 fee,
-                false,
-                AppointmentStatus::SCHEDULED,
-                "");
+                false,                        // isPaid default false
+                AppointmentStatus::SCHEDULED, // Status
+                ""                            // Notes
+            );
 
+            // 4. Save to Repository
             if (m_appointmentRepo->add(newAppt))
             {
                 return newAppt;
@@ -99,6 +107,7 @@ namespace HMS
             std::string targetDate = newDate.empty() ? appt.getDate() : newDate;
             std::string targetTime = newTime.empty() ? appt.getTime() : newTime;
 
+            // Only check validity if something actually changed
             if (targetDate != appt.getDate() || targetTime != appt.getTime())
             {
                 if (!Utils::isValidDate(targetDate) || !Utils::isValidTime(targetTime))
@@ -106,6 +115,8 @@ namespace HMS
                     return false;
                 }
 
+                // Check slot availability (exclude current appointment logic handled by simple check)
+                // Note: Strictly speaking, we should check if the NEW slot is free.
                 if (!isSlotAvailable(appt.getDoctorID(), targetDate, targetTime))
                 {
                     return false;
@@ -150,6 +161,7 @@ namespace HMS
 
             Model::Appointment appt = apptOpt.value();
 
+            // Only scheduled appointments can be marked as completed
             if (appt.getStatus() != AppointmentStatus::SCHEDULED)
                 return false;
 
@@ -238,13 +250,21 @@ namespace HMS
                                                                        const std::string &date)
         {
             std::vector<std::string> allSlots = getStandardTimeSlots();
-            std::vector<std::string> bookedSlots = m_appointmentRepo->getBookedSlots(doctorID, date);
-            std::vector<std::string> availableSlots;
 
+            // Get booked slots from Repo
+            std::vector<std::string> bookedSlots = m_appointmentRepo->getBookedSlots(doctorID, date);
+
+            // Note: set_difference requires sorted ranges.
+            // Standard slots are generated in order.
+            // Booked slots returned from Repo might not be sorted. Let's sort them to be safe.
+            std::sort(bookedSlots.begin(), bookedSlots.end());
+
+            std::vector<std::string> availableSlots;
             std::set_difference(allSlots.begin(), allSlots.end(),
                                 bookedSlots.begin(), bookedSlots.end(),
                                 std::back_inserter(availableSlots));
 
+            // If query is for today, remove past times
             std::string today = Utils::getCurrentDate();
             if (date == today)
             {
@@ -268,12 +288,14 @@ namespace HMS
             if (!Utils::isValidTime(time))
                 return false;
 
+            // Check if time is a standard slot (e.g., prevents booking at 08:13)
             std::vector<std::string> standards = getStandardTimeSlots();
             if (std::find(standards.begin(), standards.end(), time) == standards.end())
             {
                 return false;
             }
 
+            // Use repository method for the DB check
             return m_appointmentRepo->isSlotAvailable(doctorID, date, time);
         }
 
@@ -281,7 +303,7 @@ namespace HMS
         {
             std::vector<std::string> slots;
             int startHour = 8;
-            int endHour = 17;
+            int endHour = 17; // 5 PM
 
             for (int h = startHour; h < endHour; ++h)
             {
@@ -303,27 +325,33 @@ namespace HMS
                                                  const std::string &date,
                                                  const std::string &time)
         {
+            // Date/Time syntax check
             if (!Utils::isValidDate(date))
                 return false;
             if (!Utils::isValidTime(time))
                 return false;
 
-            if (!Utils::isFutureDate(date) && date != Utils::getCurrentDate())
+            // Date logic check
+            std::string today = Utils::getCurrentDate();
+            if (Utils::compareDates(date, today) < 0) // Cannot book past date
             {
                 return false;
             }
 
-            if (date == Utils::getCurrentDate())
+            // Time logic check (if today)
+            if (date == today)
             {
                 if (time <= Utils::getCurrentTime())
                     return false;
             }
 
+            // Existence checks
             if (!patientExists(patientUsername))
                 return false;
             if (!doctorExists(doctorID))
                 return false;
 
+            // Availability check
             if (!isSlotAvailable(doctorID, date, time))
                 return false;
 
@@ -340,6 +368,8 @@ namespace HMS
                 return false;
 
             std::string today = Utils::getCurrentDate();
+            // Allow cancel if date is future, OR date is today but time is future?
+            // Simple rule: Allow cancel if appointment date is not in the past.
             if (Utils::compareDates(appt->getDate(), today) < 0)
                 return false;
 
@@ -348,30 +378,56 @@ namespace HMS
 
         bool AppointmentService::canEdit(const std::string &appointmentID)
         {
+            // Same logic as cancel usually
             return canCancel(appointmentID);
         }
 
-        // ==================== Statistics (ĐÃ SỬA) ====================
-        // Vì không thể sửa .h để thêm getter, ta tạm thời disable tính năng tính tiền
-        // để code có thể biên dịch (compile) thành công.
+        // ==================== Statistics ====================
 
         double AppointmentService::getTotalRevenue()
         {
-            // Không thể truy cập fee vì thiếu getter trong Appointment.h
-            // TODO: Thêm double getFee() const vào Appointment.h để bật lại tính năng này
-            return 0.0;
+            double total = 0.0;
+            auto allAppts = m_appointmentRepo->getAll();
+
+            for (const auto &appt : allAppts)
+            {
+                // Logic: Count everything except CANCELLED.
+                if (appt.getStatus() != AppointmentStatus::CANCELLED)
+                {
+                    total += appt.getPrice();
+                }
+            }
+            return total;
         }
 
         double AppointmentService::getPaidRevenue()
         {
-            // Không thể truy cập fee vì thiếu getter trong Appointment.h
-            return 0.0;
+            double total = 0.0;
+            auto allAppts = m_appointmentRepo->getAll();
+
+            for (const auto &appt : allAppts)
+            {
+                if (appt.getStatus() != AppointmentStatus::CANCELLED && appt.isPaid())
+                {
+                    total += appt.getPrice();
+                }
+            }
+            return total;
         }
 
         double AppointmentService::getUnpaidRevenue()
         {
-            // Không thể truy cập fee vì thiếu getter trong Appointment.h
-            return 0.0;
+            double total = 0.0;
+            auto allAppts = m_appointmentRepo->getAll();
+
+            for (const auto &appt : allAppts)
+            {
+                if (appt.getStatus() != AppointmentStatus::CANCELLED && !appt.isPaid())
+                {
+                    total += appt.getPrice();
+                }
+            }
+            return total;
         }
 
         size_t AppointmentService::getCountByStatus(AppointmentStatus status)
@@ -403,8 +459,6 @@ namespace HMS
             auto doctorOpt = m_doctorRepo->getById(doctorID);
             if (doctorOpt.has_value())
             {
-                // Nếu Doctor.h có hàm getConsultationFee() thì giữ nguyên.
-                // Nếu Doctor.h cũng lỗi, hãy sửa thành return 0.0;
                 return doctorOpt->getConsultationFee();
             }
             return 0.0;
@@ -412,13 +466,8 @@ namespace HMS
 
         bool AppointmentService::patientExists(const std::string &patientUsername)
         {
-            auto all = m_patientRepo->getAll();
-            for (const auto &p : all)
-            {
-                if (p.getUsername() == patientUsername)
-                    return true;
-            }
-            return false;
+            // OPTIMIZED: Use getByUsername from Repository instead of iterating getAll
+            return m_patientRepo->getByUsername(patientUsername).has_value();
         }
 
         bool AppointmentService::doctorExists(const std::string &doctorID)
