@@ -7,18 +7,19 @@
 using namespace HMS::Model;
 using namespace HMS;
 
-TEST(DoctorTest, ConstructorAndGetters) {
+TEST(DoctorTest, ConstructorAndGetters)
+{
 
     Doctor doc(
-        "D001",                 // ID
-        "doc_john",             // Username
-        "John Doe",             // Name
-        "0912345678",           // Phone
-        Gender::MALE,           // Gender
-        "1980-01-01",           // DOB
-        "Cardiology",           // Specialization
-        "Mon-Fri 08:00-17:00",  // Schedule (String)
-        500000.0                // Fee
+        "D001",                // ID
+        "doc_john",            // Username
+        "John Doe",            // Name
+        "0912345678",          // Phone
+        Gender::MALE,          // Gender
+        "1980-01-01",          // DOB
+        "Cardiology",          // Specialization
+        "Mon-Fri 08:00-17:00", // Schedule (String)
+        500000.0               // Fee
     );
 
     EXPECT_EQ(doc.getID(), "D001");
@@ -32,8 +33,8 @@ TEST(DoctorTest, ConstructorAndGetters) {
     EXPECT_DOUBLE_EQ(doc.getConsultationFee(), 500000.0);
 }
 
-
-TEST(DoctorTest, SettersUpdateValuesCorrectly) {
+TEST(DoctorTest, SettersUpdateValuesCorrectly)
+{
     Doctor doc;
 
     doc.setSpecialization("Neurology");
@@ -46,30 +47,31 @@ TEST(DoctorTest, SettersUpdateValuesCorrectly) {
     EXPECT_DOUBLE_EQ(doc.getConsultationFee(), 1000000.0);
 }
 
-TEST(DoctorTest, SerializeReturnsCorrectFormat) {
+TEST(DoctorTest, SerializeReturnsCorrectFormat)
+{
     Doctor doc(
         "D002", "jane_doe", "Jane Doe", "0987654321",
         Gender::FEMALE, "1985-05-05", "Dermatology",
-        "Tue-Thu", 300000.0
-    );
+        "Tue-Thu", 300000.0);
 
     std::string serialized = doc.serialize();
-
 
     EXPECT_NE(serialized.find("D002"), std::string::npos);
     EXPECT_NE(serialized.find("Jane Doe"), std::string::npos);
     EXPECT_NE(serialized.find("Dermatology"), std::string::npos);
     EXPECT_NE(serialized.find("300000"), std::string::npos);
 
-
     int pipes = 0;
-    for (char c : serialized) {
-        if (c == '|') pipes++;
+    for (char c : serialized)
+    {
+        if (c == '|')
+            pipes++;
     }
     EXPECT_EQ(pipes, 8);
 }
 
-TEST(DoctorTest, DeserializeValidString) {
+TEST(DoctorTest, DeserializeValidString)
+{
 
     std::string data = "D003|doc_test|Dr. Test|0123456789|Male|1990-01-01|General|Mon-Wed|200000";
 
@@ -85,14 +87,19 @@ TEST(DoctorTest, DeserializeValidString) {
     EXPECT_DOUBLE_EQ(doc.getConsultationFee(), 200000.0);
 }
 
-TEST(DoctorTest, DeserializeEmptyStringReturnsNullopt) {
+TEST(DoctorTest, DeserializeEmptyStringReturnsNullopt)
+{
     auto result = Doctor::deserialize("");
     EXPECT_FALSE(result.has_value());
 }
 
-TEST(DoctorTest, DeserializeInvalidStringReturnsNullopt) {
+TEST(DoctorTest, DeserializeInvalidStringReturnsNullopt)
+{
     std::string invalidData = "D003|doc_test|Dr. Test";
 
     auto result = Doctor::deserialize(invalidData);
     EXPECT_FALSE(result.has_value());
 }
+/*
+cd build && ./HospitalTests --gtest_filter="DoctorTest.*"
+*/
