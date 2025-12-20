@@ -667,12 +667,19 @@ TEST_F(DoctorRepositoryTest, SaveAndLoad_AllFieldsPersisted)
     EXPECT_DOUBLE_EQ(loaded->getConsultationFee(), 750000.0);
 }
 
-TEST_F(DoctorRepositoryTest, Load_NonExistentFile_ReturnsFalse)
+TEST_F(DoctorRepositoryTest, Load_NonExistentFile_CreatesFileAndReturnsTrue)
 {
-    // load() returns false if file doesn't exist (starts with empty repo)
-    repo->setFilePath("nonexistent_file_12345.txt");
-    EXPECT_FALSE(repo->load());
+    // load() creates the file if it doesn't exist and returns true (consistent with other repositories)
+    std::string nonExistentFile = "nonexistent_file_12345.txt";
+    repo->setFilePath(nonExistentFile);
+    EXPECT_TRUE(repo->load());
     EXPECT_EQ(repo->count(), 0u);
+
+    // Cleanup the created file
+    if (std::filesystem::exists(nonExistentFile))
+    {
+        std::filesystem::remove(nonExistentFile);
+    }
 }
 
 TEST_F(DoctorRepositoryTest, LazyLoading_AutoLoadsOnAccess)
@@ -740,19 +747,22 @@ TEST_F(DoctorRepositoryTest, SetFilePath_ForcesReload)
     EXPECT_EQ(allDoctors[0].getDoctorID(), "D002");
 
     // Cleanup
-    if (std::filesystem::exists(secondFile)) {
+    if (std::filesystem::exists(secondFile))
+    {
         std::filesystem::remove(secondFile);
     }
 }
 
 // ==================== Edge Cases and Stress Tests ====================
 
-TEST_F(DoctorRepositoryTest, Add_EmptyUsername_Allowed) {
+TEST_F(DoctorRepositoryTest, Add_EmptyUsername_Allowed)
+{
     Doctor doctor = createTestDoctor("D001", "", "Dr. Test");
     EXPECT_TRUE(repo->add(doctor));
 }
 
-TEST_F(DoctorRepositoryTest, Add_SpecialCharactersInName_Handled) {
+TEST_F(DoctorRepositoryTest, Add_SpecialCharactersInName_Handled)
+{
     Doctor doctor = createTestDoctor("D001", "user1", "Dr. O'Brien-Smith");
     EXPECT_TRUE(repo->add(doctor));
 
@@ -761,7 +771,8 @@ TEST_F(DoctorRepositoryTest, Add_SpecialCharactersInName_Handled) {
     EXPECT_EQ(result->getName(), "Dr. O'Brien-Smith");
 }
 
-TEST_F(DoctorRepositoryTest, Add_VeryLongName_Handled) {
+TEST_F(DoctorRepositoryTest, Add_VeryLongName_Handled)
+{
     std::string longName(500, 'A');
     Doctor doctor = createTestDoctor("D001", "user1", longName);
     EXPECT_TRUE(repo->add(doctor));
@@ -771,7 +782,8 @@ TEST_F(DoctorRepositoryTest, Add_VeryLongName_Handled) {
     EXPECT_EQ(result->getName(), longName);
 }
 
-TEST_F(DoctorRepositoryTest, Add_UnicodeCharacters_Handled) {
+TEST_F(DoctorRepositoryTest, Add_UnicodeCharacters_Handled)
+{
     Doctor doctor = createTestDoctor("D001", "user1", "Nguyễn Văn A");
     EXPECT_TRUE(repo->add(doctor));
 
@@ -780,7 +792,8 @@ TEST_F(DoctorRepositoryTest, Add_UnicodeCharacters_Handled) {
     EXPECT_EQ(result->getName(), "Nguyễn Văn A");
 }
 
-TEST_F(DoctorRepositoryTest, Search_EmptyKeyword_ReturnsEmpty) {
+TEST_F(DoctorRepositoryTest, Search_EmptyKeyword_ReturnsEmpty)
+{
     repo->add(createTestDoctor("D001", "user1", "Dr. Smith"));
 
     auto results = repo->search("");
@@ -788,7 +801,8 @@ TEST_F(DoctorRepositoryTest, Search_EmptyKeyword_ReturnsEmpty) {
     EXPECT_EQ(results.size(), 1u);
 }
 
-TEST_F(DoctorRepositoryTest, SearchByName_EmptyName_ReturnsEmpty) {
+TEST_F(DoctorRepositoryTest, SearchByName_EmptyName_ReturnsEmpty)
+{
     repo->add(createTestDoctor("D001", "user1", "Dr. Smith"));
 
     auto results = repo->searchByName("");
@@ -796,7 +810,8 @@ TEST_F(DoctorRepositoryTest, SearchByName_EmptyName_ReturnsEmpty) {
     EXPECT_EQ(results.size(), 1u);
 }
 
-TEST_F(DoctorRepositoryTest, GetBySpecialization_EmptySpecialization_ReturnsEmpty) {
+TEST_F(DoctorRepositoryTest, GetBySpecialization_EmptySpecialization_ReturnsEmpty)
+{
     repo->add(createTestDoctor("D001", "user1", "Dr. Smith", "0111111111",
                                Gender::MALE, "1980-01-01", "Cardiology"));
 
@@ -805,7 +820,8 @@ TEST_F(DoctorRepositoryTest, GetBySpecialization_EmptySpecialization_ReturnsEmpt
     EXPECT_EQ(results.size(), 1u);
 }
 
-TEST_F(DoctorRepositoryTest, Add_ZeroConsultationFee_Allowed) {
+TEST_F(DoctorRepositoryTest, Add_ZeroConsultationFee_Allowed)
+{
     Doctor doctor = createTestDoctor("D001", "user1", "Dr. Free", "0111111111",
                                      Gender::MALE, "1980-01-01", "General", "Mon-Fri", 0.0);
     EXPECT_TRUE(repo->add(doctor));
@@ -815,7 +831,8 @@ TEST_F(DoctorRepositoryTest, Add_ZeroConsultationFee_Allowed) {
     EXPECT_DOUBLE_EQ(result->getConsultationFee(), 0.0);
 }
 
-TEST_F(DoctorRepositoryTest, Add_NegativeConsultationFee_Allowed) {
+TEST_F(DoctorRepositoryTest, Add_NegativeConsultationFee_Allowed)
+{
     Doctor doctor = createTestDoctor("D001", "user1", "Dr. Test", "0111111111",
                                      Gender::MALE, "1980-01-01", "General", "Mon-Fri", -100.0);
     EXPECT_TRUE(repo->add(doctor));
@@ -825,7 +842,8 @@ TEST_F(DoctorRepositoryTest, Add_NegativeConsultationFee_Allowed) {
     EXPECT_DOUBLE_EQ(result->getConsultationFee(), -100.0);
 }
 
-TEST_F(DoctorRepositoryTest, Add_VeryLargeConsultationFee_Handled) {
+TEST_F(DoctorRepositoryTest, Add_VeryLargeConsultationFee_Handled)
+{
     double largeFee = 999999999.99;
     Doctor doctor = createTestDoctor("D001", "user1", "Dr. Expensive", "0111111111",
                                      Gender::MALE, "1980-01-01", "General", "Mon-Fri", largeFee);
@@ -836,7 +854,8 @@ TEST_F(DoctorRepositoryTest, Add_VeryLargeConsultationFee_Handled) {
     EXPECT_DOUBLE_EQ(result->getConsultationFee(), largeFee);
 }
 
-TEST_F(DoctorRepositoryTest, Update_AllFields_Persisted) {
+TEST_F(DoctorRepositoryTest, Update_AllFields_Persisted)
+{
     Doctor original = createTestDoctor("D001", "original", "Original Name", "0111111111",
                                        Gender::MALE, "1980-01-01", "Original Spec", "Original Schedule", 500000.0);
     repo->add(original);
@@ -857,7 +876,8 @@ TEST_F(DoctorRepositoryTest, Update_AllFields_Persisted) {
     EXPECT_DOUBLE_EQ(result->getConsultationFee(), 1000000.0);
 }
 
-TEST_F(DoctorRepositoryTest, Remove_LastDoctor_LeavesRepoEmpty) {
+TEST_F(DoctorRepositoryTest, Remove_LastDoctor_LeavesRepoEmpty)
+{
     repo->add(createTestDoctor("D001", "user1"));
     EXPECT_EQ(repo->count(), 1u);
 
@@ -866,7 +886,8 @@ TEST_F(DoctorRepositoryTest, Remove_LastDoctor_LeavesRepoEmpty) {
     EXPECT_TRUE(repo->getAll().empty());
 }
 
-TEST_F(DoctorRepositoryTest, GetNextId_AfterRemove_IgnoresRemoved) {
+TEST_F(DoctorRepositoryTest, GetNextId_AfterRemove_IgnoresRemoved)
+{
     repo->add(createTestDoctor("D001", "user1"));
     repo->add(createTestDoctor("D002", "user2"));
     repo->add(createTestDoctor("D003", "user3"));
@@ -877,7 +898,8 @@ TEST_F(DoctorRepositoryTest, GetNextId_AfterRemove_IgnoresRemoved) {
     EXPECT_EQ(nextId, "D003");
 }
 
-TEST_F(DoctorRepositoryTest, Clear_FollowedByAdd_StartsClean) {
+TEST_F(DoctorRepositoryTest, Clear_FollowedByAdd_StartsClean)
+{
     repo->add(createTestDoctor("D001", "user1"));
     repo->add(createTestDoctor("D002", "user2"));
 
@@ -892,7 +914,8 @@ TEST_F(DoctorRepositoryTest, Clear_FollowedByAdd_StartsClean) {
     EXPECT_EQ(result->getUsername(), "newuser");
 }
 
-TEST_F(DoctorRepositoryTest, Clear_PersistsToFile) {
+TEST_F(DoctorRepositoryTest, Clear_PersistsToFile)
+{
     repo->add(createTestDoctor("D001", "user1"));
     repo->save();
 
@@ -909,7 +932,8 @@ TEST_F(DoctorRepositoryTest, Clear_PersistsToFile) {
 
 // ==================== Multiple Operations Sequence Tests ====================
 
-TEST_F(DoctorRepositoryTest, ComplexSequence_AddUpdateRemove_ConsistentState) {
+TEST_F(DoctorRepositoryTest, ComplexSequence_AddUpdateRemove_ConsistentState)
+{
     // Add 3 doctors
     repo->add(createTestDoctor("D001", "user1", "Doctor One"));
     repo->add(createTestDoctor("D002", "user2", "Doctor Two"));
@@ -940,7 +964,8 @@ TEST_F(DoctorRepositoryTest, ComplexSequence_AddUpdateRemove_ConsistentState) {
     EXPECT_EQ(doctor2->getName(), "Doctor Two Updated");
 }
 
-TEST_F(DoctorRepositoryTest, MultipleUpdates_LastUpdatePersists) {
+TEST_F(DoctorRepositoryTest, MultipleUpdates_LastUpdatePersists)
+{
     repo->add(createTestDoctor("D001", "user1", "Version 1"));
 
     Doctor v2("D001", "user1", "Version 2", "0123456789",
@@ -956,7 +981,8 @@ TEST_F(DoctorRepositoryTest, MultipleUpdates_LastUpdatePersists) {
     EXPECT_EQ(result->getName(), "Version 3");
 }
 
-TEST_F(DoctorRepositoryTest, AddRemoveAdd_SameID_Works) {
+TEST_F(DoctorRepositoryTest, AddRemoveAdd_SameID_Works)
+{
     Doctor doctor1 = createTestDoctor("D001", "user1", "First Doctor");
     repo->add(doctor1);
     EXPECT_TRUE(repo->exists("D001"));
@@ -975,7 +1001,8 @@ TEST_F(DoctorRepositoryTest, AddRemoveAdd_SameID_Works) {
 
 // ==================== Specialization Edge Cases ====================
 
-TEST_F(DoctorRepositoryTest, GetAllSpecializations_WithEmptySpecializations_IgnoresEmpty) {
+TEST_F(DoctorRepositoryTest, GetAllSpecializations_WithEmptySpecializations_IgnoresEmpty)
+{
     repo->add(createTestDoctor("D001", "user1", "Dr. One", "0111111111",
                                Gender::MALE, "1980-01-01", "Cardiology"));
     repo->add(createTestDoctor("D002", "user2", "Dr. Two", "0222222222",
@@ -987,7 +1014,8 @@ TEST_F(DoctorRepositoryTest, GetAllSpecializations_WithEmptySpecializations_Igno
     EXPECT_EQ(specs.size(), 2u);
 }
 
-TEST_F(DoctorRepositoryTest, GetAllSpecializations_WithWhitespaceOnly_IgnoresThem) {
+TEST_F(DoctorRepositoryTest, GetAllSpecializations_WithWhitespaceOnly_IgnoresThem)
+{
     repo->add(createTestDoctor("D001", "user1", "Dr. One", "0111111111",
                                Gender::MALE, "1980-01-01", "Cardiology"));
     repo->add(createTestDoctor("D002", "user2", "Dr. Two", "0222222222",
@@ -998,7 +1026,8 @@ TEST_F(DoctorRepositoryTest, GetAllSpecializations_WithWhitespaceOnly_IgnoresThe
     EXPECT_EQ(specs[0], "Cardiology");
 }
 
-TEST_F(DoctorRepositoryTest, GetBySpecialization_WithWhitespace_FindsMatch) {
+TEST_F(DoctorRepositoryTest, GetBySpecialization_WithWhitespace_FindsMatch)
+{
     repo->add(createTestDoctor("D001", "user1", "Dr. One", "0111111111",
                                Gender::MALE, "1980-01-01", "  Cardiology  "));
 
@@ -1008,23 +1037,26 @@ TEST_F(DoctorRepositoryTest, GetBySpecialization_WithWhitespace_FindsMatch) {
 
 // ==================== Search Comprehensive Tests ====================
 
-TEST_F(DoctorRepositoryTest, Search_MatchesInMultipleFields_ReturnsOnce) {
+TEST_F(DoctorRepositoryTest, Search_MatchesInMultipleFields_ReturnsOnce)
+{
     // Doctor with "Cardio" in both name and specialization
     repo->add(createTestDoctor("D001", "user1", "Dr. Cardio Smith", "0111111111",
                                Gender::MALE, "1980-01-01", "Cardiology"));
 
     auto results = repo->search("Cardio");
-    EXPECT_EQ(results.size(), 1u);  // Should return doctor once, not twice
+    EXPECT_EQ(results.size(), 1u); // Should return doctor once, not twice
 }
 
-TEST_F(DoctorRepositoryTest, Search_WithSpecialCharacters_HandlesGracefully) {
+TEST_F(DoctorRepositoryTest, Search_WithSpecialCharacters_HandlesGracefully)
+{
     repo->add(createTestDoctor("D001", "user1", "Dr. O'Brien"));
 
     auto results = repo->search("O'Brien");
     EXPECT_EQ(results.size(), 1u);
 }
 
-TEST_F(DoctorRepositoryTest, SearchByName_WithMiddleName_FindsMatch) {
+TEST_F(DoctorRepositoryTest, SearchByName_WithMiddleName_FindsMatch)
+{
     repo->add(createTestDoctor("D001", "user1", "John Michael Doe"));
 
     auto results = repo->searchByName("Michael");
@@ -1033,33 +1065,37 @@ TEST_F(DoctorRepositoryTest, SearchByName_WithMiddleName_FindsMatch) {
 
 // ==================== ID Format Tests ====================
 
-TEST_F(DoctorRepositoryTest, GetNextId_WithNonStandardFormat_IgnoresThem) {
+TEST_F(DoctorRepositoryTest, GetNextId_WithNonStandardFormat_IgnoresThem)
+{
     repo->add(createTestDoctor("D001", "user1"));
-    repo->add(createTestDoctor("DOC002", "user2"));  // Non-standard
-    repo->add(createTestDoctor("d003", "user3"));    // Lowercase
+    repo->add(createTestDoctor("DOC002", "user2")); // Non-standard
+    repo->add(createTestDoctor("d003", "user3"));   // Lowercase
     repo->add(createTestDoctor("D004", "user4"));
 
     std::string nextId = repo->getNextId();
-    EXPECT_EQ(nextId, "D005");  // Should only count D001 and D004
+    EXPECT_EQ(nextId, "D005"); // Should only count D001 and D004
 }
 
-TEST_F(DoctorRepositoryTest, GetNextId_WithLeadingZerosPadding_MaintainsFormat) {
+TEST_F(DoctorRepositoryTest, GetNextId_WithLeadingZerosPadding_MaintainsFormat)
+{
     repo->add(createTestDoctor("D007", "user7"));
 
     std::string nextId = repo->getNextId();
-    EXPECT_EQ(nextId, "D008");  // Should maintain 3-digit format
+    EXPECT_EQ(nextId, "D008"); // Should maintain 3-digit format
 }
 
-TEST_F(DoctorRepositoryTest, GetNextId_AfterD999_HandlesCorrectly) {
+TEST_F(DoctorRepositoryTest, GetNextId_AfterD999_HandlesCorrectly)
+{
     repo->add(createTestDoctor("D999", "user999"));
 
     std::string nextId = repo->getNextId();
-    EXPECT_EQ(nextId, "D1000");  // Should handle 4+ digits
+    EXPECT_EQ(nextId, "D1000"); // Should handle 4+ digits
 }
 
 // ==================== Persistence Edge Cases ====================
 
-TEST_F(DoctorRepositoryTest, SaveAndLoad_WithSpecialCharactersInData_Preserved) {
+TEST_F(DoctorRepositoryTest, SaveAndLoad_WithSpecialCharactersInData_Preserved)
+{
     Doctor doctor = createTestDoctor("D001", "username_ok", "Dr. Name With Dash-And'Quote",
                                      "0123456789", Gender::MALE, "1980-01-01",
                                      "General Medicine", "Mon-Fri 9-5", 500000.0);
@@ -1077,7 +1113,8 @@ TEST_F(DoctorRepositoryTest, SaveAndLoad_WithSpecialCharactersInData_Preserved) 
     EXPECT_EQ(loaded->getSpecialization(), "General Medicine");
 }
 
-TEST_F(DoctorRepositoryTest, SaveAndLoad_EmptyRepository_CreatesEmptyFile) {
+TEST_F(DoctorRepositoryTest, SaveAndLoad_EmptyRepository_CreatesEmptyFile)
+{
     repo->clear();
     repo->save();
 
@@ -1091,7 +1128,8 @@ TEST_F(DoctorRepositoryTest, SaveAndLoad_EmptyRepository_CreatesEmptyFile) {
     EXPECT_EQ(repo->count(), 0u);
 }
 
-TEST_F(DoctorRepositoryTest, Load_CorruptedLine_SkipsLine) {
+TEST_F(DoctorRepositoryTest, Load_CorruptedLine_SkipsLine)
+{
     // Create file with one good line and one corrupted line
     {
         std::ofstream out(testFilePath);
@@ -1099,19 +1137,20 @@ TEST_F(DoctorRepositoryTest, Load_CorruptedLine_SkipsLine) {
 
         Doctor good = createTestDoctor("D001", "user1", "Good Doctor");
         out << good.serialize() << "\n";
-        out << "CORRUPTED|DATA|HERE\n";  // Corrupted line
+        out << "CORRUPTED|DATA|HERE\n"; // Corrupted line
 
         Doctor good2 = createTestDoctor("D002", "user2", "Another Good Doctor");
         out << good2.serialize() << "\n";
     }
 
     repo->load();
-    EXPECT_EQ(repo->count(), 2u);  // Should load only valid entries
+    EXPECT_EQ(repo->count(), 2u); // Should load only valid entries
     EXPECT_TRUE(repo->exists("D001"));
     EXPECT_TRUE(repo->exists("D002"));
 }
 
-TEST_F(DoctorRepositoryTest, Load_FileWithOnlyComments_LoadsEmpty) {
+TEST_F(DoctorRepositoryTest, Load_FileWithOnlyComments_LoadsEmpty)
+{
     {
         std::ofstream out(testFilePath);
         out << "# This is a comment\n";
@@ -1123,7 +1162,8 @@ TEST_F(DoctorRepositoryTest, Load_FileWithOnlyComments_LoadsEmpty) {
     EXPECT_EQ(repo->count(), 0u);
 }
 
-TEST_F(DoctorRepositoryTest, Load_FileWithEmptyLines_SkipsThem) {
+TEST_F(DoctorRepositoryTest, Load_FileWithEmptyLines_SkipsThem)
+{
     {
         std::ofstream out(testFilePath);
         out << "# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee\n";
@@ -1140,23 +1180,27 @@ TEST_F(DoctorRepositoryTest, Load_FileWithEmptyLines_SkipsThem) {
 
 // ==================== Concurrent Access Simulation Tests ====================
 
-TEST_F(DoctorRepositoryTest, MultipleGetInstance_ThreadSafe) {
+TEST_F(DoctorRepositoryTest, MultipleGetInstance_ThreadSafe)
+{
     // This tests that getInstance is thread-safe
-    std::vector<DoctorRepository*> instances;
+    std::vector<DoctorRepository *> instances;
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 10; ++i)
+    {
         instances.push_back(DoctorRepository::getInstance());
     }
 
     // All should be the same instance
-    for (size_t i = 1; i < instances.size(); ++i) {
+    for (size_t i = 1; i < instances.size(); ++i)
+    {
         EXPECT_EQ(instances[0], instances[i]);
     }
 }
 
 // ==================== Gender Field Tests ====================
 
-TEST_F(DoctorRepositoryTest, Add_BothGenders_BothAdded) {
+TEST_F(DoctorRepositoryTest, Add_BothGenders_BothAdded)
+{
     Doctor male = createTestDoctor("D001", "user1", "Dr. Male", "0111111111",
                                    Gender::MALE, "1980-01-01", "General");
     Doctor female = createTestDoctor("D002", "user2", "Dr. Female", "0222222222",
@@ -1174,7 +1218,8 @@ TEST_F(DoctorRepositoryTest, Add_BothGenders_BothAdded) {
     EXPECT_EQ(femaleResult->getGender(), Gender::FEMALE);
 }
 
-TEST_F(DoctorRepositoryTest, SaveAndLoad_GenderPreserved) {
+TEST_F(DoctorRepositoryTest, SaveAndLoad_GenderPreserved)
+{
     repo->add(createTestDoctor("D001", "user1", "Dr. Male", "0111111111",
                                Gender::MALE, "1980-01-01", "General"));
     repo->add(createTestDoctor("D002", "user2", "Dr. Female", "0222222222",
@@ -1197,7 +1242,8 @@ TEST_F(DoctorRepositoryTest, SaveAndLoad_GenderPreserved) {
 
 // ==================== Final Integration Test ====================
 
-TEST_F(DoctorRepositoryTest, FullWorkflow_AddUpdateSearchRemovePersist) {
+TEST_F(DoctorRepositoryTest, FullWorkflow_AddUpdateSearchRemovePersist)
+{
     // Add multiple doctors
     repo->add(createTestDoctor("D001", "john_doe", "Dr. John Doe", "0111111111",
                                Gender::MALE, "1975-03-15", "Cardiology", "Mon-Fri 9-17", 750000.0));
@@ -1254,12 +1300,11 @@ TEST_F(DoctorRepositoryTest, FullWorkflow_AddUpdateSearchRemovePersist) {
     EXPECT_EQ(janeAfterReload->getSpecialization(), "Neurosurgery");
     EXPECT_DOUBLE_EQ(janeAfterReload->getConsultationFee(), 950000.0);
 
-
     std::string nextId = repo->getNextId();
-    EXPECT_EQ(nextId, "D003");  
+    EXPECT_EQ(nextId, "D003");
     // Get all specializations
     auto specs = repo->getAllSpecializations();
-    EXPECT_EQ(specs.size(), 2u);  // Cardiology and Neurosurgery
+    EXPECT_EQ(specs.size(), 2u); // Cardiology and Neurosurgery
 }
 
 /*
