@@ -234,16 +234,16 @@ namespace HMS
         std::string Appointment::serialize() const
         {
             return std::format("{}|{}|{}|{}|{}|{}|{:.2f}|{}|{}|{}",
-                m_appointmentID,
-                m_patientUsername,
-                m_doctorID,
-                m_appointmentDate,
-                m_appointmentTime,
-                m_disease,
-                m_price,
-                (m_isPaid ? "1" : "0"),
-                statusToString(m_status),
-                m_notes);
+                               m_appointmentID,
+                               m_patientUsername,
+                               m_doctorID,
+                               m_appointmentDate,
+                               m_appointmentTime,
+                               m_disease,
+                               m_price,
+                               (m_isPaid ? "1" : "0"),
+                               statusToString(m_status),
+                               m_notes);
         }
 
         // ==================== Static Factory Method ====================
@@ -303,7 +303,7 @@ namespace HMS
                 }
 
                 return Appointment(appointmentID, patientUsername, doctorID,
-                                date, time, disease, price, isPaid, status, notes);
+                                   date, time, disease, price, isPaid, status, notes);
             }
             catch (const std::exception &e)
             {

@@ -212,7 +212,7 @@ TEST(PatientTest, SerializeEmptyMedicalHistory)
 
     std::string serialized = p.serialize();
     EXPECT_EQ(serialized,
-        "P012|user12|Test Name|0123456789|Male|2000-01-01|Address|");
+              "P012|user12|Test Name|0123456789|Male|2000-01-01|Address|");
 }
 
 TEST(PatientTest, DeserializeEmptyMedicalHistory)
@@ -252,7 +252,6 @@ TEST(PatientTest, DeserializeValidatesAllFields)
     EXPECT_EQ(p.getAddress(), "Full Address");
     EXPECT_EQ(p.getMedicalHistory(), "Complete History");
 }
-
 
 /*
 cd build && ./HospitalTests --gtest_filter="PatientTest.*"

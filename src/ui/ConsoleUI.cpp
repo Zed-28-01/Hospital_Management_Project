@@ -875,7 +875,7 @@ namespace HMS
             {
                 time_t now = time(nullptr);
                 tm *ltm = localtime(&now);
-                char buffer[40];  // Large enough for worst case
+                char buffer[40]; // Large enough for worst case
                 snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d",
                          1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday);
                 today = buffer;
