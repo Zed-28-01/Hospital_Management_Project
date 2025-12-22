@@ -254,6 +254,19 @@ public:
                          const std::string& time);
 
     /**
+     * @brief Check if a time slot is available, excluding a specific appointment
+     * @param doctorID Doctor's ID
+     * @param date Date (YYYY-MM-DD)
+     * @param time Time (HH:MM)
+     * @param excludeAppointmentID Appointment ID to exclude from the check
+     * @return True if slot is available
+     */
+    bool isSlotAvailable(const std::string& doctorID,
+                         const std::string& date,
+                         const std::string& time,
+                         const std::string& excludeAppointmentID);
+
+    /**
      * @brief Get booked slots for a doctor on a date
      * @param doctorID Doctor's ID
      * @param date Date (YYYY-MM-DD)

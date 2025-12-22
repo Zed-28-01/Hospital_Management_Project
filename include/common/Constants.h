@@ -18,6 +18,10 @@ constexpr const char* APPOINTMENT_FILE = "data/Appointment.txt";
 constexpr char FIELD_DELIMITER = '|';
 constexpr char COMMENT_CHAR = '#';
 
+// ==================== Work Hours ====================
+constexpr int WORK_START_HOUR = 8;   // 8 AM
+constexpr int WORK_END_HOUR = 17;    // 5 PM
+
 // ==================== Validation Rules ====================
 constexpr int MIN_USERNAME_LENGTH = 3;
 constexpr int MAX_USERNAME_LENGTH = 50;

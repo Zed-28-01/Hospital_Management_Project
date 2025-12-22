@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <iomanip>
+#include <sstream>
 
 // Include Service & Repositories
 #include "bll/AppointmentService.h"
@@ -316,8 +318,152 @@ TEST_F(AppointmentServiceTest, Statistics_Revenue) {
     EXPECT_DOUBLE_EQ(service->getUnpaidRevenue(), expectedUnpaid);
 }
 
-// Main function cho GTest
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+// ==================== 6. NEW TESTS FOR REFACTORED CODE ====================
+
+TEST_F(AppointmentServiceTest, Booking_Fail_EmptyDisease) {
+    std::string date = getFutureDate();
+
+    // Empty disease string should fail
+    auto result = service->bookAppointment(VALID_PAT_USER, VALID_DOC_ID, date, "09:00", "");
+    EXPECT_FALSE(result.has_value()) << "Should fail with empty disease";
+
+    // Whitespace-only disease string should fail
+    result = service->bookAppointment(VALID_PAT_USER, VALID_DOC_ID, date, "09:00", "   ");
+    EXPECT_FALSE(result.has_value()) << "Should fail with whitespace-only disease";
+
+    // Tab and newline only should fail
+    result = service->bookAppointment(VALID_PAT_USER, VALID_DOC_ID, date, "09:00", "\t\n");
+    EXPECT_FALSE(result.has_value()) << "Should fail with tab/newline only disease";
+}
+
+TEST_F(AppointmentServiceTest, Booking_Success_TrimmedDisease) {
+    std::string date = getFutureDate();
+
+    // Disease with leading/trailing whitespace should be trimmed and succeed
+    auto result = service->bookAppointment(VALID_PAT_USER, VALID_DOC_ID, date, "09:00", "  Fever  ");
+    ASSERT_TRUE(result.has_value()) << "Should succeed with trimmed disease";
+    EXPECT_EQ(result->getDisease(), "Fever") << "Disease should be trimmed";
+}
+
+TEST_F(AppointmentServiceTest, Edit_Success_KeepSameSlot) {
+    std::string date = getFutureDate();
+    auto appt = service->bookAppointment(VALID_PAT_USER, VALID_DOC_ID, date, "09:00", "Checkup");
+    ASSERT_TRUE(appt.has_value());
+
+    // Edit without changing date/time (empty strings = keep current values)
+    // This should succeed even though the slot is "occupied" by this appointment
+    bool success = service->editAppointment(appt->getAppointmentID(), "", "");
+    EXPECT_TRUE(success) << "Should succeed when keeping the same slot";
+
+    // Verify appointment unchanged
+    auto updated = service->getAppointmentByID(appt->getAppointmentID());
+    ASSERT_TRUE(updated.has_value());
+    EXPECT_EQ(updated->getDate(), date);
+    EXPECT_EQ(updated->getTime(), "09:00");
+}
+
+TEST_F(AppointmentServiceTest, Edit_Success_SameTimeNewDate) {
+    std::string date1 = "2030-01-01";
+    std::string date2 = "2030-01-02";
+
+    auto appt = service->bookAppointment(VALID_PAT_USER, VALID_DOC_ID, date1, "09:00", "Checkup");
+    ASSERT_TRUE(appt.has_value());
+
+    // Edit to new date, same time - should succeed (slot is free on new date)
+    bool success = service->editAppointment(appt->getAppointmentID(), date2, "");
+    EXPECT_TRUE(success) << "Should succeed moving to new date with same time";
+
+    auto updated = service->getAppointmentByID(appt->getAppointmentID());
+    EXPECT_EQ(updated->getDate(), date2);
+    EXPECT_EQ(updated->getTime(), "09:00");
+}
+
+TEST_F(AppointmentServiceTest, Cancel_Fail_SameDayPastTime) {
+    // This test verifies that canCancel checks time for same-day appointments
+    std::string today = Utils::getCurrentDate();
+    std::string currentTime = Utils::getCurrentTime();
+
+    // Inject an appointment for today with a past time
+    // Use 00:00 which is always in the past unless it's exactly midnight
+    Appointment pastTimeAppt("APT_TODAY_PAST", VALID_PAT_USER, VALID_DOC_ID,
+                              today, "00:00", "Checkup", DOC_FEE, false,
+                              AppointmentStatus::SCHEDULED, "");
+    aptRepo->add(pastTimeAppt);
+
+    // Try to cancel - should fail because time has passed
+    bool success = service->cancelAppointment("APT_TODAY_PAST");
+    EXPECT_FALSE(success) << "Should not allow cancelling same-day appointment with past time";
+}
+
+TEST_F(AppointmentServiceTest, Cancel_Success_SameDayFutureTime) {
+    std::string today = Utils::getCurrentDate();
+    std::string currentTime = Utils::getCurrentTime();
+
+    // Only run this test if there's still time left today (before 23:30)
+    if (currentTime < "23:30") {
+        // Inject an appointment for today with future time (23:30)
+        Appointment futureTimeAppt("APT_TODAY_FUTURE", VALID_PAT_USER, VALID_DOC_ID,
+                                   today, "23:30", "Checkup", DOC_FEE, false,
+                                   AppointmentStatus::SCHEDULED, "");
+        aptRepo->add(futureTimeAppt);
+
+        // Try to cancel - should succeed because time hasn't passed
+        bool success = service->cancelAppointment("APT_TODAY_FUTURE");
+        EXPECT_TRUE(success) << "Should allow cancelling same-day appointment with future time";
+    }
+}
+
+TEST_F(AppointmentServiceTest, Edit_Fail_SameDayPastTime) {
+    std::string today = Utils::getCurrentDate();
+
+    // Inject a past-time appointment for today
+    Appointment pastTimeAppt("APT_EDIT_PAST", VALID_PAT_USER, VALID_DOC_ID,
+                              today, "00:00", "Checkup", DOC_FEE, false,
+                              AppointmentStatus::SCHEDULED, "");
+    aptRepo->add(pastTimeAppt);
+
+    // Try to edit - should fail because canEdit uses same logic as canCancel
+    bool success = service->editAppointment("APT_EDIT_PAST", "2030-01-01", "10:00");
+    EXPECT_FALSE(success) << "Should not allow editing same-day appointment with past time";
+}
+
+// ==================== 7. REPOSITORY SLOT EXCLUSION TEST ====================
+
+TEST_F(AppointmentServiceTest, Repository_SlotAvailable_WithExclusion) {
+    std::string date = getFutureDate();
+
+    // Book a slot
+    auto appt = service->bookAppointment(VALID_PAT_USER, VALID_DOC_ID, date, "09:00", "Checkup");
+    ASSERT_TRUE(appt.has_value());
+
+    // Without exclusion, slot should be unavailable
+    EXPECT_FALSE(aptRepo->isSlotAvailable(VALID_DOC_ID, date, "09:00"))
+        << "Slot should be unavailable without exclusion";
+
+    // With exclusion of the same appointment, slot should be available
+    EXPECT_TRUE(aptRepo->isSlotAvailable(VALID_DOC_ID, date, "09:00", appt->getAppointmentID()))
+        << "Slot should be available when excluding the occupying appointment";
+
+    // With exclusion of a different appointment, slot should still be unavailable
+    EXPECT_FALSE(aptRepo->isSlotAvailable(VALID_DOC_ID, date, "09:00", "DIFFERENT_ID"))
+        << "Slot should be unavailable when excluding a different appointment";
+}
+
+TEST_F(AppointmentServiceTest, StandardTimeSlots_UsesConstants) {
+    auto slots = service->getStandardTimeSlots();
+
+    // Should have slots from WORK_START_HOUR to WORK_END_HOUR
+    // (WORK_END_HOUR - WORK_START_HOUR) * 2 slots (each hour has :00 and :30)
+    size_t expectedCount = (Constants::WORK_END_HOUR - Constants::WORK_START_HOUR) * 2;
+    EXPECT_EQ(slots.size(), expectedCount);
+
+    // First slot should be at WORK_START_HOUR:00
+    std::stringstream firstSlot;
+    firstSlot << std::setfill('0') << std::setw(2) << Constants::WORK_START_HOUR << ":00";
+    EXPECT_EQ(slots.front(), firstSlot.str());
+
+    // Last slot should be at (WORK_END_HOUR-1):30
+    std::stringstream lastSlot;
+    lastSlot << std::setfill('0') << std::setw(2) << (Constants::WORK_END_HOUR - 1) << ":30";
+    EXPECT_EQ(slots.back(), lastSlot.str());
 }
