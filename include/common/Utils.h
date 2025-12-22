@@ -107,6 +107,23 @@ int compareDates(const std::string& date1, const std::string& date2);
  */
 bool isFutureDate(const std::string& date);
 
+/**
+ * @brief Get number of days in a month
+ * @param month Month (1-12)
+ * @param year Year (for leap year calculation)
+ * @return Number of days in the month, or 0 if invalid month
+ */
+int getDaysInMonth(int month, int year);
+
+/**
+ * @brief Calculate week date range (Monday to Sunday)
+ * @param date Any date in the week (YYYY-MM-DD)
+ * @param startDate Output: Monday of that week
+ * @param endDate Output: Sunday of that week
+ * @return True if successful
+ */
+bool getWeekRange(const std::string& date, std::string& startDate, std::string& endDate);
+
 // ==================== ID Generation ====================
 
 /**
