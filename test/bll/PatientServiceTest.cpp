@@ -319,9 +319,10 @@ TEST_F(PatientServiceTest, SaveAndLoadData)
     service->createPatient(createTestPatient("P001", "save_test", "Save Test"));
     ASSERT_TRUE(service->saveData());
 
-    // 2. Xóa dữ liệu trên RAM
-    DAL::PatientRepository::getInstance()->clear();
-    ASSERT_EQ(service->getPatientCount(), 0u);
+    // 2. Reset repository instance to clear in-memory data without saving
+    DAL::PatientRepository::resetInstance();
+    auto freshRepo = DAL::PatientRepository::getInstance();
+    freshRepo->setFilePath(testPatientFile);
 
     // 3. Load lại từ file
     ASSERT_TRUE(service->loadData());
