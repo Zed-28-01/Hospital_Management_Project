@@ -46,9 +46,7 @@ namespace HMS
         }
 
         // ==================== Destructor ====================
-        AppointmentService::~AppointmentService()
-        {
-        }
+        AppointmentService::~AppointmentService() = default;
 
         // ==================== Singleton Access ====================
         AppointmentService *AppointmentService::getInstance()

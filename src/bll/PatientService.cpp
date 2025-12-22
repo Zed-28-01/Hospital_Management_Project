@@ -65,7 +65,7 @@ namespace HMS
             return m_patientRepo->add(patient);
         }
 
-        std::optional<Model::Patient> PatientService::createPatient(
+        Result<Model::Patient> PatientService::createPatient(
             const std::string &username,
             const std::string &name,
             const std::string &phone,
@@ -149,22 +149,22 @@ namespace HMS
         }
 
         // ==================== Query Operations ====================
-        std::optional<Model::Patient> PatientService::getPatientByID(const std::string &patientID)
+        Result<Model::Patient> PatientService::getPatientByID(const std::string &patientID)
         {
             return m_patientRepo->getById(patientID);
         }
 
-        std::optional<Model::Patient> PatientService::getPatientByUsername(const std::string &username)
+        Result<Model::Patient> PatientService::getPatientByUsername(const std::string &username)
         {
             return m_patientRepo->getByUsername(username);
         }
 
-        std::vector<Model::Patient> PatientService::getAllPatients()
+        List<Model::Patient> PatientService::getAllPatients()
         {
             return m_patientRepo->getAll();
         }
 
-        std::vector<Model::Patient> PatientService::searchPatients(const std::string &keyword)
+        List<Model::Patient> PatientService::searchPatients(const std::string &keyword)
         {
             if (keyword.empty())
             {
@@ -181,17 +181,17 @@ namespace HMS
 
         // ==================== Appointment Queries ====================
 
-        std::vector<Model::Appointment> PatientService::getAppointmentHistory(const std::string &username)
+        List<Model::Appointment> PatientService::getAppointmentHistory(const std::string &username)
         {
             return m_appointmentRepo->getByPatient(username);
         }
 
-        std::vector<Model::Appointment> PatientService::getUpcomingAppointments(const std::string &username)
+        List<Model::Appointment> PatientService::getUpcomingAppointments(const std::string &username)
         {
             return m_appointmentRepo->getUpcomingByPatient(username);
         }
 
-        std::vector<Model::Appointment> PatientService::getPastAppointments(const std::string &username)
+        List<Model::Appointment> PatientService::getPastAppointments(const std::string &username)
         {
             return m_appointmentRepo->getHistoryByPatient(username);
         }
@@ -228,10 +228,10 @@ namespace HMS
             return total;
         }
 
-        std::vector<Model::Appointment> PatientService::getUnpaidAppointments(const std::string &username)
+        List<Model::Appointment> PatientService::getUnpaidAppointments(const std::string &username)
         {
             auto unpaidAppointments = m_appointmentRepo->getUnpaidByPatient(username);
-            std::vector<Model::Appointment> result;
+            List<Model::Appointment> result;
 
             for (const auto &apt : unpaidAppointments)
             {

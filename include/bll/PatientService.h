@@ -5,9 +5,8 @@
 #include "../model/Patient.h"
 #include "../model/Appointment.h"
 #include "../common/Types.h"
+
 #include <string>
-#include <vector>
-#include <optional>
 #include <mutex>
 #include <memory>
 
@@ -83,7 +82,7 @@ public:
      * @param medicalHistory Medical history
      * @return Created patient or nullopt if failed
      */
-    std::optional<Model::Patient> createPatient(
+    Result<Model::Patient> createPatient(
         const std::string& username,
         const std::string& name,
         const std::string& phone,
@@ -113,27 +112,27 @@ public:
      * @param patientID The patient's ID
      * @return Patient if found, nullopt otherwise
      */
-    std::optional<Model::Patient> getPatientByID(const std::string& patientID);
+    Result<Model::Patient> getPatientByID(const std::string& patientID);
 
     /**
      * @brief Get patient by username
      * @param username The account username
      * @return Patient if found, nullopt otherwise
      */
-    std::optional<Model::Patient> getPatientByUsername(const std::string& username);
+    Result<Model::Patient> getPatientByUsername(const std::string& username);
 
     /**
      * @brief Get all patients
      * @return Vector of all patients
      */
-    std::vector<Model::Patient> getAllPatients();
+    List<Model::Patient> getAllPatients();
 
     /**
      * @brief Search patients by keyword
      * @param keyword Search keyword
      * @return Vector of matching patients
      */
-    std::vector<Model::Patient> searchPatients(const std::string& keyword);
+    List<Model::Patient> searchPatients(const std::string& keyword);
 
     /**
      * @brief Get total patient count
@@ -148,21 +147,21 @@ public:
      * @param username The patient's username
      * @return Vector of all appointments
      */
-    std::vector<Model::Appointment> getAppointmentHistory(const std::string& username);
+    List<Model::Appointment> getAppointmentHistory(const std::string& username);
 
     /**
      * @brief Get patient's upcoming appointments
      * @param username The patient's username
      * @return Vector of scheduled future appointments
      */
-    std::vector<Model::Appointment> getUpcomingAppointments(const std::string& username);
+    List<Model::Appointment> getUpcomingAppointments(const std::string& username);
 
     /**
      * @brief Get patient's past appointments
      * @param username The patient's username
      * @return Vector of completed/cancelled appointments
      */
-    std::vector<Model::Appointment> getPastAppointments(const std::string& username);
+    List<Model::Appointment> getPastAppointments(const std::string& username);
 
     // ==================== Billing ====================
 
@@ -185,7 +184,7 @@ public:
      * @param username The patient's username
      * @return Vector of unpaid appointments
      */
-    std::vector<Model::Appointment> getUnpaidAppointments(const std::string& username);
+    List<Model::Appointment> getUnpaidAppointments(const std::string& username);
 
     // ==================== Medical History ====================
 
