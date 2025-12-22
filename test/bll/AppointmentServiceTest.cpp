@@ -467,3 +467,10 @@ TEST_F(AppointmentServiceTest, StandardTimeSlots_UsesConstants) {
     lastSlot << std::setfill('0') << std::setw(2) << (Constants::WORK_END_HOUR - 1) << ":30";
     EXPECT_EQ(slots.back(), lastSlot.str());
 }
+
+/*
+Build and run the test
+cd build && ./HospitalTests --gtest_filter="AppointmentServiceTest*"
+Run the test
+./HospitalTests --gtest_filter="AppointmentServiceTest*"
+*/
