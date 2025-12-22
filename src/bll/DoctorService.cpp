@@ -10,6 +10,10 @@ namespace HMS
     namespace BLL
     {
 
+        // ========================== STATIC MEMBER DEFINITIONS ================================
+        std::unique_ptr<DoctorService> DoctorService::s_instance = nullptr;
+        std::mutex DoctorService::s_mutex;
+
         // ========================== CONSTRUCTOR ================================
 
         DoctorService::DoctorService()
@@ -189,8 +193,7 @@ namespace HMS
                           {
                               return a.getDate() < b.getDate();
                           }
-                          return a.getTime() < b.getTime();
-                      });
+                          return a.getTime() < b.getTime(); });
 
             return result;
         }
