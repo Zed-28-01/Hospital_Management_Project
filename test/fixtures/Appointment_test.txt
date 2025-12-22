@@ -1,0 +1,10 @@
+# Appointment fixture data for testing
+# Format: appointmentID|patientUsername|doctorID|date|time|disease|price|isPaid|status|notes
+APT001|patient1|D001|2024-06-15|09:00|Regular checkup|500000|1|completed|Patient in good health
+APT002|patient1|D002|2024-06-20|10:00|Headache consultation|600000|1|completed|Prescribed medication
+APT003|patient2|D001|2024-07-01|14:00|Heart palpitations|500000|0|scheduled|Follow-up required
+APT004|patient3|D003|2024-07-05|11:00|Knee pain|450000|0|scheduled|X-ray recommended
+APT005|patient2|D004|2024-06-10|15:00|Skin rash|400000|1|completed|Allergy reaction treated
+APT006|patient4|D001|2024-07-10|08:00|Annual checkup|500000|0|scheduled|New patient
+APT007|patient1|D001|2024-05-01|09:00|Cancelled appointment|500000|0|cancelled|Patient rescheduled
+APT008|patient5|D005|2024-07-15|07:00|General consultation|350000|0|scheduled|First visit

@@ -1,234 +1,234 @@
 #include "bll/DoctorService.h"
 #include "common/Utils.h"
 #include "common/Types.h"
+#include "common/Constants.h"
 #include <set>
+#include <algorithm>
 
+namespace HMS
+{
+    namespace BLL
+    {
 
-namespace HMS {
-    namespace BLL {
+        // ========================== CONSTRUCTOR ================================
 
-// ========================== CONSTRUCTOR ================================
-
-        DoctorService::DoctorService() {
+        DoctorService::DoctorService()
+        {
             m_doctorRepo = DAL::DoctorRepository::getInstance();
             m_appointmentRepo = DAL::AppointmentRepository::getInstance();
-
         }
         DoctorService::~DoctorService() = default;
 
-// =========================== SINGLETON ACCESS ========================
+        // =========================== SINGLETON ACCESS ========================
 
-        DoctorService* DoctorService::getInstance() {
+        DoctorService *DoctorService::getInstance()
+        {
             std::lock_guard<std::mutex> lock(s_mutex);
-            if (!s_instance) {
+            if (!s_instance)
+            {
                 s_instance = std::unique_ptr<DoctorService>(new DoctorService());
             }
             return s_instance.get();
         }
-        void DoctorService::resetInstance() {
+
+        void DoctorService::resetInstance()
+        {
             std::lock_guard<std::mutex> lock(s_mutex);
             s_instance.reset();
         }
 
-// ============================= CRUD Operations ===============================
+        // ============================= CRUD Operations ===============================
 
-        bool DoctorService::createDoctor(const Model::Doctor& doctor) {
-
-            if (!validateDoctor(doctor)) {
+        bool DoctorService::createDoctor(const Model::Doctor &doctor)
+        {
+            if (!validateDoctor(doctor))
+            {
                 return false;
             }
-            if (doctorExists(doctor.getID())) {
+            if (doctorExists(doctor.getID()))
+            {
                 return false;
             }
             return m_doctorRepo->add(doctor);
         }
 
-        std::optional<Model::Doctor> DoctorService::createDoctor(const std::string& username,
-                                                                const std::string& name,
-                                                                const std::string& phone,
-                                                                Gender gender,
-                                                                const std::string& dateOfBirth,
-                                                                const std::string& specialization,
-                                                                const std::string& schedule,
-                                                                double consultationFee) {
+        Result<Model::Doctor> DoctorService::createDoctor(const std::string &username,
+                                                          const std::string &name,
+                                                          const std::string &phone,
+                                                          Gender gender,
+                                                          const std::string &dateOfBirth,
+                                                          const std::string &specialization,
+                                                          const std::string &schedule,
+                                                          double consultationFee)
+        {
             std::string id = Utils::generateDoctorID();
             Model::Doctor newDoc(id,
-                                username,
-                                name,
-                                phone,
-                                gender,
-                                dateOfBirth,
-                                specialization,
-                                schedule,
-                                consultationFee
-                            );
+                                 username,
+                                 name,
+                                 phone,
+                                 gender,
+                                 dateOfBirth,
+                                 specialization,
+                                 schedule,
+                                 consultationFee);
 
-            if (createDoctor(newDoc)) {
+            if (createDoctor(newDoc))
+            {
                 return newDoc;
             }
 
             return std::nullopt;
         }
 
-        bool DoctorService::updateDoctor(const Model::Doctor& doctor) {
-
-            if (!doctorExists(doctor.getID())) {
+        bool DoctorService::updateDoctor(const Model::Doctor &doctor)
+        {
+            if (!doctorExists(doctor.getID()))
+            {
                 return false;
             }
 
-            if (!validateDoctor(doctor)) {
+            if (!validateDoctor(doctor))
+            {
                 return false;
             }
 
             return m_doctorRepo->update(doctor);
         }
 
-        bool DoctorService::deleteDoctor(const std::string& doctorID) {
-
-            if (!doctorExists(doctorID)) {
+        bool DoctorService::deleteDoctor(const std::string &doctorID)
+        {
+            if (!doctorExists(doctorID))
+            {
                 return false;
             }
 
             return m_doctorRepo->remove(doctorID);
         }
 
-// ============================== QUERY OPERATIONS ===========================
+        // ============================== QUERY OPERATIONS ===========================
 
-        std::optional<Model::Doctor> DoctorService::getDoctorByID(const std::string& doctorID) {
-
-            auto doctors = m_doctorRepo->getAll();
-            for (const auto& doc: doctors) {
-                if (doc.getID() == doctorID) {
-                    return doc;
-                }
-            }
-            return std::nullopt;
-
+        Result<Model::Doctor> DoctorService::getDoctorByID(const std::string &doctorID)
+        {
+            return m_doctorRepo->getById(doctorID);
         }
 
-        std::optional<Model::Doctor> DoctorService::getDoctorByUsername(const std::string& username) {
-
-            auto doctors = m_doctorRepo->getAll();
-            for (const auto& doc : doctors) {
-                if (doc.getUsername() == username) {
-                    return doc;
-                }
-            }
-
-            return std::nullopt;
+        Result<Model::Doctor> DoctorService::getDoctorByUsername(const std::string &username)
+        {
+            return m_doctorRepo->getByUsername(username);
         }
 
-        std::vector<Model::Doctor> DoctorService::getAllDoctors() {
+        List<Model::Doctor> DoctorService::getAllDoctors()
+        {
             return m_doctorRepo->getAll();
         }
 
-        std::vector<Model::Doctor> DoctorService::searchDoctors(const std::string& keyword) {
-
-            auto doctors = m_doctorRepo->getAll();
-            std::vector<Model::Doctor> result;
-            for (auto const& doc : doctors) {
-                if (Utils::containsIgnoreCase(doc.getID(), keyword) ||
-                    Utils::containsIgnoreCase(doc.getName(), keyword) ||
-                    Utils::containsIgnoreCase(doc.getSpecialization(), keyword)) {
-                    result.push_back(doc);
-                }
-            }
-            return result;
+        List<Model::Doctor> DoctorService::searchDoctors(const std::string &keyword)
+        {
+            return m_doctorRepo->search(keyword);
         }
 
-        std::vector<Model::Doctor> DoctorService::getDoctorsBySpecialization(const std::string& specialization) {
-            std::vector<Model::Doctor> result;
-            auto doctors = m_doctorRepo->getAll();
-            std::string target = Utils::toLower(specialization);
-            for (auto const& doc : doctors) {
-                if (Utils::toLower(doc.getSpecialization()) == target) {
-                    result.push_back(doc);
-                }
-            }
-            return result;
+        List<Model::Doctor> DoctorService::getDoctorsBySpecialization(const std::string &specialization)
+        {
+            return m_doctorRepo->getBySpecialization(specialization);
         }
 
-        std::vector<std::string> DoctorService::getAllSpecializations() {
-
-            std::set<std::string> specSet;
-            auto doctors = m_doctorRepo->getAll();
-            for (const auto& doc : doctors) {
-                if (!doc.getSpecialization().empty()) {
-                    specSet.insert(doc.getSpecialization());
-                }
-            }
-            return std::vector<std::string>(specSet.begin(), specSet.end());
+        List<std::string> DoctorService::getAllSpecializations()
+        {
+            return m_doctorRepo->getAllSpecializations();
         }
 
-        size_t DoctorService::getDoctorCount() const {
-            return m_doctorRepo->getAll().size();
+        size_t DoctorService::getDoctorCount() const
+        {
+            return m_doctorRepo->count();
         }
 
-// ========================== SCHEDULE MANAGEMENT =============================
+        // ========================== SCHEDULE MANAGEMENT =============================
 
-        std::vector<Model::Appointment> DoctorService::getDoctorSchedule(const std::string& doctorID, const std::string& date) {
+        List<Model::Appointment> DoctorService::getDoctorSchedule(const std::string &doctorID, const std::string &date)
+        {
             auto appointments = m_appointmentRepo->getAll();
-            std::vector<Model::Appointment> result;
-            for (auto const& app : appointments) {
+            List<Model::Appointment> result;
+
+            for (const auto &app : appointments)
+            {
                 if (app.getDoctorID() == doctorID && app.getDate() == date &&
-                    app.getStatus() != AppointmentStatus::CANCELLED) {
+                    app.getStatus() != AppointmentStatus::CANCELLED)
+                {
                     result.push_back(app);
                 }
             }
 
-            std::sort(result.begin(), result.end(), [](const Model::Appointment& a, const Model::Appointment& b) {
-                    return a.getTime() < b.getTime();
-            });
+            std::sort(result.begin(), result.end(), [](const Model::Appointment &a, const Model::Appointment &b)
+                      { return a.getTime() < b.getTime(); });
 
             return result;
         }
 
-        std::vector<Model::Appointment> DoctorService::getUpcomingAppointments(const std::string& doctorID) {
+        List<Model::Appointment> DoctorService::getUpcomingAppointments(const std::string &doctorID)
+        {
             auto allApp = m_appointmentRepo->getAll();
-            std::vector<Model::Appointment> result;
+            List<Model::Appointment> result;
             std::string today = Utils::getCurrentDate();
             std::string nowTime = Utils::getCurrentTime();
 
-            for (const auto& app : allApp) {
+            for (const auto &app : allApp)
+            {
                 if (app.getDoctorID() == doctorID &&
                     app.getStatus() != AppointmentStatus::CANCELLED &&
                     app.getStatus() != AppointmentStatus::COMPLETED &&
-                    (app. getDate() > today || (app.getDate() == today && app.getTime() > nowTime))) {
-                        result.push_back(app);
-                    }
+                    (app.getDate() > today || (app.getDate() == today && app.getTime() > nowTime)))
+                {
+                    result.push_back(app);
+                }
             }
 
-            std::sort(result.begin(), result.end(), [](const Model::Appointment& a, const Model::Appointment& b) {
-                    return a.getTime() < b.getTime();
-            });
+            // Sort by date first, then by time
+            std::sort(result.begin(), result.end(), [](const Model::Appointment &a, const Model::Appointment &b)
+                      {
+                          if (a.getDate() != b.getDate())
+                          {
+                              return a.getDate() < b.getDate();
+                          }
+                          return a.getTime() < b.getTime();
+                      });
 
             return result;
         }
 
-        std::vector<std::string> DoctorService::getAvailableSlots(const std::string& doctorID, const std::string& date) {
-            std::vector<std::string> availableSlots;
+        List<std::string> DoctorService::getAvailableSlots(const std::string &doctorID, const std::string &date)
+        {
+            // Validate the date format
+            if (!Utils::isValidDate(date))
+            {
+                return {};
+            }
 
-            std::vector<std::string> standardSlots {
+            // Don't return slots for past dates
+            if (Utils::compareDates(date, Utils::getCurrentDate()) < 0)
+            {
+                return {};
+            }
+
+            List<std::string> availableSlots;
+
+            static const List<std::string> standardSlots{
                 "08:00", "09:00",
                 "10:00", "11:00",
                 "13:00", "14:00",
-                "15:00", "16:00"
-            };
+                "15:00", "16:00"};
 
-            auto exitingSchedule = m_appointmentRepo->getBookedSlots(doctorID, date);
-            std::set<std::string> occupiedTime;
-            for (const auto& schedule : exitingSchedule) {
-                occupiedTime.insert(schedule);
-            }
+            auto existingSchedule = m_appointmentRepo->getBookedSlots(doctorID, date);
+            std::set<std::string> occupiedTime(existingSchedule.begin(), existingSchedule.end());
 
-            for (auto const& slot : standardSlots) {
-                if (occupiedTime.find(slot) == occupiedTime.end()) {
-                    if (date == Utils::getCurrentDate()) {
-                        if (slot > Utils::getCurrentTime()) {
-                            availableSlots.push_back(slot);
-                        }
-                    }
-                    else {
+            bool isToday = (date == Utils::getCurrentDate());
+            std::string currentTime = isToday ? Utils::getCurrentTime() : "";
+
+            for (const auto &slot : standardSlots)
+            {
+                if (occupiedTime.find(slot) == occupiedTime.end())
+                {
+                    if (!isToday || slot > currentTime)
+                    {
                         availableSlots.push_back(slot);
                     }
                 }
@@ -236,21 +236,28 @@ namespace HMS {
             return availableSlots;
         }
 
-        bool DoctorService::isSlotAvailable(const std::string& doctorID, const std::string& time, const std::string& date) {
+        bool DoctorService::isSlotAvailable(const std::string &doctorID, const std::string &time, const std::string &date)
+        {
+            if (!Utils::isValidTime(time) || !Utils::isValidDate(date))
+            {
+                return false;
+            }
 
-            auto slot = getAvailableSlots(doctorID, date);
-            return std::find(slot.begin(), slot.end(), time) != slot.end();
+            auto slots = getAvailableSlots(doctorID, date);
+            return std::find(slots.begin(), slots.end(), time) != slots.end();
         }
 
-// ============================= ACTIVITY TRACKING ===============================
+        // ============================= ACTIVITY TRACKING ===============================
 
-        std::vector<Model::Appointment> DoctorService::getDoctorActivity(const std::string& doctorID) {
-
+        List<Model::Appointment> DoctorService::getDoctorActivity(const std::string &doctorID)
+        {
             auto allAppointments = m_appointmentRepo->getAll();
-            std::vector<Model::Appointment> result;
+            List<Model::Appointment> result;
 
-            for (auto const& app : allAppointments) {
-                if (app.getDoctorID() == doctorID) {
+            for (const auto &app : allAppointments)
+            {
+                if (app.getDoctorID() == doctorID)
+                {
                     result.push_back(app);
                 }
             }
@@ -258,85 +265,137 @@ namespace HMS {
             return result;
         }
 
-        std::vector<Model::Appointment> DoctorService::getCompletedAppointments(const std::string& doctorID) {
-
+        List<Model::Appointment> DoctorService::getCompletedAppointments(const std::string &doctorID)
+        {
             auto allAppointments = m_appointmentRepo->getAll();
-            std::vector<Model::Appointment> result;
-            for (auto const& app : allAppointments) {
-                if (app.getDoctorID() == doctorID && app.getStatus() == AppointmentStatus::COMPLETED) {
+            List<Model::Appointment> result;
+
+            for (const auto &app : allAppointments)
+            {
+                if (app.getDoctorID() == doctorID && app.getStatus() == AppointmentStatus::COMPLETED)
+                {
                     result.push_back(app);
                 }
             }
             return result;
         }
 
-        std::vector<Model::Appointment> DoctorService::getAppointmentsInRange(const std::string& doctorID,
-                                                                              const std::string& startDate,
-                                                                              const std::string& endDate) {
+        List<Model::Appointment> DoctorService::getAppointmentsInRange(const std::string &doctorID,
+                                                                       const std::string &startDate,
+                                                                       const std::string &endDate)
+        {
+            if (!Utils::isValidDate(startDate) || !Utils::isValidDate(endDate))
+            {
+                return {};
+            }
+
             auto activities = getDoctorActivity(doctorID);
-            std::vector<Model::Appointment> result;
-            for (auto const& a : activities) {
-                if (a.getDate() >= startDate && a.getDate() <= endDate) {
+            List<Model::Appointment> result;
+
+            for (const auto &a : activities)
+            {
+                int cmpStart = Utils::compareDates(a.getDate(), startDate);
+                int cmpEnd = Utils::compareDates(a.getDate(), endDate);
+                if (cmpStart >= 0 && cmpEnd <= 0)
+                {
                     result.push_back(a);
                 }
             }
             return result;
         }
 
-        std::vector<Model::Appointment> DoctorService::getTodayAppointments(const std::string& doctorID) {
+        List<Model::Appointment> DoctorService::getTodayAppointments(const std::string &doctorID)
+        {
             return getDoctorSchedule(doctorID, Utils::getCurrentDate());
         }
 
-// ============================ STATISTICS ================================
+        // ============================ STATISTICS ================================
 
-        double DoctorService::getDoctorRevenue(const std::string& doctorID) {
+        double DoctorService::getDoctorRevenue(const std::string &doctorID)
+        {
             auto completed = getCompletedAppointments(doctorID);
             double total = 0.0;
-            for (const auto& app : completed) {
+            for (const auto &app : completed)
+            {
                 total += app.getPrice();
             }
             return total;
         }
 
-        size_t DoctorService::getDoctorAppointmentCount(const std::string& doctorID)  {
+        size_t DoctorService::getDoctorAppointmentCount(const std::string &doctorID)
+        {
             return getDoctorActivity(doctorID).size();
         }
 
-        size_t DoctorService::getDoctorPatientCount(const std::string& doctorID) {
+        size_t DoctorService::getDoctorPatientCount(const std::string &doctorID)
+        {
             auto activity = getDoctorActivity(doctorID);
             std::set<std::string> uniquePatients;
 
-            for (const auto& act : activity) {
-                if (act.getStatus() == AppointmentStatus::COMPLETED) {
-                    uniquePatients.insert(act.getPatientUsername()); 
+            for (const auto &act : activity)
+            {
+                if (act.getStatus() == AppointmentStatus::COMPLETED)
+                {
+                    uniquePatients.insert(act.getPatientUsername());
                 }
             }
             return uniquePatients.size();
         }
 
-// ================================ VALIDATION & PERSISTENCE ==============================
+        // ================================ VALIDATION & PERSISTENCE ==============================
 
-        bool DoctorService::validateDoctor(const Model::Doctor& doctor) {
-            if (doctor.getID().empty() || doctor.getName().empty() ||
-                doctor.getPhone().empty() || doctor.getSpecialization().empty() ||
-                doctor.getDoctorID().empty() || doctor.getDateOfBirth().empty() ||
-                doctor.getGenderString().empty() || doctor.getUsername().empty()) {
+        bool DoctorService::validateDoctor(const Model::Doctor &doctor)
+        {
+            // Check required fields are not empty
+            if (doctor.getID().empty() ||
+                doctor.getName().empty() ||
+                doctor.getPhone().empty() ||
+                doctor.getSpecialization().empty() ||
+                doctor.getDateOfBirth().empty() ||
+                doctor.getUsername().empty())
+            {
                 return false;
             }
-            if (doctor.getConsultationFee() < 0) return false;
+
+            // Validate phone format
+            if (!Utils::isValidPhone(doctor.getPhone()))
+            {
+                return false;
+            }
+
+            // Validate date of birth format
+            if (!Utils::isValidDate(doctor.getDateOfBirth()))
+            {
+                return false;
+            }
+
+            // Date of birth should not be in the future
+            if (Utils::isFutureDate(doctor.getDateOfBirth()))
+            {
+                return false;
+            }
+
+            // Consultation fee must be non-negative
+            if (doctor.getConsultationFee() < 0)
+            {
+                return false;
+            }
+
             return true;
         }
 
-        bool DoctorService::doctorExists(const std::string& doctorID){
-            auto doc = getDoctorByID(doctorID);
-            return doc.has_value();
+        bool DoctorService::doctorExists(const std::string &doctorID)
+        {
+            return m_doctorRepo->exists(doctorID);
         }
 
-        bool DoctorService::saveData() {
+        bool DoctorService::saveData()
+        {
             return m_doctorRepo->save();
         }
 
-        bool DoctorService::loadData() {
+        bool DoctorService::loadData()
+        {
             return m_doctorRepo->load();
         }
 

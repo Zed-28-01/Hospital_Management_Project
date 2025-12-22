@@ -1,1 +1,0 @@
-# appointmentID|patientUsername|doctorID|date|time|disease|price|isPaid|status|notes

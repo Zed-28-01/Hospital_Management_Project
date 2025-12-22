@@ -18,7 +18,7 @@ namespace
 {
 
     const std::string TEST_DATA_DIR = "test/fixtures/";
-    const std::string TEST_DATA_FILE = "test/fixtures/AppointmentTest.txt";
+    const std::string TEST_DATA_FILE = "test/fixtures/Appointment_test.txt";
 
     // Helper tạo appointment hợp lệ
     // Giả định constructor của Appointment khớp với thứ tự tham số này

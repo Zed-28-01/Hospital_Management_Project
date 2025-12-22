@@ -6,8 +6,6 @@
 #include "../model/Appointment.h"
 #include "../common/Types.h"
 #include <string>
-#include <vector>
-#include <optional>
 #include <mutex>
 #include <memory>
 
@@ -84,7 +82,7 @@ public:
      * @param consultationFee Consultation fee
      * @return Created doctor or nullopt if failed
      */
-    std::optional<Model::Doctor> createDoctor(
+    Result<Model::Doctor> createDoctor(
         const std::string& username,
         const std::string& name,
         const std::string& phone,
@@ -115,40 +113,40 @@ public:
      * @param doctorID The doctor's ID
      * @return Doctor if found, nullopt otherwise
      */
-    std::optional<Model::Doctor> getDoctorByID(const std::string& doctorID);
+    Result<Model::Doctor> getDoctorByID(const std::string& doctorID);
 
     /**
      * @brief Get doctor by username
      * @param username The account username
      * @return Doctor if found, nullopt otherwise
      */
-    std::optional<Model::Doctor> getDoctorByUsername(const std::string& username);
+    Result<Model::Doctor> getDoctorByUsername(const std::string& username);
 
     /**
      * @brief Get all doctors
      * @return Vector of all doctors
      */
-    std::vector<Model::Doctor> getAllDoctors();
+    List<Model::Doctor> getAllDoctors();
 
     /**
      * @brief Search doctors by keyword
      * @param keyword Search keyword
      * @return Vector of matching doctors
      */
-    std::vector<Model::Doctor> searchDoctors(const std::string& keyword);
+    List<Model::Doctor> searchDoctors(const std::string& keyword);
 
     /**
      * @brief Get doctors by specialization
      * @param specialization The medical specialization
      * @return Vector of matching doctors
      */
-    std::vector<Model::Doctor> getDoctorsBySpecialization(const std::string& specialization);
+    List<Model::Doctor> getDoctorsBySpecialization(const std::string& specialization);
 
     /**
      * @brief Get all available specializations
      * @return Vector of specialization names
      */
-    std::vector<std::string> getAllSpecializations();
+    List<std::string> getAllSpecializations();
 
     /**
      * @brief Get total doctor count
@@ -164,15 +162,15 @@ public:
      * @param date The date (YYYY-MM-DD)
      * @return Vector of appointments on that date
      */
-    std::vector<Model::Appointment> getDoctorSchedule(const std::string& doctorID,
-                                                       const std::string& date);
+    List<Model::Appointment> getDoctorSchedule(const std::string& doctorID,
+                                                const std::string& date);
 
     /**
      * @brief Get doctor's upcoming appointments
      * @param doctorID The doctor's ID
      * @return Vector of upcoming appointments
      */
-    std::vector<Model::Appointment> getUpcomingAppointments(const std::string& doctorID);
+    List<Model::Appointment> getUpcomingAppointments(const std::string& doctorID);
 
     /**
      * @brief Get doctor's available time slots for a date
@@ -180,19 +178,19 @@ public:
      * @param date The date (YYYY-MM-DD)
      * @return Vector of available time slots (HH:MM format)
      */
-    std::vector<std::string> getAvailableSlots(const std::string& doctorID,
-                                                const std::string& date);
+    List<std::string> getAvailableSlots(const std::string& doctorID,
+                                         const std::string& date);
 
     /**
      * @brief Check if a time slot is available
      * @param doctorID The doctor's ID
-     * @param date The date (YYYY-MM-DD)
      * @param time The time (HH:MM)
+     * @param date The date (YYYY-MM-DD)
      * @return True if slot is available
      */
     bool isSlotAvailable(const std::string& doctorID,
-                         const std::string& date,
-                         const std::string& time);
+                         const std::string& time,
+                         const std::string& date);
 
     // ==================== Activity Tracking ====================
 
@@ -201,14 +199,14 @@ public:
      * @param doctorID The doctor's ID
      * @return Vector of all doctor's appointments
      */
-    std::vector<Model::Appointment> getDoctorActivity(const std::string& doctorID);
+    List<Model::Appointment> getDoctorActivity(const std::string& doctorID);
 
     /**
      * @brief Get doctor's completed appointments
      * @param doctorID The doctor's ID
      * @return Vector of completed appointments
      */
-    std::vector<Model::Appointment> getCompletedAppointments(const std::string& doctorID);
+    List<Model::Appointment> getCompletedAppointments(const std::string& doctorID);
 
     /**
      * @brief Get doctor's appointments in date range
@@ -217,16 +215,16 @@ public:
      * @param endDate End date
      * @return Vector of appointments in range
      */
-    std::vector<Model::Appointment> getAppointmentsInRange(const std::string& doctorID,
-                                                            const std::string& startDate,
-                                                            const std::string& endDate);
+    List<Model::Appointment> getAppointmentsInRange(const std::string& doctorID,
+                                                     const std::string& startDate,
+                                                     const std::string& endDate);
 
     /**
      * @brief Get today's appointments for a doctor
      * @param doctorID The doctor's ID
      * @return Vector of today's appointments
      */
-    std::vector<Model::Appointment> getTodayAppointments(const std::string& doctorID);
+    List<Model::Appointment> getTodayAppointments(const std::string& doctorID);
 
     // ==================== Statistics ====================
 
