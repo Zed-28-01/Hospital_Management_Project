@@ -2,13 +2,38 @@
 #include "common/Utils.h"
 #include "common/Types.h"
 #include "common/Constants.h"
+
 #include <set>
 #include <algorithm>
+#include <sstream>
+#include <iomanip>
 
 namespace HMS
 {
     namespace BLL
     {
+
+        // ==================== Static Cached Time Slots ====================
+        // Uses the same pattern as AppointmentService for consistency
+        static const List<std::string> &getCachedStandardTimeSlots()
+        {
+            static const List<std::string> slots = []()
+            {
+                List<std::string> result;
+                for (int h = Constants::WORK_START_HOUR; h < Constants::WORK_END_HOUR; ++h)
+                {
+                    std::stringstream ss1;
+                    ss1 << std::setfill('0') << std::setw(2) << h << ":00";
+                    result.push_back(ss1.str());
+
+                    std::stringstream ss2;
+                    ss2 << std::setfill('0') << std::setw(2) << h << ":30";
+                    result.push_back(ss2.str());
+                }
+                return result;
+            }();
+            return slots;
+        }
 
         // ========================== STATIC MEMBER DEFINITIONS ================================
         std::unique_ptr<DoctorService> DoctorService::s_instance = nullptr;
@@ -150,18 +175,20 @@ namespace HMS
 
         List<Model::Appointment> DoctorService::getDoctorSchedule(const std::string &doctorID, const std::string &date)
         {
-            auto appointments = m_appointmentRepo->getAll();
+            // Use efficient repository query instead of filtering all appointments
+            auto appointments = m_appointmentRepo->getByDoctorAndDate(doctorID, date);
             List<Model::Appointment> result;
 
+            // Filter out cancelled appointments
             for (const auto &app : appointments)
             {
-                if (app.getDoctorID() == doctorID && app.getDate() == date &&
-                    app.getStatus() != AppointmentStatus::CANCELLED)
+                if (app.getStatus() != AppointmentStatus::CANCELLED)
                 {
                     result.push_back(app);
                 }
             }
 
+            // getByDoctorAndDate already returns sorted by time, but ensure consistency
             std::sort(result.begin(), result.end(), [](const Model::Appointment &a, const Model::Appointment &b)
                       { return a.getTime() < b.getTime(); });
 
@@ -212,21 +239,18 @@ namespace HMS
                 return {};
             }
 
+            // Use cached standard time slots (consistent with AppointmentService)
+            const List<std::string> &allSlots = getCachedStandardTimeSlots();
+
+            // Get booked slots from repository
+            auto bookedSlots = m_appointmentRepo->getBookedSlots(doctorID, date);
+            std::set<std::string> occupiedTime(bookedSlots.begin(), bookedSlots.end());
+
             List<std::string> availableSlots;
-
-            static const List<std::string> standardSlots{
-                "08:00", "09:00",
-                "10:00", "11:00",
-                "13:00", "14:00",
-                "15:00", "16:00"};
-
-            auto existingSchedule = m_appointmentRepo->getBookedSlots(doctorID, date);
-            std::set<std::string> occupiedTime(existingSchedule.begin(), existingSchedule.end());
-
             bool isToday = (date == Utils::getCurrentDate());
             std::string currentTime = isToday ? Utils::getCurrentTime() : "";
 
-            for (const auto &slot : standardSlots)
+            for (const auto &slot : allSlots)
             {
                 if (occupiedTime.find(slot) == occupiedTime.end())
                 {

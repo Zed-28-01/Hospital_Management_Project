@@ -322,6 +322,16 @@ private:
      * @return True if doctor exists
      */
     bool doctorExists(const std::string& doctorID);
+
+    /**
+     * @brief Calculate all revenue statistics in a single pass
+     * @param totalRevenue Output: total revenue (excluding cancelled)
+     * @param paidRevenue Output: paid revenue
+     * @param unpaidRevenue Output: unpaid revenue
+     */
+    void calculateRevenueStatistics(double& totalRevenue,
+                                    double& paidRevenue,
+                                    double& unpaidRevenue);
 };
 
 } // namespace BLL

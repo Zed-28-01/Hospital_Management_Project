@@ -317,16 +317,27 @@ TEST_F(PatientServiceTest, GetUnpaidAppointments_SortingOrder)
 // ==================== PERSISTENCE (IO) ====================
 TEST_F(PatientServiceTest, SaveAndLoadData)
 {
-    // 1. Tạo dữ liệu và lưu
+    // 1. Create data and save
     service->createPatient(createTestPatient("P001", "save_test", "Save Test"));
     ASSERT_TRUE(service->saveData());
 
-    // 2. Reset repository instance to clear in-memory data without saving
+    // 2. Reset both repository AND service to simulate app restart
+    // IMPORTANT: Must reset service since it holds pointers to repositories.
+    // Resetting only repository causes dangling pointer in service -> crash
     DAL::PatientRepository::resetInstance();
+    DAL::AppointmentRepository::resetInstance();
+    PatientService::resetInstance();
+
+    // 3. Get fresh instances (simulating app restart)
     auto freshRepo = DAL::PatientRepository::getInstance();
     freshRepo->setFilePath(TEST_PATIENT_FILE);
 
-    // 3. Load lại từ file
+    auto freshApptRepo = DAL::AppointmentRepository::getInstance();
+    freshApptRepo->setFilePath(TEST_APPOINTMENT_FILE);
+
+    service = PatientService::getInstance();
+
+    // 4. Load data from file
     ASSERT_TRUE(service->loadData());
     EXPECT_EQ(service->getPatientCount(), 1u);
     EXPECT_TRUE(service->getPatientByUsername("save_test").has_value());
