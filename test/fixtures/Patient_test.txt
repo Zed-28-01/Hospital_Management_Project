@@ -1,0 +1,7 @@
+# Patient fixture data for testing
+# Format: patientID|username|name|phone|gender|dateOfBirth|address|medicalHistory
+P001|patient1|Nguyen Van A|0912345678|Male|1990-05-15|123 Le Loi St, District 1|Diabetes Type 2
+P002|patient2|Tran Thi B|0923456789|Female|1985-08-22|456 Nguyen Hue St, District 3|Hypertension
+P003|patient3|Le Van C|0934567890|Male|1978-12-10|789 Hai Ba Trung St, District 5|None
+P004|patient4|Pham Thi D|0945678901|Female|1995-03-25|321 Vo Van Tan St, District 10|Allergies: Penicillin
+P005|patient5|Hoang Van E|0956789012|Male|2000-07-30|654 Cach Mang Thang 8 St, District 1|Asthma

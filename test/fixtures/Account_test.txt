@@ -1,0 +1,8 @@
+# Account fixture data for testing
+# Format: username|passwordHash|role|isActive|createdDate
+admin|admin123hash|admin|1|2024-01-01
+doctor1|doc1hash|doctor|1|2024-01-15
+doctor2|doc2hash|doctor|1|2024-02-01
+patient1|pat1hash|patient|1|2024-03-01
+patient2|pat2hash|patient|1|2024-03-15
+patient3|pat3hash|patient|0|2024-04-01
