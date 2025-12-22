@@ -14,16 +14,18 @@
 
 using namespace HMS;
 
-class DoctorServiceTest : public ::testing::Test {
+class DoctorServiceTest : public ::testing::Test
+{
 protected:
-    BLL::DoctorService* service;
-    DAL::DoctorRepository* docRepo;
-    DAL::AppointmentRepository* appRepo;
+    BLL::DoctorService *service;
+    DAL::DoctorRepository *docRepo;
+    DAL::AppointmentRepository *appRepo;
 
     const std::string TEST_DOC_FILE = "test_data/doctors_test.txt";
     const std::string TEST_APP_FILE = "test_data/appointments_test.txt";
 
-    void SetUp() override {
+    void SetUp() override
+    {
         std::filesystem::create_directories("test_data");
 
         BLL::DoctorService::resetInstance();
@@ -41,7 +43,8 @@ protected:
         appRepo->clear();
     }
 
-    void TearDown() override {
+    void TearDown() override
+    {
         docRepo->clear();
         appRepo->clear();
 
@@ -51,7 +54,8 @@ protected:
     }
 };
 
-TEST_F(DoctorServiceTest, CreateAndGetDoctorSuccess) {
+TEST_F(DoctorServiceTest, CreateAndGetDoctorSuccess)
+{
     Model::Doctor doc(
         "TEST_D01",
         "user_test",
@@ -61,8 +65,7 @@ TEST_F(DoctorServiceTest, CreateAndGetDoctorSuccess) {
         "1980-01-01",
         "Cardiology",
         "Mon-Fri",
-        500000
-    );
+        500000);
 
     bool created = service->createDoctor(doc);
 
@@ -74,7 +77,8 @@ TEST_F(DoctorServiceTest, CreateAndGetDoctorSuccess) {
     EXPECT_EQ(retrieved->getSpecialization(), "Cardiology");
 }
 
-TEST_F(DoctorServiceTest, CreateDoctorDuplicateFail) {
+TEST_F(DoctorServiceTest, CreateDoctorDuplicateFail)
+{
     Model::Doctor doc(
         "TEST_D01",
         "u1",
@@ -84,14 +88,14 @@ TEST_F(DoctorServiceTest, CreateDoctorDuplicateFail) {
         "1990-05-15",
         "General",
         "All",
-        100000
-    );
+        100000);
 
     EXPECT_TRUE(service->createDoctor(doc));
     EXPECT_FALSE(service->createDoctor(doc));
 }
 
-TEST_F(DoctorServiceTest, CreateDoctorInvalidPhoneFail) {
+TEST_F(DoctorServiceTest, CreateDoctorInvalidPhoneFail)
+{
     Model::Doctor doc(
         "TEST_D_INVALID",
         "u_invalid",
@@ -101,13 +105,13 @@ TEST_F(DoctorServiceTest, CreateDoctorInvalidPhoneFail) {
         "1990-05-15",
         "General",
         "All",
-        100000
-    );
+        100000);
 
     EXPECT_FALSE(service->createDoctor(doc));
 }
 
-TEST_F(DoctorServiceTest, CreateDoctorInvalidDateFail) {
+TEST_F(DoctorServiceTest, CreateDoctorInvalidDateFail)
+{
     Model::Doctor doc(
         "TEST_D_INVALID2",
         "u_invalid2",
@@ -117,13 +121,13 @@ TEST_F(DoctorServiceTest, CreateDoctorInvalidDateFail) {
         "1990",
         "General",
         "All",
-        100000
-    );
+        100000);
 
     EXPECT_FALSE(service->createDoctor(doc));
 }
 
-TEST_F(DoctorServiceTest, CreateDoctorFutureDOBFail) {
+TEST_F(DoctorServiceTest, CreateDoctorFutureDOBFail)
+{
     Model::Doctor doc(
         "TEST_D_FUTURE",
         "u_future",
@@ -133,13 +137,13 @@ TEST_F(DoctorServiceTest, CreateDoctorFutureDOBFail) {
         "2099-01-01",
         "General",
         "All",
-        100000
-    );
+        100000);
 
     EXPECT_FALSE(service->createDoctor(doc));
 }
 
-TEST_F(DoctorServiceTest, SearchDoctorsLogic) {
+TEST_F(DoctorServiceTest, SearchDoctorsLogic)
+{
     Model::Doctor doc1(
         "TEST_D02",
         "u2",
@@ -149,8 +153,7 @@ TEST_F(DoctorServiceTest, SearchDoctorsLogic) {
         "1990-06-20",
         "Neurology",
         "Mon",
-        100000
-    );
+        100000);
     Model::Doctor doc2(
         "TEST_D03",
         "u3",
@@ -160,8 +163,7 @@ TEST_F(DoctorServiceTest, SearchDoctorsLogic) {
         "1992-03-10",
         "Dermatology",
         "Tue",
-        200000
-    );
+        200000);
 
     service->createDoctor(doc1);
     service->createDoctor(doc2);
@@ -178,7 +180,8 @@ TEST_F(DoctorServiceTest, SearchDoctorsLogic) {
     EXPECT_TRUE(resultNone.empty());
 }
 
-TEST_F(DoctorServiceTest, GetUpcomingAppointmentsFilter) {
+TEST_F(DoctorServiceTest, GetUpcomingAppointmentsFilter)
+{
     std::string docID = "TEST_DOC_UPCOMING";
 
     Model::Doctor doc(
@@ -190,24 +193,20 @@ TEST_F(DoctorServiceTest, GetUpcomingAppointmentsFilter) {
         "1980-05-15",
         "Time Management",
         "All",
-        100000
-    );
+        100000);
     service->createDoctor(doc);
 
     Model::Appointment pastApp(
         "A_PAST", "Pat1", docID, "2000-01-01", "10:00", "Flu", 100.0,
-        true, AppointmentStatus::COMPLETED, "Done"
-    );
+        true, AppointmentStatus::COMPLETED, "Done");
 
     Model::Appointment futureApp(
         "A_FUTURE", "Pat2", docID, "2099-01-01", "09:00", "Checkup", 200.0,
-        false, AppointmentStatus::SCHEDULED, "Pending"
-    );
+        false, AppointmentStatus::SCHEDULED, "Pending");
 
     Model::Appointment cancelledApp(
         "A_CANCEL", "Pat3", docID, "2099-01-01", "11:00", "Sick", 200.0,
-        false, AppointmentStatus::CANCELLED, "Cancelled"
-    );
+        false, AppointmentStatus::CANCELLED, "Cancelled");
 
     appRepo->add(pastApp);
     appRepo->add(futureApp);
@@ -219,7 +218,8 @@ TEST_F(DoctorServiceTest, GetUpcomingAppointmentsFilter) {
     EXPECT_EQ(upcoming[0].getAppointmentID(), "A_FUTURE");
 }
 
-TEST_F(DoctorServiceTest, GetUpcomingAppointmentsSortedByDateTime) {
+TEST_F(DoctorServiceTest, GetUpcomingAppointmentsSortedByDateTime)
+{
     std::string docID = "TEST_DOC_SORT";
 
     Model::Doctor doc(
@@ -231,22 +231,18 @@ TEST_F(DoctorServiceTest, GetUpcomingAppointmentsSortedByDateTime) {
         "1975-08-20",
         "Sorting",
         "All",
-        100000
-    );
+        100000);
     service->createDoctor(doc);
 
     Model::Appointment app1(
         "A1", "Pat1", docID, "2099-01-02", "08:00", "A", 100.0,
-        false, AppointmentStatus::SCHEDULED, ""
-    );
+        false, AppointmentStatus::SCHEDULED, "");
     Model::Appointment app2(
         "A2", "Pat2", docID, "2099-01-01", "10:00", "B", 100.0,
-        false, AppointmentStatus::SCHEDULED, ""
-    );
+        false, AppointmentStatus::SCHEDULED, "");
     Model::Appointment app3(
         "A3", "Pat3", docID, "2099-01-01", "08:00", "C", 100.0,
-        false, AppointmentStatus::SCHEDULED, ""
-    );
+        false, AppointmentStatus::SCHEDULED, "");
 
     appRepo->add(app1);
     appRepo->add(app2);
@@ -260,7 +256,8 @@ TEST_F(DoctorServiceTest, GetUpcomingAppointmentsSortedByDateTime) {
     EXPECT_EQ(upcoming[2].getAppointmentID(), "A1");
 }
 
-TEST_F(DoctorServiceTest, GetAvailableSlotsLogic) {
+TEST_F(DoctorServiceTest, GetAvailableSlotsLogic)
+{
     std::string docID = "TEST_DOC_SLOTS";
     std::string date = "2099-12-31";
 
@@ -273,14 +270,12 @@ TEST_F(DoctorServiceTest, GetAvailableSlotsLogic) {
         "1985-04-10",
         "Scheduling",
         "All",
-        100000
-    );
+        100000);
     service->createDoctor(doc);
 
     Model::Appointment bookedApp(
         "A1", "Pat1", docID, date, "08:00", "Flu", 100.0,
-        false, AppointmentStatus::SCHEDULED, ""
-    );
+        false, AppointmentStatus::SCHEDULED, "");
     appRepo->add(bookedApp);
 
     std::vector<std::string> slots = service->getAvailableSlots(docID, date);
@@ -292,21 +287,24 @@ TEST_F(DoctorServiceTest, GetAvailableSlotsLogic) {
     EXPECT_TRUE(has09);
 }
 
-TEST_F(DoctorServiceTest, GetAvailableSlotsInvalidDate) {
+TEST_F(DoctorServiceTest, GetAvailableSlotsInvalidDate)
+{
     std::string docID = "TEST_DOC_INVALID_DATE";
 
     auto slots = service->getAvailableSlots(docID, "invalid-date");
     EXPECT_TRUE(slots.empty());
 }
 
-TEST_F(DoctorServiceTest, GetAvailableSlotsPastDate) {
+TEST_F(DoctorServiceTest, GetAvailableSlotsPastDate)
+{
     std::string docID = "TEST_DOC_PAST";
 
     auto slots = service->getAvailableSlots(docID, "2000-01-01");
     EXPECT_TRUE(slots.empty());
 }
 
-TEST_F(DoctorServiceTest, IsSlotAvailableValidation) {
+TEST_F(DoctorServiceTest, IsSlotAvailableValidation)
+{
     std::string docID = "TEST_DOC_SLOT_VAL";
     std::string date = "2099-12-31";
 
@@ -314,7 +312,8 @@ TEST_F(DoctorServiceTest, IsSlotAvailableValidation) {
     EXPECT_FALSE(service->isSlotAvailable(docID, "09:00", "invalid"));
 }
 
-TEST_F(DoctorServiceTest, StatisticsCalculation) {
+TEST_F(DoctorServiceTest, StatisticsCalculation)
+{
     std::string docID = "TEST_STATS";
 
     Model::Doctor doc(
@@ -326,8 +325,7 @@ TEST_F(DoctorServiceTest, StatisticsCalculation) {
         "1970-12-25",
         "Statistics",
         "All",
-        100000
-    );
+        100000);
     service->createDoctor(doc);
 
     Model::Appointment app1("S1", "Pat_A", docID, "2023-01-01", "08:00", "A", 100.0, true, AppointmentStatus::COMPLETED, "");
@@ -347,7 +345,8 @@ TEST_F(DoctorServiceTest, StatisticsCalculation) {
     EXPECT_EQ(count, 2);
 }
 
-TEST_F(DoctorServiceTest, GetAppointmentsInRangeValidation) {
+TEST_F(DoctorServiceTest, GetAppointmentsInRangeValidation)
+{
     std::string docID = "TEST_RANGE";
 
     auto result = service->getAppointmentsInRange(docID, "invalid", "2023-12-31");
@@ -357,7 +356,8 @@ TEST_F(DoctorServiceTest, GetAppointmentsInRangeValidation) {
     EXPECT_TRUE(result.empty());
 }
 
-TEST_F(DoctorServiceTest, GetAppointmentsInRangeLogic) {
+TEST_F(DoctorServiceTest, GetAppointmentsInRangeLogic)
+{
     std::string docID = "TEST_RANGE2";
 
     Model::Doctor doc(
@@ -369,8 +369,7 @@ TEST_F(DoctorServiceTest, GetAppointmentsInRangeLogic) {
         "1982-07-14",
         "Range",
         "All",
-        100000
-    );
+        100000);
     service->createDoctor(doc);
 
     Model::Appointment app1("R1", "Pat1", docID, "2023-01-15", "08:00", "A", 100.0, true, AppointmentStatus::COMPLETED, "");
@@ -385,7 +384,8 @@ TEST_F(DoctorServiceTest, GetAppointmentsInRangeLogic) {
     EXPECT_EQ(result.size(), 2);
 }
 
-TEST_F(DoctorServiceTest, ValidateDoctorEmptyFields) {
+TEST_F(DoctorServiceTest, ValidateDoctorEmptyFields)
+{
     Model::Doctor emptyName("D1", "u1", "", "0123456789", Gender::MALE, "1990-01-01", "Spec", "All", 100);
     EXPECT_FALSE(service->validateDoctor(emptyName));
 
@@ -396,12 +396,14 @@ TEST_F(DoctorServiceTest, ValidateDoctorEmptyFields) {
     EXPECT_FALSE(service->validateDoctor(emptySpec));
 }
 
-TEST_F(DoctorServiceTest, ValidateDoctorNegativeFee) {
+TEST_F(DoctorServiceTest, ValidateDoctorNegativeFee)
+{
     Model::Doctor doc("D_NEG", "u_neg", "Name", "0123456789", Gender::MALE, "1990-01-01", "Spec", "All", -100);
     EXPECT_FALSE(service->validateDoctor(doc));
 }
 
-TEST_F(DoctorServiceTest, DoctorExistsCheck) {
+TEST_F(DoctorServiceTest, DoctorExistsCheck)
+{
     Model::Doctor doc(
         "TEST_EXISTS",
         "u_exists",
@@ -411,15 +413,15 @@ TEST_F(DoctorServiceTest, DoctorExistsCheck) {
         "1988-11-30",
         "Existence",
         "All",
-        100000
-    );
+        100000);
 
     EXPECT_FALSE(service->doctorExists("TEST_EXISTS"));
     service->createDoctor(doc);
     EXPECT_TRUE(service->doctorExists("TEST_EXISTS"));
 }
 
-TEST_F(DoctorServiceTest, UpdateDoctorSuccess) {
+TEST_F(DoctorServiceTest, UpdateDoctorSuccess)
+{
     Model::Doctor doc(
         "TEST_UPDATE",
         "u_update",
@@ -429,8 +431,7 @@ TEST_F(DoctorServiceTest, UpdateDoctorSuccess) {
         "1979-02-28",
         "Original",
         "Mon-Fri",
-        100000
-    );
+        100000);
     service->createDoctor(doc);
 
     Model::Doctor updated(
@@ -442,8 +443,7 @@ TEST_F(DoctorServiceTest, UpdateDoctorSuccess) {
         "1979-02-28",
         "Updated Spec",
         "Mon-Sat",
-        150000
-    );
+        150000);
 
     EXPECT_TRUE(service->updateDoctor(updated));
 
@@ -453,7 +453,8 @@ TEST_F(DoctorServiceTest, UpdateDoctorSuccess) {
     EXPECT_EQ(retrieved->getSpecialization(), "Updated Spec");
 }
 
-TEST_F(DoctorServiceTest, UpdateNonExistentDoctorFail) {
+TEST_F(DoctorServiceTest, UpdateNonExistentDoctorFail)
+{
     Model::Doctor doc(
         "NON_EXISTENT",
         "u_non",
@@ -463,13 +464,13 @@ TEST_F(DoctorServiceTest, UpdateNonExistentDoctorFail) {
         "1995-09-05",
         "None",
         "All",
-        100000
-    );
+        100000);
 
     EXPECT_FALSE(service->updateDoctor(doc));
 }
 
-TEST_F(DoctorServiceTest, DeleteDoctorSuccess) {
+TEST_F(DoctorServiceTest, DeleteDoctorSuccess)
+{
     Model::Doctor doc(
         "TEST_DELETE",
         "u_delete",
@@ -479,8 +480,7 @@ TEST_F(DoctorServiceTest, DeleteDoctorSuccess) {
         "1983-06-18",
         "Deletion",
         "All",
-        100000
-    );
+        100000);
     service->createDoctor(doc);
 
     EXPECT_TRUE(service->doctorExists("TEST_DELETE"));
@@ -488,11 +488,13 @@ TEST_F(DoctorServiceTest, DeleteDoctorSuccess) {
     EXPECT_FALSE(service->doctorExists("TEST_DELETE"));
 }
 
-TEST_F(DoctorServiceTest, DeleteNonExistentDoctorFail) {
+TEST_F(DoctorServiceTest, DeleteNonExistentDoctorFail)
+{
     EXPECT_FALSE(service->deleteDoctor("NON_EXISTENT_ID"));
 }
 
-TEST_F(DoctorServiceTest, GetDoctorByUsername) {
+TEST_F(DoctorServiceTest, GetDoctorByUsername)
+{
     Model::Doctor doc(
         "TEST_USERNAME",
         "unique_username",
@@ -502,8 +504,7 @@ TEST_F(DoctorServiceTest, GetDoctorByUsername) {
         "1977-04-22",
         "Users",
         "All",
-        100000
-    );
+        100000);
     service->createDoctor(doc);
 
     auto retrieved = service->getDoctorByUsername("unique_username");
@@ -514,7 +515,8 @@ TEST_F(DoctorServiceTest, GetDoctorByUsername) {
     EXPECT_FALSE(notFound.has_value());
 }
 
-TEST_F(DoctorServiceTest, GetDoctorsBySpecialization) {
+TEST_F(DoctorServiceTest, GetDoctorsBySpecialization)
+{
     Model::Doctor doc1(
         "SPEC_D1",
         "u_spec1",
@@ -524,8 +526,7 @@ TEST_F(DoctorServiceTest, GetDoctorsBySpecialization) {
         "1980-01-01",
         "Cardiology",
         "Mon",
-        100000
-    );
+        100000);
     Model::Doctor doc2(
         "SPEC_D2",
         "u_spec2",
@@ -535,8 +536,7 @@ TEST_F(DoctorServiceTest, GetDoctorsBySpecialization) {
         "1985-05-05",
         "Cardiology",
         "Tue",
-        120000
-    );
+        120000);
     Model::Doctor doc3(
         "SPEC_D3",
         "u_spec3",
@@ -546,8 +546,7 @@ TEST_F(DoctorServiceTest, GetDoctorsBySpecialization) {
         "1990-10-10",
         "Neurology",
         "Wed",
-        150000
-    );
+        150000);
 
     service->createDoctor(doc1);
     service->createDoctor(doc2);
@@ -563,7 +562,8 @@ TEST_F(DoctorServiceTest, GetDoctorsBySpecialization) {
     EXPECT_TRUE(none.empty());
 }
 
-TEST_F(DoctorServiceTest, GetAllSpecializations) {
+TEST_F(DoctorServiceTest, GetAllSpecializations)
+{
     Model::Doctor doc1("ALL_SPEC1", "u_as1", "D1", "0401234567", Gender::MALE, "1980-01-01", "Cardiology", "Mon", 100000);
     Model::Doctor doc2("ALL_SPEC2", "u_as2", "D2", "0501234567", Gender::FEMALE, "1985-05-05", "Neurology", "Tue", 100000);
     Model::Doctor doc3("ALL_SPEC3", "u_as3", "D3", "0601234567", Gender::MALE, "1990-10-10", "Cardiology", "Wed", 100000);
@@ -581,7 +581,8 @@ TEST_F(DoctorServiceTest, GetAllSpecializations) {
     EXPECT_TRUE(hasNeuro);
 }
 
-TEST_F(DoctorServiceTest, GetDoctorCount) {
+TEST_F(DoctorServiceTest, GetDoctorCount)
+{
     EXPECT_EQ(service->getDoctorCount(), 0);
 
     Model::Doctor doc1("COUNT1", "u_c1", "D1", "0701234567", Gender::MALE, "1980-01-01", "Spec", "Mon", 100000);
@@ -597,7 +598,8 @@ TEST_F(DoctorServiceTest, GetDoctorCount) {
     EXPECT_EQ(service->getDoctorCount(), 1);
 }
 
-TEST_F(DoctorServiceTest, GetDoctorAppointmentCount) {
+TEST_F(DoctorServiceTest, GetDoctorAppointmentCount)
+{
     std::string docID = "TEST_APP_COUNT";
 
     Model::Doctor doc(docID, "u_app_count", "Dr. Count", "0901234567", Gender::MALE, "1975-03-15", "Counting", "All", 100000);
@@ -614,7 +616,8 @@ TEST_F(DoctorServiceTest, GetDoctorAppointmentCount) {
     EXPECT_EQ(service->getDoctorAppointmentCount(docID), 2);
 }
 
-TEST_F(DoctorServiceTest, GetTodayAppointments) {
+TEST_F(DoctorServiceTest, GetTodayAppointments)
+{
     std::string docID = "TEST_TODAY";
     std::string today = Utils::getCurrentDate();
 
@@ -632,7 +635,8 @@ TEST_F(DoctorServiceTest, GetTodayAppointments) {
     EXPECT_EQ(todayApps[0].getAppointmentID(), "TODAY1");
 }
 
-TEST_F(DoctorServiceTest, CreateDoctorWithParameters) {
+TEST_F(DoctorServiceTest, CreateDoctorWithParameters)
+{
     auto result = service->createDoctor(
         "param_user",
         "Dr. Parameters",
@@ -641,11 +645,14 @@ TEST_F(DoctorServiceTest, CreateDoctorWithParameters) {
         "1988-12-12",
         "Parameters",
         "Mon-Fri",
-        200000
-    );
+        200000);
 
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result->getName(), "Dr. Parameters");
     EXPECT_EQ(result->getUsername(), "param_user");
     EXPECT_FALSE(result->getID().empty());
 }
+
+/*
+./HospitalTests --gtest_filter="DoctorServiceTest.*"
+*/
