@@ -11,24 +11,31 @@ using namespace HMS;
 using namespace HMS::BLL;
 using namespace HMS::Model;
 
+namespace
+{
+    const std::string TEST_DATA_DIR = "test_data/";
+    const std::string TEST_PATIENT_FILE = "test_data/patients_test.txt";
+    const std::string TEST_APPOINTMENT_FILE = "test_data/appointments_test.txt";
+}
+
 // ==================== TEST FIXTURE ====================
 class PatientServiceTest : public ::testing::Test
 {
 protected:
     PatientService *service;
-    std::string testPatientFile = "test_patients.txt";
-    std::string testAppointmentFile = "test_appointments.txt";
 
     void SetUp() override
     {
+        std::filesystem::create_directories(TEST_DATA_DIR);
+
         PatientService::resetInstance();
         service = PatientService::getInstance();
 
         auto patientRepo = DAL::PatientRepository::getInstance();
         auto appointmentRepo = DAL::AppointmentRepository::getInstance();
 
-        patientRepo->setFilePath(testPatientFile);
-        appointmentRepo->setFilePath(testAppointmentFile);
+        patientRepo->setFilePath(TEST_PATIENT_FILE);
+        appointmentRepo->setFilePath(TEST_APPOINTMENT_FILE);
 
         patientRepo->clear();
         appointmentRepo->clear();
@@ -43,11 +50,6 @@ protected:
         appointmentRepo->clear();
 
         PatientService::resetInstance();
-
-        if (std::filesystem::exists(testPatientFile))
-            std::filesystem::remove(testPatientFile);
-        if (std::filesystem::exists(testAppointmentFile))
-            std::filesystem::remove(testAppointmentFile);
     }
 
     Patient createTestPatient(
@@ -322,7 +324,7 @@ TEST_F(PatientServiceTest, SaveAndLoadData)
     // 2. Reset repository instance to clear in-memory data without saving
     DAL::PatientRepository::resetInstance();
     auto freshRepo = DAL::PatientRepository::getInstance();
-    freshRepo->setFilePath(testPatientFile);
+    freshRepo->setFilePath(TEST_PATIENT_FILE);
 
     // 3. Load lại từ file
     ASSERT_TRUE(service->loadData());

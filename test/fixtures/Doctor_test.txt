@@ -1,0 +1,7 @@
+# Doctor fixture data for testing
+# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee
+D001|doctor1|Dr. Nguyen Minh Tuan|0901234567|Male|1975-03-15|Cardiology|Mon-Fri 08:00-17:00|500000
+D002|doctor2|Dr. Tran Thi Lan|0912345678|Female|1980-07-22|Neurology|Tue-Sat 09:00-18:00|600000
+D003|doctor3|Dr. Le Van Hung|0923456789|Male|1978-11-10|Orthopedics|Mon-Wed-Fri 08:00-16:00|450000
+D004|doctor4|Dr. Pham Thi Mai|0934567890|Female|1982-04-05|Dermatology|Mon-Thu 10:00-19:00|400000
+D005|doctor5|Dr. Hoang Van Nam|0945678901|Male|1970-09-18|General Medicine|Mon-Sat 07:00-15:00|350000
