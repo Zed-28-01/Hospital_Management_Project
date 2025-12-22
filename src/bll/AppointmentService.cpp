@@ -1,18 +1,37 @@
-// SỬA: Dùng đường dẫn chuẩn dựa trên include_directories trong CMake
 #include "bll/AppointmentService.h"
 #include "common/Utils.h"
 #include "common/Constants.h"
 
 #include <algorithm>
-#include <iostream>
 #include <sstream>
 #include <iomanip>
-#include <set> // Thêm thư viện set cho logic available slots
+#include <set>
 
 namespace HMS
 {
     namespace BLL
     {
+
+        // ==================== Static Cached Time Slots ====================
+        static const std::vector<std::string> &getCachedStandardTimeSlots()
+        {
+            static const std::vector<std::string> slots = []()
+            {
+                std::vector<std::string> result;
+                for (int h = Constants::WORK_START_HOUR; h < Constants::WORK_END_HOUR; ++h)
+                {
+                    std::stringstream ss1;
+                    ss1 << std::setfill('0') << std::setw(2) << h << ":00";
+                    result.push_back(ss1.str());
+
+                    std::stringstream ss2;
+                    ss2 << std::setfill('0') << std::setw(2) << h << ":30";
+                    result.push_back(ss2.str());
+                }
+                return result;
+            }();
+            return slots;
+        }
 
         // ==================== Singleton Members ====================
         std::unique_ptr<AppointmentService> AppointmentService::s_instance = nullptr;
@@ -63,26 +82,32 @@ namespace HMS
                 return std::nullopt;
             }
 
-            // 2. Get data needed for creation
+            // 2. Validate and trim disease description
+            std::string trimmedDisease = Utils::trim(disease);
+            if (trimmedDisease.empty())
+            {
+                return std::nullopt;
+            }
+
+            // 3. Get data needed for creation
             double fee = getDoctorFee(doctorID);
             std::string id = generateAppointmentID();
 
-            // 3. Create Model object
-            // Constructor: ID, PatientUser, DocID, Date, Time, Disease, Price, isPaid, Status, Notes
+            // 4. Create Model object
             Model::Appointment newAppt(
                 id,
                 patientUsername,
                 doctorID,
                 date,
                 time,
-                disease,
+                trimmedDisease,
                 fee,
                 false,                        // isPaid default false
                 AppointmentStatus::SCHEDULED, // Status
                 ""                            // Notes
             );
 
-            // 4. Save to Repository
+            // 5. Save to Repository
             if (m_appointmentRepo->add(newAppt))
             {
                 return newAppt;
@@ -115,9 +140,8 @@ namespace HMS
                     return false;
                 }
 
-                // Check slot availability (exclude current appointment logic handled by simple check)
-                // Note: Strictly speaking, we should check if the NEW slot is free.
-                if (!isSlotAvailable(appt.getDoctorID(), targetDate, targetTime))
+                // Check slot availability, excluding the current appointment
+                if (!m_appointmentRepo->isSlotAvailable(appt.getDoctorID(), targetDate, targetTime, appointmentID))
                 {
                     return false;
                 }
@@ -249,7 +273,7 @@ namespace HMS
         std::vector<std::string> AppointmentService::getAvailableSlots(const std::string &doctorID,
                                                                        const std::string &date)
         {
-            std::vector<std::string> allSlots = getStandardTimeSlots();
+            const std::vector<std::string> &allSlots = getCachedStandardTimeSlots();
 
             // Get booked slots from Repo
             std::vector<std::string> bookedSlots = m_appointmentRepo->getBookedSlots(doctorID, date);
@@ -289,7 +313,7 @@ namespace HMS
                 return false;
 
             // Check if time is a standard slot (e.g., prevents booking at 08:13)
-            std::vector<std::string> standards = getStandardTimeSlots();
+            const std::vector<std::string> &standards = getCachedStandardTimeSlots();
             if (std::find(standards.begin(), standards.end(), time) == standards.end())
             {
                 return false;
@@ -301,21 +325,8 @@ namespace HMS
 
         std::vector<std::string> AppointmentService::getStandardTimeSlots()
         {
-            std::vector<std::string> slots;
-            int startHour = 8;
-            int endHour = 17; // 5 PM
-
-            for (int h = startHour; h < endHour; ++h)
-            {
-                std::stringstream ss1;
-                ss1 << std::setfill('0') << std::setw(2) << h << ":00";
-                slots.push_back(ss1.str());
-
-                std::stringstream ss2;
-                ss2 << std::setfill('0') << std::setw(2) << h << ":30";
-                slots.push_back(ss2.str());
-            }
-            return slots;
+            // Return a copy of the cached slots
+            return getCachedStandardTimeSlots();
         }
 
         // ==================== Validation ====================
@@ -368,17 +379,26 @@ namespace HMS
                 return false;
 
             std::string today = Utils::getCurrentDate();
-            // Allow cancel if date is future, OR date is today but time is future?
-            // Simple rule: Allow cancel if appointment date is not in the past.
-            if (Utils::compareDates(appt->getDate(), today) < 0)
+            int dateCompare = Utils::compareDates(appt->getDate(), today);
+
+            // Cannot cancel past appointments
+            if (dateCompare < 0)
                 return false;
+
+            // For today's appointments, check if the time has already passed
+            if (dateCompare == 0)
+            {
+                std::string currentTime = Utils::getCurrentTime();
+                if (appt->getTime() <= currentTime)
+                    return false;
+            }
 
             return true;
         }
 
         bool AppointmentService::canEdit(const std::string &appointmentID)
         {
-            // Same logic as cancel usually
+            // Same logic as cancel
             return canCancel(appointmentID);
         }
 
@@ -386,48 +406,35 @@ namespace HMS
 
         double AppointmentService::getTotalRevenue()
         {
-            double total = 0.0;
-            auto allAppts = m_appointmentRepo->getAll();
+            double totalRevenue = 0.0;
+            double paidRevenue = 0.0;
+            double unpaidRevenue = 0.0;
 
-            for (const auto &appt : allAppts)
-            {
-                // Logic: Count everything except CANCELLED.
-                if (appt.getStatus() != AppointmentStatus::CANCELLED)
-                {
-                    total += appt.getPrice();
-                }
-            }
-            return total;
+            calculateRevenueStatistics(totalRevenue, paidRevenue, unpaidRevenue);
+
+            return totalRevenue;
         }
 
         double AppointmentService::getPaidRevenue()
         {
-            double total = 0.0;
-            auto allAppts = m_appointmentRepo->getAll();
+            double totalRevenue = 0.0;
+            double paidRevenue = 0.0;
+            double unpaidRevenue = 0.0;
 
-            for (const auto &appt : allAppts)
-            {
-                if (appt.getStatus() != AppointmentStatus::CANCELLED && appt.isPaid())
-                {
-                    total += appt.getPrice();
-                }
-            }
-            return total;
+            calculateRevenueStatistics(totalRevenue, paidRevenue, unpaidRevenue);
+
+            return paidRevenue;
         }
 
         double AppointmentService::getUnpaidRevenue()
         {
-            double total = 0.0;
-            auto allAppts = m_appointmentRepo->getAll();
+            double totalRevenue = 0.0;
+            double paidRevenue = 0.0;
+            double unpaidRevenue = 0.0;
 
-            for (const auto &appt : allAppts)
-            {
-                if (appt.getStatus() != AppointmentStatus::CANCELLED && !appt.isPaid())
-                {
-                    total += appt.getPrice();
-                }
-            }
-            return total;
+            calculateRevenueStatistics(totalRevenue, paidRevenue, unpaidRevenue);
+
+            return unpaidRevenue;
         }
 
         size_t AppointmentService::getCountByStatus(AppointmentStatus status)
@@ -451,7 +458,7 @@ namespace HMS
 
         std::string AppointmentService::generateAppointmentID()
         {
-            return m_appointmentRepo->getNextId();
+            return Utils::generateAppointmentID();
         }
 
         double AppointmentService::getDoctorFee(const std::string &doctorID)
@@ -466,13 +473,44 @@ namespace HMS
 
         bool AppointmentService::patientExists(const std::string &patientUsername)
         {
-            // OPTIMIZED: Use getByUsername from Repository instead of iterating getAll
             return m_patientRepo->getByUsername(patientUsername).has_value();
         }
 
         bool AppointmentService::doctorExists(const std::string &doctorID)
         {
             return m_doctorRepo->exists(doctorID);
+        }
+
+        void AppointmentService::calculateRevenueStatistics(double &totalRevenue,
+                                                            double &paidRevenue,
+                                                            double &unpaidRevenue)
+        {
+            totalRevenue = 0.0;
+            paidRevenue = 0.0;
+            unpaidRevenue = 0.0;
+
+            auto allAppts = m_appointmentRepo->getAll();
+
+            for (const auto &appt : allAppts)
+            {
+                // Skip cancelled appointments
+                if (appt.getStatus() == AppointmentStatus::CANCELLED)
+                {
+                    continue;
+                }
+
+                double price = appt.getPrice();
+                totalRevenue += price;
+
+                if (appt.isPaid())
+                {
+                    paidRevenue += price;
+                }
+                else
+                {
+                    unpaidRevenue += price;
+                }
+            }
         }
 
     } // namespace BLL
