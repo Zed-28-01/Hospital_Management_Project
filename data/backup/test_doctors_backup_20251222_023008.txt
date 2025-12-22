@@ -1,3 +1,0 @@
-# doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|fee
-D001|john_doe|Dr. John Doe|0111111111|Male|1975-03-15|Cardiology|Mon-Fri 9-17|750000.00
-D002|jane_smith|Dr. Jane Smith-Wilson|0222222222|Female|1980-07-22|Neurosurgery|Tue-Sat 10-18|950000.00

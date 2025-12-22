@@ -1,2 +1,0 @@
-# Hospital Management System - Doctor Data
-# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee

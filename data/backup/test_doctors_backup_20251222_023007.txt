@@ -1,2 +1,0 @@
-# doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|fee
-D099|user99|Dr. Test|0123456789|Male|1980-01-01|General Medicine|Mon-Fri 9:00-17:00|500000.00
