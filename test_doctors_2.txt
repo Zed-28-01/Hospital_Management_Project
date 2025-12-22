@@ -1,0 +1,1 @@
+# doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|fee

@@ -1,16 +1,20 @@
 #include "model/Statistics.h"
 #include "common/Utils.h"
+
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+
 namespace HMS
 {
     namespace Model
     {
+
         void Statistics::display() const
         {
             std::cout << toReport() << "\n";
         }
+
         void Statistics::reset()
         {
             totalPatients = 0;
@@ -34,63 +38,79 @@ namespace HMS
             doctorsBySpecialization.clear();
             appointmentsBySpecialization.clear();
         }
+
         void Statistics::calculate()
         {
-            if (totalAppointments > 0)
+            // Calculate average only from completed appointments (those with revenue)
+            if (completedAppointments > 0)
             {
-                averageConsultationFee = totalRevenue / totalAppointments;
+                averageConsultationFee = totalRevenue / completedAppointments;
             }
             else
             {
                 averageConsultationFee = 0.0;
             }
         }
+
         double Statistics::getCompletionRate() const
         {
             if (totalAppointments == 0)
                 return 0.0;
             return (static_cast<double>(completedAppointments) / totalAppointments) * 100.0;
         }
+
         double Statistics::getCancellationRate() const
         {
             if (totalAppointments == 0)
                 return 0.0;
             return (static_cast<double>(cancelledAppointments) / totalAppointments) * 100.0;
         }
+
         double Statistics::getPaymentRate() const
         {
             if (totalRevenue <= 0.0)
                 return 0.0;
             return (paidRevenue / totalRevenue) * 100.0;
         }
+
         std::string Statistics::toReport() const
         {
             std::ostringstream oss;
-            oss << std::fixed << std::setprecision(2); // Định dạng số thập phân 2 chữ số
+            oss << std::fixed << std::setprecision(2);
 
             oss << "THONG KE HE THONG\n";
-
             oss << "   - Tong benh nhan: " << totalPatients << "\n";
             oss << "   - Tong bac si:    " << totalDoctors << "\n";
             oss << "   - Tong lich hen:  " << totalAppointments << "\n";
-            oss << "   - Hoan thanh: " << completedAppointments
+            oss << "   - Da len lich:    " << scheduledAppointments << "\n";
+            oss << "   - Hoan thanh:     " << completedAppointments
                 << " (" << getCompletionRate() << "%)\n";
-            oss << "   - Da huy:     " << cancelledAppointments
+            oss << "   - Da huy:         " << cancelledAppointments
                 << " (" << getCancellationRate() << "%)\n";
-            oss << "   - Vang mat:   " << noShowAppointments << "\n";
+            oss << "   - Vang mat:       " << noShowAppointments << "\n";
 
-            oss << "THONG KE DOANH THU" << "\n";
-            oss << "   - Tong doanh thu: " << Utils::formatMoney(totalRevenue) << "\n";
-            oss << "   - Da thanh toan:  " << Utils::formatMoney(paidRevenue) << " (" << getPaymentRate() << "%)\n";
+            oss << "\nTHONG KE DOANH THU\n";
+            oss << "   - Tong doanh thu:  " << Utils::formatMoney(totalRevenue) << "\n";
+            oss << "   - Da thanh toan:   " << Utils::formatMoney(paidRevenue)
+                << " (" << getPaymentRate() << "%)\n";
             oss << "   - Chua thanh toan: " << Utils::formatMoney(unpaidRevenue) << "\n";
-            oss << "   - Trung binh/ca:  " << Utils::formatMoney(averageConsultationFee) << "\n";
+            oss << "   - Trung binh/ca:   " << Utils::formatMoney(averageConsultationFee) << "\n";
 
-            oss << "THONG KE THEO KHOA" << "\n";
-            for (const auto &pair : doctorsBySpecialization)
+            oss << "\nTHONG KE THEO KHOA\n";
+            for (const auto &[specialization, count] : doctorsBySpecialization)
             {
-                oss << "   - " << pair.first << ": " << pair.second << " bac si\n";
+                oss << "   - " << specialization << ": " << count << " bac si";
+
+                auto it = appointmentsBySpecialization.find(specialization);
+                if (it != appointmentsBySpecialization.end())
+                {
+                    oss << ", " << it->second << " lich hen";
+                }
+                oss << "\n";
             }
+
             return oss.str();
         }
-    }
-}
+
+    } // namespace Model
+} // namespace HMS
