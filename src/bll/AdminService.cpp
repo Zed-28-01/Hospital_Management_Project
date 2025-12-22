@@ -1,12 +1,9 @@
 #include "bll/AdminService.h"
-
 #include "common/Utils.h"
 #include "common/Types.h"
 
 #include <algorithm>
-#include <ctime>
 #include <iomanip>
-#include <map>
 #include <sstream>
 #include <unordered_map>
 
@@ -75,6 +72,10 @@ namespace HMS
             const std::string today = Utils::getCurrentDate();
             const std::string currentMonth = today.substr(0, 7);
 
+            // Get week range for appointmentsThisWeek calculation
+            std::string weekStart, weekEnd;
+            Utils::getWeekRange(today, weekStart, weekEnd);
+
             for (const auto &appt : appointments)
             {
                 // ===== Status =====
@@ -113,6 +114,13 @@ namespace HMS
 
                 if (apptDate.length() >= 7 && apptDate.substr(0, 7) == currentMonth)
                     stats.appointmentsThisMonth++;
+
+                // Check if appointment is within this week
+                if (Utils::compareDates(apptDate, weekStart) >= 0 &&
+                    Utils::compareDates(apptDate, weekEnd) <= 0)
+                {
+                    stats.appointmentsThisWeek++;
+                }
 
                 // ===== Specialization (using pre-built map) =====
                 auto it = doctorSpecMap.find(appt.getDoctorID());
@@ -182,79 +190,37 @@ namespace HMS
 
         // ==================== Date-Based Queries ====================
 
-        std::vector<Model::Appointment> AdminService::getAppointmentsToday()
+        List<Model::Appointment> AdminService::getAppointmentsToday()
         {
             return m_appointmentService->getTodayAppointments();
         }
 
-        std::vector<Model::Appointment> AdminService::getAppointmentsThisWeek()
+        List<Model::Appointment> AdminService::getAppointmentsThisWeek()
         {
-            const std::string today = Utils::getCurrentDate();
-
-            // Parse today's date
-            int year = std::stoi(today.substr(0, 4));
-            int month = std::stoi(today.substr(5, 2));
-            int day = std::stoi(today.substr(8, 2));
-
-            // Create tm struct for today
-            std::tm tm = {};
-            tm.tm_year = year - 1900;
-            tm.tm_mon = month - 1;
-            tm.tm_mday = day;
-            std::mktime(&tm);
-
-            // Calculate start of week (Monday)
-            int daysFromMonday = (tm.tm_wday == 0) ? 6 : tm.tm_wday - 1;
-            tm.tm_mday -= daysFromMonday;
-            std::mktime(&tm);
-
-            char startBuffer[11];
-            std::strftime(startBuffer, sizeof(startBuffer), "%Y-%m-%d", &tm);
-            std::string startDate(startBuffer);
-
-            // Calculate end of week (Sunday)
-            tm.tm_mday += 6;
-            std::mktime(&tm);
-
-            char endBuffer[11];
-            std::strftime(endBuffer, sizeof(endBuffer), "%Y-%m-%d", &tm);
-            std::string endDate(endBuffer);
-
+            std::string startDate, endDate;
+            if (!Utils::getWeekRange(Utils::getCurrentDate(), startDate, endDate))
+            {
+                return {};
+            }
             return m_appointmentService->getAppointmentsInRange(startDate, endDate);
         }
 
-        std::vector<Model::Appointment> AdminService::getAppointmentsThisMonth()
+        List<Model::Appointment> AdminService::getAppointmentsThisMonth()
         {
             const std::string today = Utils::getCurrentDate();
             const std::string startDate = today.substr(0, 7) + "-01";
 
-            // Calculate last day of month
             int year = std::stoi(today.substr(0, 4));
             int month = std::stoi(today.substr(5, 2));
-
-            int daysInMonth;
-            if (month == 2)
-            {
-                bool isLeap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
-                daysInMonth = isLeap ? 29 : 28;
-            }
-            else if (month == 4 || month == 6 || month == 9 || month == 11)
-            {
-                daysInMonth = 30;
-            }
-            else
-            {
-                daysInMonth = 31;
-            }
+            int daysInMonth = Utils::getDaysInMonth(month, year);
 
             std::ostringstream endOss;
             endOss << today.substr(0, 7) << "-" << std::setfill('0') << std::setw(2) << daysInMonth;
-            std::string endDate = endOss.str();
 
-            return m_appointmentService->getAppointmentsInRange(startDate, endDate);
+            return m_appointmentService->getAppointmentsInRange(startDate, endOss.str());
         }
 
-        std::vector<Model::Appointment> AdminService::getAppointmentsByDateRange(
+        List<Model::Appointment> AdminService::getAppointmentsByDateRange(
             const std::string &startDate,
             const std::string &endDate)
         {
@@ -263,7 +229,7 @@ namespace HMS
 
         // ==================== Doctor Statistics ====================
 
-        std::vector<Model::Doctor> AdminService::getDoctorsByActivity()
+        List<Model::Doctor> AdminService::getDoctorsByActivity()
         {
             auto doctors = m_doctorService->getAllDoctors();
 
@@ -284,7 +250,7 @@ namespace HMS
             return doctors;
         }
 
-        std::vector<Model::Doctor> AdminService::getDoctorsByRevenue()
+        List<Model::Doctor> AdminService::getDoctorsByRevenue()
         {
             auto doctors = m_doctorService->getAllDoctors();
 
@@ -348,6 +314,12 @@ namespace HMS
 
         std::string AdminService::generateDailyReport(const std::string &date)
         {
+            // Validate date format
+            if (!Utils::isValidDate(date))
+            {
+                return "Error: Invalid date format. Expected YYYY-MM-DD.";
+            }
+
             auto appointments = m_appointmentService->getAppointmentsByDate(date);
 
             std::ostringstream oss;
@@ -393,6 +365,12 @@ namespace HMS
 
         std::string AdminService::generateWeeklyReport(const std::string &startDate)
         {
+            // Validate date format
+            if (!Utils::isValidDate(startDate))
+            {
+                return "Error: Invalid date format. Expected YYYY-MM-DD.";
+            }
+
             // Calculate end date (6 days after start)
             int year = std::stoi(startDate.substr(0, 4));
             int month = std::stoi(startDate.substr(5, 2));
@@ -459,25 +437,24 @@ namespace HMS
 
         std::string AdminService::generateMonthlyReport(int month, int year)
         {
+            // Validate month
+            if (month < 1 || month > 12)
+            {
+                return "Error: Invalid month. Expected 1-12.";
+            }
+
+            // Validate year (reasonable range)
+            if (year < 1900 || year > 2100)
+            {
+                return "Error: Invalid year.";
+            }
+
             // Build start and end dates
             std::ostringstream startOss;
             startOss << year << "-" << std::setfill('0') << std::setw(2) << month << "-01";
             std::string startDate = startOss.str();
 
-            int daysInMonth;
-            if (month == 2)
-            {
-                bool isLeap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
-                daysInMonth = isLeap ? 29 : 28;
-            }
-            else if (month == 4 || month == 6 || month == 9 || month == 11)
-            {
-                daysInMonth = 30;
-            }
-            else
-            {
-                daysInMonth = 31;
-            }
+            int daysInMonth = Utils::getDaysInMonth(month, year);
 
             std::ostringstream endOss;
             endOss << year << "-" << std::setfill('0') << std::setw(2) << month << "-"

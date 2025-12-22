@@ -174,6 +174,65 @@ namespace HMS
             return compareDates(date, getCurrentDate()) > 0;
         }
 
+        int getDaysInMonth(int month, int year)
+        {
+            if (month < 1 || month > 12)
+            {
+                return 0;
+            }
+
+            if (month == 2)
+            {
+                bool isLeap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+                return isLeap ? 29 : 28;
+            }
+
+            if (month == 4 || month == 6 || month == 9 || month == 11)
+            {
+                return 30;
+            }
+
+            return 31;
+        }
+
+        bool getWeekRange(const std::string &date, std::string &startDate, std::string &endDate)
+        {
+            if (!isValidDate(date))
+            {
+                return false;
+            }
+
+            int year = std::stoi(date.substr(0, 4));
+            int month = std::stoi(date.substr(5, 2));
+            int day = std::stoi(date.substr(8, 2));
+
+            std::tm tm = {};
+            tm.tm_year = year - 1900;
+            tm.tm_mon = month - 1;
+            tm.tm_mday = day;
+            std::mktime(&tm);
+
+            // Calculate days from Monday (Monday = 0, Sunday = 6)
+            int daysFromMonday = (tm.tm_wday == 0) ? 6 : tm.tm_wday - 1;
+
+            // Go to Monday
+            tm.tm_mday -= daysFromMonday;
+            std::mktime(&tm);
+
+            char buffer[11];
+            std::strftime(buffer, sizeof(buffer), "%Y-%m-%d", &tm);
+            startDate = buffer;
+
+            // Go to Sunday (add 6 days)
+            tm.tm_mday += 6;
+            std::mktime(&tm);
+
+            std::strftime(buffer, sizeof(buffer), "%Y-%m-%d", &tm);
+            endDate = buffer;
+
+            return true;
+        }
+
         // ==================== ID Generation ====================
 
         std::string generateID(const std::string &prefix)

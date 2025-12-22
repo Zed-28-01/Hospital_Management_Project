@@ -5,8 +5,9 @@
 #include "AppointmentService.h"
 #include "../model/Statistics.h"
 #include "../common/Types.h"
+
 #include <string>
-#include <vector>
+#include <map>
 #include <mutex>
 #include <memory>
 
@@ -139,19 +140,19 @@ public:
      * @brief Get appointments for today
      * @return Vector of today's appointments
      */
-    std::vector<Model::Appointment> getAppointmentsToday();
+    List<Model::Appointment> getAppointmentsToday();
 
     /**
      * @brief Get appointments for this week
      * @return Vector of this week's appointments
      */
-    std::vector<Model::Appointment> getAppointmentsThisWeek();
+    List<Model::Appointment> getAppointmentsThisWeek();
 
     /**
      * @brief Get appointments for this month
      * @return Vector of this month's appointments
      */
-    std::vector<Model::Appointment> getAppointmentsThisMonth();
+    List<Model::Appointment> getAppointmentsThisMonth();
 
     /**
      * @brief Get appointments in date range
@@ -159,7 +160,7 @@ public:
      * @param endDate End date (YYYY-MM-DD)
      * @return Vector of appointments in range
      */
-    std::vector<Model::Appointment> getAppointmentsByDateRange(
+    List<Model::Appointment> getAppointmentsByDateRange(
         const std::string& startDate,
         const std::string& endDate);
 
@@ -169,13 +170,13 @@ public:
      * @brief Get doctors by appointment count (sorted)
      * @return Vector of doctors sorted by activity
      */
-    std::vector<Model::Doctor> getDoctorsByActivity();
+    List<Model::Doctor> getDoctorsByActivity();
 
     /**
      * @brief Get doctors by revenue (sorted)
      * @return Vector of doctors sorted by revenue
      */
-    std::vector<Model::Doctor> getDoctorsByRevenue();
+    List<Model::Doctor> getDoctorsByRevenue();
 
     /**
      * @brief Get doctor count by specialization
