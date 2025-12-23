@@ -30,47 +30,47 @@ Implement the advanced features (Department, Medicine, Prescription, ReportGener
 > **Estimated: 3 model implementations**
 
 #### 1.1 Medicine Model (Independent - Start Here)
-- [ ] Create `src/model/Medicine.cpp`
-  - [ ] Implement constructors (default + parameterized)
-  - [ ] Implement all getters/setters
-  - [ ] Implement `addStock(int quantity)`
-  - [ ] Implement `removeStock(int quantity)` - returns false if insufficient
-  - [ ] Implement `isLowStock()` - compares with reorderLevel
-  - [ ] Implement `isExpired()` - compares with current date
-  - [ ] Implement `isExpiringSoon(int days)` - threshold check
-  - [ ] Implement `serialize()` - pipe-delimited format
-  - [ ] Implement `deserialize(const std::string&)` - parse and create
-  - [ ] Implement `displayInfo()` - console output
-- [ ] Verify build: `cmake --build build --target HospitalLib`
+- [x] Create `src/model/Medicine.cpp`
+  - [x] Implement constructors (default + parameterized)
+  - [x] Implement all getters/setters
+  - [x] Implement `addStock(int quantity)`
+  - [x] Implement `removeStock(int quantity)` - returns false if insufficient
+  - [x] Implement `isLowStock()` - compares with reorderLevel
+  - [x] Implement `isExpired()` - compares with current date
+  - [x] Implement `isExpiringSoon(int days)` - threshold check
+  - [x] Implement `serialize()` - pipe-delimited format
+  - [x] Implement `deserialize(const std::string&)` - parse and create
+  - [x] Implement `displayInfo()` - console output
+- [x] Verify build: `cmake --build build --target HospitalLib`
 
 #### 1.2 Department Model (Independent)
-- [ ] Create `src/model/Department.cpp`
-  - [ ] Implement constructors
-  - [ ] Implement all getters/setters
-  - [ ] Implement `addDoctor(const std::string& doctorID)`
-  - [ ] Implement `removeDoctor(const std::string& doctorID)`
-  - [ ] Implement `hasDoctor(const std::string& doctorID)` - checks vector
-  - [ ] Implement `getDoctorCount()` - returns vector size
-  - [ ] Implement `serialize()` - handle doctorIDs as comma-separated
-  - [ ] Implement `deserialize(const std::string&)`
-  - [ ] Implement `displayInfo()`
-- [ ] Verify build
+- [x] Create `src/model/Department.cpp`
+  - [x] Implement constructors
+  - [x] Implement all getters/setters
+  - [x] Implement `addDoctor(const std::string& doctorID)`
+  - [x] Implement `removeDoctor(const std::string& doctorID)`
+  - [x] Implement `hasDoctor(const std::string& doctorID)` - checks vector
+  - [x] Implement `getDoctorCount()` - returns vector size
+  - [x] Implement `serialize()` - handle doctorIDs as comma-separated
+  - [x] Implement `deserialize(const std::string&)`
+  - [x] Implement `displayInfo()`
+- [x] Verify build
 
 #### 1.3 Prescription Model (Depends on Medicine)
-- [ ] Create `src/model/Prescription.cpp`
-  - [ ] Implement PrescriptionItem serialization helper
-  - [ ] Implement constructors
-  - [ ] Implement all getters/setters
-  - [ ] Implement `addItem(const PrescriptionItem&)`
-  - [ ] Implement `removeItem(const std::string& medicineID)`
-  - [ ] Implement `clearItems()`
-  - [ ] Implement `getItemCount()`
-  - [ ] Implement `calculateTotalCost()` - sum medicine costs
-  - [ ] Implement `serialize()` - complex items format
-  - [ ] Implement `deserialize(const std::string&)` - parse items
-  - [ ] Implement `displayInfo()`
-  - [ ] Implement `toPrintFormat()` - patient-friendly output
-- [ ] Verify build
+- [x] Create `src/model/Prescription.cpp`
+  - [x] Implement PrescriptionItem serialization helper
+  - [x] Implement constructors
+  - [x] Implement all getters/setters
+  - [x] Implement `addItem(const PrescriptionItem&)`
+  - [x] Implement `removeItem(const std::string& medicineID)`
+  - [x] Implement `clearItems()`
+  - [x] Implement `getItemCount()`
+  - [x] Implement `calculateTotalCost()` - sum medicine costs
+  - [x] Implement `serialize()` - complex items format
+  - [x] Implement `deserialize(const std::string&)` - parse items
+  - [x] Implement `displayInfo()`
+  - [x] Implement `toPrintFormat()` - patient-friendly output
+- [x] Verify build
 
 ---
 
