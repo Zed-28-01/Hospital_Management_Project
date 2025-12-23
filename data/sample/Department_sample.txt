@@ -1,0 +1,8 @@
+# Hospital Management System - Department Sample Data
+# Format: departmentID|name|description|headDoctorID|doctorIDs|location|phone
+DEP001|Cardiology|Heart and cardiovascular care including heart surgery, cardiac catheterization, and heart failure management|D001|D001,D005|Building A, Floor 2|0281234567
+DEP002|Pediatrics|Child healthcare from newborns to adolescents including vaccinations and developmental assessments|D002|D002,D008|Building B, Floor 1|0281234568
+DEP003|Neurology|Brain and nervous system disorders including stroke, epilepsy, and Parkinson's disease|D003|D003|Building A, Floor 3|0281234569
+DEP004|Orthopedics|Bone, joint, and muscle disorders including fractures, arthritis, and sports injuries|D004|D004,D009|Building C, Floor 1|0281234570
+DEP005|Dermatology|Skin, hair, and nail conditions including acne, eczema, and skin cancer screening|D006|D006|Building B, Floor 2|0281234571
+DEP006|General Medicine|Primary care and internal medicine for adult patients|D007|D007,D010|Building A, Floor 1|0281234572

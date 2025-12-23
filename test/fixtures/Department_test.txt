@@ -1,0 +1,5 @@
+# Test Fixture - Department Data
+# Format: departmentID|name|description|headDoctorID|doctorIDs|location|phone
+DEP001|Cardiology|Heart care department|D001|D001,D002|Test Building A|0281111111
+DEP002|Pediatrics|Child healthcare|D003|D003|Test Building B|0282222222
+DEP003|Neurology|Brain and nerves|D004|D004,D005,D006|Test Building C|0283333333

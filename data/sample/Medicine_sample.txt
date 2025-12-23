@@ -1,0 +1,14 @@
+# Hospital Management System - Medicine Sample Data
+# Format: medicineID|name|genericName|category|manufacturer|description|unitPrice|quantity|reorderLevel|expiryDate|dosageForm|strength
+MED001|Paracetamol 500mg|Acetaminophen|Pain Relief|PharmaCorp|For mild to moderate pain and fever reduction|5000|500|100|2026-12-31|Tablet|500mg
+MED002|Amoxicillin 250mg|Amoxicillin|Antibiotic|MedPharm|Broad-spectrum antibiotic for bacterial infections|15000|200|50|2025-08-15|Capsule|250mg
+MED003|Omeprazole 20mg|Omeprazole|Gastrointestinal|GastroCare|Proton pump inhibitor for acid reflux and ulcers|12000|300|75|2025-11-30|Capsule|20mg
+MED004|Ibuprofen 400mg|Ibuprofen|Pain Relief|PharmaCorp|NSAID for pain, inflammation, and fever|8000|400|80|2026-06-30|Tablet|400mg
+MED005|Metformin 500mg|Metformin Hydrochloride|Diabetes|DiabeCare|First-line medication for type 2 diabetes|10000|250|60|2026-03-15|Tablet|500mg
+MED006|Amlodipine 5mg|Amlodipine Besylate|Cardiovascular|HeartMed|Calcium channel blocker for hypertension|18000|150|40|2025-09-20|Tablet|5mg
+MED007|Cetirizine 10mg|Cetirizine Hydrochloride|Antihistamine|AllergyFree|For allergic rhinitis and urticaria|7000|350|70|2026-01-10|Tablet|10mg
+MED008|Azithromycin 500mg|Azithromycin|Antibiotic|MedPharm|Macrolide antibiotic for respiratory infections|25000|100|30|2025-07-25|Tablet|500mg
+MED009|Salbutamol Inhaler|Salbutamol Sulfate|Respiratory|BreathEasy|Bronchodilator for asthma and COPD|45000|80|20|2025-10-05|Inhaler|100mcg/dose
+MED010|Diclofenac Gel 1%|Diclofenac Sodium|Pain Relief|TopicalMed|Topical NSAID for joint and muscle pain|22000|120|25|2026-02-28|Gel|1%
+MED011|Losartan 50mg|Losartan Potassium|Cardiovascular|HeartMed|ARB for hypertension and heart failure|20000|180|45|2025-12-15|Tablet|50mg
+MED012|Pantoprazole 40mg|Pantoprazole Sodium|Gastrointestinal|GastroCare|PPI for GERD and peptic ulcers|14000|220|55|2026-04-20|Tablet|40mg
