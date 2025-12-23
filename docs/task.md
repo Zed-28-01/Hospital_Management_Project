@@ -30,18 +30,18 @@ Implement the advanced features (Department, Medicine, Prescription, ReportGener
 > **Estimated: 3 model implementations**
 
 #### 1.1 Medicine Model (Independent - Start Here)
-- [ ] Create `src/model/Medicine.cpp`
-  - [ ] Implement constructors (default + parameterized)
-  - [ ] Implement all getters/setters
-  - [ ] Implement `addStock(int quantity)`
-  - [ ] Implement `removeStock(int quantity)` - returns false if insufficient
-  - [ ] Implement `isLowStock()` - compares with reorderLevel
-  - [ ] Implement `isExpired()` - compares with current date
-  - [ ] Implement `isExpiringSoon(int days)` - threshold check
-  - [ ] Implement `serialize()` - pipe-delimited format
-  - [ ] Implement `deserialize(const std::string&)` - parse and create
-  - [ ] Implement `displayInfo()` - console output
-- [ ] Verify build: `cmake --build build --target HospitalLib`
+- [x] Create `src/model/Medicine.cpp`
+  - [x] Implement constructors (default + parameterized)
+  - [x] Implement all getters/setters
+  - [x] Implement `addStock(int quantity)`
+  - [x] Implement `removeStock(int quantity)` - returns false if insufficient
+  - [x] Implement `isLowStock()` - compares with reorderLevel
+  - [x] Implement `isExpired()` - compares with current date
+  - [x] Implement `isExpiringSoon(int days)` - threshold check
+  - [x] Implement `serialize()` - pipe-delimited format
+  - [x] Implement `deserialize(const std::string&)` - parse and create
+  - [x] Implement `displayInfo()` - console output
+- [x] Verify build: `cmake --build build --target HospitalLib`
 
 #### 1.2 Department Model (Independent)
 - [ ] Create `src/model/Department.cpp`
