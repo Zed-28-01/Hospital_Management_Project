@@ -1,0 +1,5 @@
+# Test Fixture - Prescription Data
+# Format: prescriptionID|appointmentID|patientUsername|doctorID|date|diagnosis|notes|isDispensed|items
+PRE001|APT001|testpatient1|D001|2024-03-15|Test Diagnosis 1|Test notes|1|MED001:10:1 tablet daily:5 days:After meals
+PRE002|APT002|testpatient2|D002|2024-03-16|Test Diagnosis 2|More test notes|0|MED001:5:1 tablet twice daily:3 days:With food;MED002:10:1 capsule daily:10 days:Before breakfast
+PRE003|APT003|testpatient1|D001|2024-03-17|Test Diagnosis 3||0|MED003:14:1 capsule daily:14 days:Morning

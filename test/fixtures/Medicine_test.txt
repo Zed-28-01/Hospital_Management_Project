@@ -1,0 +1,6 @@
+# Test Fixture - Medicine Data
+# Format: medicineID|name|genericName|category|manufacturer|description|unitPrice|quantity|reorderLevel|expiryDate|dosageForm|strength
+MED001|Test Paracetamol|Acetaminophen|Pain Relief|TestPharm|Test pain medicine|5000|100|20|2026-12-31|Tablet|500mg
+MED002|Test Amoxicillin|Amoxicillin|Antibiotic|TestPharm|Test antibiotic|15000|50|10|2025-06-30|Capsule|250mg
+MED003|Test Omeprazole|Omeprazole|Gastrointestinal|TestPharm|Test GI medicine|12000|5|10|2025-01-15|Capsule|20mg
+MED004|Expired Medicine|Test Generic|Test Category|TestPharm|This medicine is expired|10000|30|5|2023-01-01|Tablet|100mg
