@@ -143,7 +143,6 @@ namespace HMS
                                m_phone);
         }
 
-        // ==================== Static Factory Method ====================
         Result<Department> Department::deserialize(const std::string &line)
         {
             // Skip empty lines and comments
@@ -190,12 +189,10 @@ namespace HMS
                     return std::nullopt;
                 }
 
-                // Create Department object
                 Department dept(departmentID, name, description, headDoctorID);
                 dept.setLocation(location);
                 dept.setPhone(phone);
 
-                // Parse and add doctor IDs (comma-separated)
                 if (!doctorIDsStr.empty())
                 {
                     auto doctorIDs = Utils::split(doctorIDsStr, Constants::LIST_DELIMITER);
