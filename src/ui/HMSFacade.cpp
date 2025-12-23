@@ -33,7 +33,7 @@ namespace HMS {
             m_isInitialized = false;
         }
 
-        HMSFacade::HMSFacade() {
+        HMSFacade::~HMSFacade() {
             shutdown();
         }
 
@@ -255,11 +255,12 @@ namespace HMS {
                                    const std::string& address,
                                    const std::string& medicalHistory) {
 
+
             Gender gender = stringToGender(genderStr);
 
             // temporary username, use other way if needed
-            std::string tempUsername = "user_" + Utils::getCurrentDateTime();
-            
+            std::string tempUsername = name + Utils::getCurrentDateTime();
+
             auto newPatient = m_patientService->createPatient(
                                                     tempUsername,
                                                     name,
@@ -281,9 +282,16 @@ namespace HMS {
             if (!patientOpt.has_value()) return false;
 
             Model::Patient patient = patientOpt.value();
-            patient.setPhone(phone);
-            patient.setAddress(address);
-            patient.setMedicalHistory(medicalHistory);
+
+            if (!phone.empty()) {
+                patient.setPhone(phone);
+            }
+            if (!address.empty()) {
+                patient.setAddress(address);
+            }
+            if (!medicalHistory.empty()) {
+                patient.setMedicalHistory(medicalHistory);
+            }
 
             return m_patientService->updatePatient(patient);
         }
@@ -315,10 +323,15 @@ namespace HMS {
                                   const std::string& schedule,
                                   double consultationFee) {
 
+
+            if (!m_authService->registerAccount(username,password, Role::DOCTOR)) {
+                return false;
+            }
+
             Gender gender = stringToGender(genderStr);
 
-            return m_adminService->addDoctor(username,
-                                             password,
+            auto newPatient = m_doctorService->createDoctor(
+                                             username,
                                              name,
                                              phone,
                                              gender,
@@ -326,7 +339,50 @@ namespace HMS {
                                              specialization,
                                              schedule,
                                              consultationFee);
+            return newPatient.has_value();
 
+        }
+
+        bool HMSFacade::updateDoctor(const std::string& doctorID,
+                                     const std::string& specialization,
+                                     const std::string& schedule,
+                                     double consultationFee) {
+            auto doctorOpt = m_doctorService->getDoctorByID(doctorID);
+            if (!doctorOpt.has_value()) return false;
+
+            Model::Doctor doc = doctorOpt.value();
+
+            if (!specialization.empty()) {
+                doc.setSpecialization(specialization);
+            }
+
+            if (!schedule.empty()) {
+                doc.setSchedule(schedule);
+            }
+            if (consultationFee > 0 ) {
+                doc.setConsultationFee(consultationFee);
+            }
+            return m_doctorService->updateDoctor(doc);
+        }
+
+        bool HMSFacade::deleteDoctor(const std::string& doctorID) {
+            return m_doctorService->deleteDoctor(doctorID);
+        }
+
+        Model::Statistics HMSFacade::getStatistics(){
+            return m_adminService->getStatistics();
+        }
+
+        std::string HMSFacade::generateReport() {
+            return m_adminService->generateSummaryReport();
+        }
+
+        bool HMSFacade::saveData() {
+            return m_adminService->saveAllData();
+        }
+
+        bool HMSFacade::loadData() {
+            return m_adminService->loadAllData();
         }
     }
 }
