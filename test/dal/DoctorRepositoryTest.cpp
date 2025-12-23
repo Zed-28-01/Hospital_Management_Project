@@ -9,6 +9,12 @@ using namespace HMS;
 using namespace HMS::DAL;
 using namespace HMS::Model;
 
+namespace
+{
+    const std::string TEST_DATA_DIR = "test/fixtures/";
+    const std::string TEST_DATA_FILE = "test/fixtures/Doctor_test.txt";
+}
+
 class DoctorRepositoryTest : public ::testing::Test
 {
 protected:
@@ -21,9 +27,12 @@ protected:
         DoctorRepository::resetInstance();
         repo = DoctorRepository::getInstance();
 
-        // Use a test file
-        testFilePath = "test_doctors.txt";
+        // Use fixture file
+        testFilePath = TEST_DATA_FILE;
         repo->setFilePath(testFilePath);
+        std::filesystem::create_directories(TEST_DATA_DIR);
+        std::ofstream ofs(testFilePath, std::ios::trunc);
+        ofs.close();
         repo->clear();
     }
 
@@ -31,17 +40,6 @@ protected:
     {
         repo->clear();
         DoctorRepository::resetInstance();
-
-        // Clean up test file and temp files
-        if (std::filesystem::exists(testFilePath))
-        {
-            std::filesystem::remove(testFilePath);
-        }
-        std::string tempFile = testFilePath + ".tmp";
-        if (std::filesystem::exists(tempFile))
-        {
-            std::filesystem::remove(tempFile);
-        }
     }
 
     // Helper function to create test doctor
@@ -670,7 +668,7 @@ TEST_F(DoctorRepositoryTest, SaveAndLoad_AllFieldsPersisted)
 TEST_F(DoctorRepositoryTest, Load_NonExistentFile_CreatesFileAndReturnsTrue)
 {
     // load() creates the file if it doesn't exist and returns true (consistent with other repositories)
-    std::string nonExistentFile = "nonexistent_file_12345.txt";
+    std::string nonExistentFile = TEST_DATA_DIR + "nonexistent_file_12345.txt";
     repo->setFilePath(nonExistentFile);
     EXPECT_TRUE(repo->load());
     EXPECT_EQ(repo->count(), 0u);
@@ -713,7 +711,7 @@ TEST_F(DoctorRepositoryTest, Save_AtomicWrite_TempFileCleanedUp)
 
 TEST_F(DoctorRepositoryTest, SetFilePath_ChangesFilePath)
 {
-    std::string newPath = "new_test_doctors.txt";
+    std::string newPath = TEST_DATA_DIR + "new_test_doctors.txt";
     repo->setFilePath(newPath);
     EXPECT_EQ(repo->getFilePath(), newPath);
 
@@ -731,7 +729,7 @@ TEST_F(DoctorRepositoryTest, SetFilePath_ForcesReload)
     repo->save();
 
     // Create second file with different data
-    std::string secondFile = "test_doctors_2.txt";
+    std::string secondFile = TEST_DATA_DIR + "test_doctors_2.txt";
     {
         std::ofstream out(secondFile);
         out << "# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee\n";

@@ -18,7 +18,7 @@ namespace
 {
 
     const std::string TEST_DATA_DIR = "test/fixtures/";
-    const std::string TEST_DATA_FILE = "test/fixtures/AppointmentTest.txt";
+    const std::string TEST_DATA_FILE = "test/fixtures/Appointment_test.txt";
 
     // Helper tạo appointment hợp lệ
     // Giả định constructor của Appointment khớp với thứ tự tham số này
@@ -215,6 +215,39 @@ TEST_F(AppointmentRepositoryTest, SlotAvailableWhenCancelled)
         AppointmentStatus::CANCELLED));
 
     EXPECT_TRUE(repo->isSlotAvailable("D1", "2030-01-01", "09:00"));
+}
+
+TEST_F(AppointmentRepositoryTest, SlotAvailableWithExclusion)
+{
+    // Add a scheduled appointment
+    repo->add(makeAppointment("APT1", "p1", "D1", "2030-01-01", "09:00"));
+
+    // Without exclusion, slot should be unavailable
+    EXPECT_FALSE(repo->isSlotAvailable("D1", "2030-01-01", "09:00"));
+
+    // With exclusion of the same appointment ID, slot should be available
+    EXPECT_TRUE(repo->isSlotAvailable("D1", "2030-01-01", "09:00", "APT1"));
+
+    // With exclusion of a different appointment ID, slot should still be unavailable
+    EXPECT_FALSE(repo->isSlotAvailable("D1", "2030-01-01", "09:00", "APT999"));
+
+    // Empty exclusion ID should behave like no exclusion
+    EXPECT_FALSE(repo->isSlotAvailable("D1", "2030-01-01", "09:00", ""));
+}
+
+TEST_F(AppointmentRepositoryTest, SlotAvailableWithExclusion_MultipleAppointments)
+{
+    // Add two appointments at different times
+    repo->add(makeAppointment("APT1", "p1", "D1", "2030-01-01", "09:00"));
+    repo->add(makeAppointment("APT2", "p2", "D1", "2030-01-01", "10:00"));
+
+    // Excluding APT1 should only free up the 09:00 slot
+    EXPECT_TRUE(repo->isSlotAvailable("D1", "2030-01-01", "09:00", "APT1"));
+    EXPECT_FALSE(repo->isSlotAvailable("D1", "2030-01-01", "10:00", "APT1"));
+
+    // Excluding APT2 should only free up the 10:00 slot
+    EXPECT_FALSE(repo->isSlotAvailable("D1", "2030-01-01", "09:00", "APT2"));
+    EXPECT_TRUE(repo->isSlotAvailable("D1", "2030-01-01", "10:00", "APT2"));
 }
 
 // ============================================================================

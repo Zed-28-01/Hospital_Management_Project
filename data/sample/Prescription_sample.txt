@@ -1,0 +1,9 @@
+# Hospital Management System - Prescription Sample Data
+# Format: prescriptionID|appointmentID|patientUsername|doctorID|date|diagnosis|notes|isDispensed|items
+# Items format: medicineID:quantity:dosage:duration:instructions;...
+PRE001|APT001|patient001|D001|2024-03-15|Viral Fever with mild headache|Rest recommended, drink plenty of fluids|1|MED001:20:2 tablets 3 times daily:5 days:After meals;MED007:10:1 tablet daily:10 days:Before bedtime
+PRE002|APT002|patient002|D002|2024-03-16|Common Cold and Cough|Avoid cold beverages, get adequate rest|1|MED001:15:1 tablet twice daily:5 days:As needed for fever;MED007:7:1 tablet daily:7 days:Morning
+PRE003|APT003|patient001|D003|2024-03-18|Migraine with Nausea|Avoid bright lights and loud sounds|0|MED004:10:1 tablet every 6 hours:3 days:With food;MED003:14:1 capsule daily:14 days:Before breakfast
+PRE004|APT004|patient003|D001|2024-03-20|Hypertension Stage 1|Regular BP monitoring, reduce salt intake|1|MED006:30:1 tablet daily:30 days:Morning;MED011:30:1 tablet daily:30 days:Evening
+PRE005|APT005|patient004|D002|2024-03-22|Acute Bronchitis|Avoid smoking, steam inhalation recommended|0|MED008:6:1 tablet daily:6 days:After dinner;MED009:1:2 puffs every 4-6 hours:Until better:As needed
+PRE006|APT006|patient002|D004|2024-03-25|Muscle Strain - Lower Back|Apply ice for first 48 hours, then heat|1|MED004:21:1 tablet 3 times daily:7 days:After meals;MED010:1:Apply thin layer 3 times daily:14 days:Affected area only

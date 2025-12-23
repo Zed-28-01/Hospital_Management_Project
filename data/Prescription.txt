@@ -1,0 +1,4 @@
+# Hospital Management System - Prescription Data
+# Format: prescriptionID|appointmentID|patientUsername|doctorID|date|diagnosis|notes|isDispensed|items
+# Items format: medicineID:quantity:dosage:duration:instructions;... (semicolon-separated items, colon-separated fields)
+# Example: PRE001|APT001|patient001|D001|2024-03-15|Viral Fever|Rest recommended|1|MED001:20:2 tablets 3 times daily:5 days:After meals;MED003:10:1 capsule daily:7 days:Before breakfast

@@ -12,7 +12,7 @@ using namespace HMS::Model;
 namespace
 {
     const std::string TEST_DATA_DIR = "test/fixtures/";
-    const std::string TEST_DATA_FILE = "test/fixtures/AccountTest.txt";
+    const std::string TEST_DATA_FILE = "test/fixtures/Account_test.txt";
 }
 
 class AccountRepositoryTest : public ::testing::Test

@@ -11,24 +11,31 @@ using namespace HMS;
 using namespace HMS::BLL;
 using namespace HMS::Model;
 
+namespace
+{
+    const std::string TEST_DATA_DIR = "test_data/";
+    const std::string TEST_PATIENT_FILE = "test_data/patients_test.txt";
+    const std::string TEST_APPOINTMENT_FILE = "test_data/appointments_test.txt";
+}
+
 // ==================== TEST FIXTURE ====================
 class PatientServiceTest : public ::testing::Test
 {
 protected:
     PatientService *service;
-    std::string testPatientFile = "test_patients.txt";
-    std::string testAppointmentFile = "test_appointments.txt";
 
     void SetUp() override
     {
+        std::filesystem::create_directories(TEST_DATA_DIR);
+
         PatientService::resetInstance();
         service = PatientService::getInstance();
 
         auto patientRepo = DAL::PatientRepository::getInstance();
         auto appointmentRepo = DAL::AppointmentRepository::getInstance();
 
-        patientRepo->setFilePath(testPatientFile);
-        appointmentRepo->setFilePath(testAppointmentFile);
+        patientRepo->setFilePath(TEST_PATIENT_FILE);
+        appointmentRepo->setFilePath(TEST_APPOINTMENT_FILE);
 
         patientRepo->clear();
         appointmentRepo->clear();
@@ -43,11 +50,6 @@ protected:
         appointmentRepo->clear();
 
         PatientService::resetInstance();
-
-        if (std::filesystem::exists(testPatientFile))
-            std::filesystem::remove(testPatientFile);
-        if (std::filesystem::exists(testAppointmentFile))
-            std::filesystem::remove(testAppointmentFile);
     }
 
     Patient createTestPatient(
@@ -315,15 +317,27 @@ TEST_F(PatientServiceTest, GetUnpaidAppointments_SortingOrder)
 // ==================== PERSISTENCE (IO) ====================
 TEST_F(PatientServiceTest, SaveAndLoadData)
 {
-    // 1. Tạo dữ liệu và lưu
+    // 1. Create data and save
     service->createPatient(createTestPatient("P001", "save_test", "Save Test"));
     ASSERT_TRUE(service->saveData());
 
-    // 2. Xóa dữ liệu trên RAM
-    DAL::PatientRepository::getInstance()->clear();
-    ASSERT_EQ(service->getPatientCount(), 0u);
+    // 2. Reset both repository AND service to simulate app restart
+    // IMPORTANT: Must reset service since it holds pointers to repositories.
+    // Resetting only repository causes dangling pointer in service -> crash
+    DAL::PatientRepository::resetInstance();
+    DAL::AppointmentRepository::resetInstance();
+    PatientService::resetInstance();
 
-    // 3. Load lại từ file
+    // 3. Get fresh instances (simulating app restart)
+    auto freshRepo = DAL::PatientRepository::getInstance();
+    freshRepo->setFilePath(TEST_PATIENT_FILE);
+
+    auto freshApptRepo = DAL::AppointmentRepository::getInstance();
+    freshApptRepo->setFilePath(TEST_APPOINTMENT_FILE);
+
+    service = PatientService::getInstance();
+
+    // 4. Load data from file
     ASSERT_TRUE(service->loadData());
     EXPECT_EQ(service->getPatientCount(), 1u);
     EXPECT_TRUE(service->getPatientByUsername("save_test").has_value());

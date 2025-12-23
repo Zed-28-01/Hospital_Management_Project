@@ -94,6 +94,13 @@ using Time = std::string;      // Format: HH:MM
 using Phone = std::string;
 using Money = double;
 
+// Advanced Feature Type Aliases
+using DepartmentID = std::string;
+using MedicineID = std::string;
+using PrescriptionID = std::string;
+using Quantity = int;
+using StockLevel = int;
+
 // ==================== Result Types ====================
 template<typename T>
 using Result = std::optional<T>;

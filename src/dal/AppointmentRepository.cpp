@@ -490,12 +490,25 @@ namespace HMS
                                                     const std::string &date,
                                                     const std::string &time)
         {
+            return isSlotAvailable(doctorID, date, time, "");
+        }
+
+        bool AppointmentRepository::isSlotAvailable(const std::string &doctorID,
+                                                    const std::string &date,
+                                                    const std::string &time,
+                                                    const std::string &excludeAppointmentID)
+        {
             if (!m_isLoaded)
                 load();
 
             return std::none_of(m_appointments.begin(), m_appointments.end(),
-                                [&doctorID, &date, &time](const Model::Appointment &apt)
+                                [&doctorID, &date, &time, &excludeAppointmentID](const Model::Appointment &apt)
                                 {
+                                    // Skip the excluded appointment (for edit scenarios)
+                                    if (!excludeAppointmentID.empty() && apt.getAppointmentID() == excludeAppointmentID)
+                                    {
+                                        return false;
+                                    }
                                     return apt.getDoctorID() == doctorID &&
                                            apt.getDate() == date &&
                                            apt.getTime() == time &&

@@ -14,9 +14,19 @@ constexpr const char* PATIENT_FILE = "data/Patient.txt";
 constexpr const char* DOCTOR_FILE = "data/Doctor.txt";
 constexpr const char* APPOINTMENT_FILE = "data/Appointment.txt";
 
+// Advanced Feature File Paths
+constexpr const char* DEPARTMENT_FILE = "data/Department.txt";
+constexpr const char* MEDICINE_FILE = "data/Medicine.txt";
+constexpr const char* PRESCRIPTION_FILE = "data/Prescription.txt";
+constexpr const char* REPORTS_DIR = "data/reports/";
+
 // ==================== Field Delimiters ====================
 constexpr char FIELD_DELIMITER = '|';
 constexpr char COMMENT_CHAR = '#';
+
+// ==================== Work Hours ====================
+constexpr int WORK_START_HOUR = 8;   // 8 AM
+constexpr int WORK_END_HOUR = 17;    // 5 PM
 
 // ==================== Validation Rules ====================
 constexpr int MIN_USERNAME_LENGTH = 3;
@@ -30,6 +40,21 @@ constexpr const char* PATIENT_ID_PREFIX = "P";
 constexpr const char* DOCTOR_ID_PREFIX = "D";
 constexpr const char* ADMIN_ID_PREFIX = "A";
 constexpr const char* APPOINTMENT_ID_PREFIX = "APT";
+
+// Advanced Feature ID Prefixes
+constexpr const char* DEPARTMENT_ID_PREFIX = "DEP";
+constexpr const char* MEDICINE_ID_PREFIX = "MED";
+constexpr const char* PRESCRIPTION_ID_PREFIX = "PRE";
+
+// ==================== Medicine/Inventory Constants ====================
+constexpr int DEFAULT_REORDER_LEVEL = 10;
+constexpr int EXPIRY_WARNING_DAYS = 30;
+constexpr int LOW_STOCK_THRESHOLD = 10;
+
+// ==================== Prescription Constants ====================
+constexpr char ITEM_DELIMITER = ';';           // Separates prescription items
+constexpr char ITEM_FIELD_DELIMITER = ':';     // Separates fields within an item
+constexpr char LIST_DELIMITER = ',';
 
 // ==================== Date/Time Formats ====================
 constexpr const char* DATE_FORMAT = "YYYY-MM-DD";
@@ -69,6 +94,43 @@ namespace Menu {
         constexpr int LIST_DOCTORS = 5;
         constexpr int VIEW_STATISTICS = 6;
         constexpr int LOGOUT = 7;
+    }
+
+    namespace Pharmacy {
+        constexpr int VIEW_MEDICINES = 1;
+        constexpr int ADD_MEDICINE = 2;
+        constexpr int UPDATE_STOCK = 3;
+        constexpr int VIEW_LOW_STOCK = 4;
+        constexpr int VIEW_EXPIRING = 5;
+        constexpr int SEARCH_MEDICINE = 6;
+        constexpr int BACK = 7;
+    }
+
+    namespace Department {
+        constexpr int VIEW_DEPARTMENTS = 1;
+        constexpr int ADD_DEPARTMENT = 2;
+        constexpr int EDIT_DEPARTMENT = 3;
+        constexpr int ASSIGN_DOCTOR = 4;
+        constexpr int VIEW_DEPARTMENT_STATS = 5;
+        constexpr int BACK = 6;
+    }
+
+    namespace Prescription {
+        constexpr int CREATE_PRESCRIPTION = 1;
+        constexpr int VIEW_PRESCRIPTIONS = 2;
+        constexpr int DISPENSE_PRESCRIPTION = 3;
+        constexpr int PRINT_PRESCRIPTION = 4;
+        constexpr int BACK = 5;
+    }
+
+    namespace Reports {
+        constexpr int DAILY_REPORT = 1;
+        constexpr int WEEKLY_REPORT = 2;
+        constexpr int MONTHLY_REPORT = 3;
+        constexpr int REVENUE_REPORT = 4;
+        constexpr int DOCTOR_PERFORMANCE = 5;
+        constexpr int EXPORT_REPORT = 6;
+        constexpr int BACK = 7;
     }
 }
 
