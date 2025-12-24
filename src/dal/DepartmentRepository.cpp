@@ -107,7 +107,7 @@ namespace HMS {
             {return dep.getDepartmentID() == id; });
 
             if (it != m_departments.end()) {
-                m_departments.erase(it, m_departments.end());
+                m_departments.erase(it);
                 return save();
             }
             return false;
@@ -156,10 +156,10 @@ namespace HMS {
 
                 for (const auto &line : lines)
                 {
-                    auto patient = Model::Department::deserialize(line);
-                    if (patient)
+                    auto department = Model::Department::deserialize(line);
+                    if (department)
                     {
-                        m_departments.push_back(patient.value());
+                        m_departments.push_back(department.value());
                     }
                 }
 
@@ -176,11 +176,18 @@ namespace HMS {
 // =========================================== QUERY OPERATIONS ===============================================
 
         size_t DepartmentRepository::count() const {
+            if (!m_isLoaded) {
+                const_cast<DepartmentRepository *>(this)->load();
+            }
             return m_departments.size();
         }
 
 
         bool DepartmentRepository::exists(const std::string& id) const {
+            if (!m_isLoaded) {
+                const_cast<DepartmentRepository *>(this)->load();
+            }
+
             for (const auto& dep : m_departments) {
                 if (dep.getDepartmentID() == id) {
                     return true;
@@ -191,6 +198,7 @@ namespace HMS {
 
         bool DepartmentRepository::clear() {
             m_departments.clear();
+            m_isLoaded = true;
             return save();
         }
 
