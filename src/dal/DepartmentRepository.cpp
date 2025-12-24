@@ -156,6 +156,9 @@ namespace HMS {
 
                 for (const auto &line : lines)
                 {
+                    if (line.empty() || line[0] == '#') {
+                        continue;
+                    }
                     auto department = Model::Department::deserialize(line);
                     if (department)
                     {
