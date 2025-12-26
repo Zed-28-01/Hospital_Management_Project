@@ -1,53 +1,34 @@
 #include "dal/PrescriptionRepository.h"
-#include "dal/FileHelper.h"
 #include "common/Constants.h"
 #include "common/Utils.h"
-#include "common/Types.h"
+#include "dal/FileHelper.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <format>
-#include <string>
+#include <sstream>
 
 namespace HMS
 {
     namespace DAL
     {
-        // Using declarations for cleaner code
-        using HMS::Date;
-        using HMS::ID;
-        using HMS::Result;
-        using Model::Prescription;
-        using Model::PrescriptionItem;
-
         // ==================== Static Members Initialization ====================
-
-        std::unique_ptr<PrescriptionRepository> PrescriptionRepository::s_instance = nullptr;
+        std::unique_ptr<PrescriptionRepository> PrescriptionRepository::s_instance =
+            nullptr;
         std::mutex PrescriptionRepository::s_mutex;
 
-        // ==================== Constructor / Destructor ====================
-
+        // ==================== Private Constructor ====================
         PrescriptionRepository::PrescriptionRepository()
-            : m_filePath(Constants::PRESCRIPTION_FILE), m_isLoaded(false)
-        {
-            FileHelper::createDirectoryIfNotExists(Constants::DATA_DIR);
-            FileHelper::createFileIfNotExists(m_filePath);
-            // Note: Lazy loading - data will be loaded on first access
-        }
-
-        PrescriptionRepository::~PrescriptionRepository()
-        {
-            // Do NOT save in destructor - let user explicitly save
-            // or save will be called in resetInstance()
-        }
+            : m_filePath(Constants::PRESCRIPTION_FILE), m_isLoaded(false) {}
 
         // ==================== Singleton Access ====================
-
         PrescriptionRepository *PrescriptionRepository::getInstance()
         {
             std::lock_guard<std::mutex> lock(s_mutex);
             if (!s_instance)
             {
-                s_instance = std::unique_ptr<PrescriptionRepository>(new PrescriptionRepository());
+                s_instance =
+                    std::unique_ptr<PrescriptionRepository>(new PrescriptionRepository());
             }
             return s_instance.get();
         }
@@ -55,36 +36,37 @@ namespace HMS
         void PrescriptionRepository::resetInstance()
         {
             std::lock_guard<std::mutex> lock(s_mutex);
-            if (s_instance)
+            s_instance.reset();
+        }
+
+        // ==================== Destructor ====================
+        PrescriptionRepository::~PrescriptionRepository() = default;
+
+        // ==================== Private Helper ====================
+        void PrescriptionRepository::ensureLoaded() const
+        {
+            if (!m_isLoaded)
             {
-                s_instance->save();
-                s_instance.reset();
+                const_cast<PrescriptionRepository *>(this)->loadInternal();
             }
         }
 
         // ==================== CRUD Operations ====================
-
-        std::vector<Prescription> PrescriptionRepository::getAll()
+        std::vector<Model::Prescription> PrescriptionRepository::getAll()
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
             return m_prescriptions;
         }
 
-        std::optional<Prescription> PrescriptionRepository::getById(const std::string &id)
+        std::optional<Model::Prescription>
+        PrescriptionRepository::getById(const std::string &id)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            auto it = std::find_if(m_prescriptions.begin(), m_prescriptions.end(),
-                                   [&id](const Prescription &p)
-                                   {
-                                       return p.getPrescriptionID() == id;
-                                   });
+            auto it = std::ranges::find_if(m_prescriptions, [&id](const auto &p)
+                                           { return p.getPrescriptionID() == id; });
 
             if (it != m_prescriptions.end())
             {
@@ -93,80 +75,63 @@ namespace HMS
             return std::nullopt;
         }
 
-        bool PrescriptionRepository::add(const Prescription &prescription)
+        bool PrescriptionRepository::add(const Model::Prescription &prescription)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             // Check if prescription ID already exists
-            const std::string &prescriptionID = prescription.getPrescriptionID();
-            auto it = std::find_if(m_prescriptions.begin(), m_prescriptions.end(),
-                                   [&prescriptionID](const Prescription &p)
-                                   {
-                                       return p.getPrescriptionID() == prescriptionID;
-                                   });
+            bool idExists = std::ranges::any_of(
+                m_prescriptions, [&prescription](const auto &p)
+                { return p.getPrescriptionID() == prescription.getPrescriptionID(); });
 
-            if (it != m_prescriptions.end())
-            {
-                return false; // Prescription ID already exists
-            }
-
-            // Check if appointment already has a prescription
-            const std::string &appointmentID = prescription.getAppointmentID();
-            if (!appointmentID.empty())
-            {
-                auto aptIt = std::find_if(m_prescriptions.begin(), m_prescriptions.end(),
-                                          [&appointmentID](const Prescription &p)
-                                          {
-                                              return p.getAppointmentID() == appointmentID;
-                                          });
-
-                if (aptIt != m_prescriptions.end())
-                {
-                    return false; // Appointment already has a prescription
-                }
-            }
-
-            m_prescriptions.push_back(prescription);
-            return save();
-        }
-
-        bool PrescriptionRepository::update(const Prescription &prescription)
-        {
-            if (!m_isLoaded)
-            {
-                load();
-            }
-
-            auto it = std::find_if(m_prescriptions.begin(), m_prescriptions.end(),
-                                   [&prescription](const Prescription &p)
-                                   {
-                                       return p.getPrescriptionID() == prescription.getPrescriptionID();
-                                   });
-
-            if (it == m_prescriptions.end())
+            if (idExists)
             {
                 return false;
             }
 
-            *it = prescription;
-            return save();
+            // Check if appointment ID already has a prescription (unless empty)
+            const std::string &appointmentID = prescription.getAppointmentID();
+            if (!appointmentID.empty())
+            {
+                bool appointmentExists = std::ranges::any_of(
+                    m_prescriptions, [&appointmentID](const auto &p)
+                    { return p.getAppointmentID() == appointmentID; });
+
+                if (appointmentExists)
+                {
+                    return false;
+                }
+            }
+
+            m_prescriptions.push_back(prescription);
+            return saveInternal();
+        }
+
+        bool PrescriptionRepository::update(const Model::Prescription &prescription)
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            auto it =
+                std::ranges::find_if(m_prescriptions, [&prescription](const auto &p)
+                                     { return p.getPrescriptionID() == prescription.getPrescriptionID(); });
+
+            if (it != m_prescriptions.end())
+            {
+                *it = prescription;
+                return saveInternal();
+            }
+            return false;
         }
 
         bool PrescriptionRepository::remove(const std::string &id)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            auto it = std::find_if(m_prescriptions.begin(), m_prescriptions.end(),
-                                   [&id](const Prescription &p)
-                                   {
-                                       return p.getPrescriptionID() == id;
-                                   });
+            auto it = std::ranges::find_if(m_prescriptions, [&id](const auto &p)
+                                           { return p.getPrescriptionID() == id; });
 
             if (it == m_prescriptions.end())
             {
@@ -174,85 +139,130 @@ namespace HMS
             }
 
             m_prescriptions.erase(it);
-            return save();
+            return saveInternal();
         }
 
         // ==================== Persistence ====================
-
         bool PrescriptionRepository::save()
         {
-            std::vector<std::string> lines;
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            return saveInternal();
+        }
 
-            // Add header
-            lines.push_back(FileHelper::getFileHeader("Prescription"));
-
-            // Add each prescription
-            for (const auto &prescription : m_prescriptions)
+        bool PrescriptionRepository::saveInternal()
+        {
+            try
             {
-                lines.push_back(prescription.serialize());
-            }
+                std::vector<std::string> lines;
 
-            return FileHelper::writeLines(m_filePath, lines);
+                // Add header
+                auto header = FileHelper::getFileHeader("Prescription");
+                std::stringstream hss(header);
+                std::string headerLine;
+                while (std::getline(hss, headerLine))
+                {
+                    if (!headerLine.empty())
+                    {
+                        lines.push_back(headerLine);
+                    }
+                }
+
+                // Add data - complex items serialization is handled by
+                // Prescription::serialize()
+                for (const auto &prescription : m_prescriptions)
+                {
+                    lines.push_back(prescription.serialize());
+                }
+
+                FileHelper::createBackup(m_filePath);
+                return FileHelper::writeLines(m_filePath, lines);
+            }
+            catch (...)
+            {
+                return false;
+            }
         }
 
         bool PrescriptionRepository::load()
         {
-            m_prescriptions.clear();
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            return loadInternal();
+        }
 
-            auto lines = FileHelper::readLines(m_filePath);
-
-            for (const auto &line : lines)
+        bool PrescriptionRepository::loadInternal()
+        {
+            try
             {
-                auto prescriptionOpt = Prescription::deserialize(line);
-                if (prescriptionOpt.has_value())
-                {
-                    m_prescriptions.push_back(prescriptionOpt.value());
-                }
-            }
+                // Create parent directory of the file if it doesn't exist
+                std::filesystem::path filePath(m_filePath);
+                std::filesystem::path parentDir = filePath.parent_path();
 
-            m_isLoaded = true;
-            return true;
+                if (!parentDir.empty())
+                {
+                    FileHelper::createDirectoryIfNotExists(parentDir.string());
+                }
+
+                FileHelper::createFileIfNotExists(m_filePath);
+
+                std::vector<std::string> lines = FileHelper::readLines(m_filePath);
+
+                m_prescriptions.clear();
+
+                for (const auto &line : lines)
+                {
+                    // Prescription::deserialize() handles complex items parsing
+                    auto prescription = Model::Prescription::deserialize(line);
+                    if (prescription)
+                    {
+                        m_prescriptions.push_back(prescription.value());
+                    }
+                }
+
+                m_isLoaded = true;
+                return true;
+            }
+            catch (...)
+            {
+                m_isLoaded = false;
+                return false;
+            }
         }
 
         // ==================== Query Operations ====================
-
         size_t PrescriptionRepository::count() const
         {
-            // Note: Does not lazy load. Call load() or getAll() first if needed.
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
             return m_prescriptions.size();
         }
 
         bool PrescriptionRepository::exists(const std::string &id) const
         {
-            // Note: Does not lazy load. Call load() or getAll() first if needed.
-            return std::any_of(m_prescriptions.begin(), m_prescriptions.end(),
-                               [&id](const Prescription &p)
-                               {
-                                   return p.getPrescriptionID() == id;
-                               });
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            return std::ranges::any_of(m_prescriptions, [&id](const auto &p)
+                                       { return p.getPrescriptionID() == id; });
         }
 
         bool PrescriptionRepository::clear()
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             m_prescriptions.clear();
-            m_isLoaded = true; // Still loaded, just empty
-            return save();
+            m_isLoaded = true;
+            return saveInternal();
         }
 
         // ==================== Prescription-Specific Queries ====================
-
-        std::optional<Prescription> PrescriptionRepository::getByAppointment(const std::string &appointmentID)
+        std::optional<Model::Prescription>
+        PrescriptionRepository::getByAppointment(const std::string &appointmentID)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            auto it = std::find_if(m_prescriptions.begin(), m_prescriptions.end(),
-                                   [&appointmentID](const Prescription &p)
-                                   {
-                                       return p.getAppointmentID() == appointmentID;
-                                   });
+            auto it =
+                std::ranges::find_if(m_prescriptions, [&appointmentID](const auto &p)
+                                     { return p.getAppointmentID() == appointmentID; });
 
             if (it != m_prescriptions.end())
             {
@@ -261,301 +271,242 @@ namespace HMS
             return std::nullopt;
         }
 
-        std::vector<Prescription> PrescriptionRepository::getByPatient(const std::string &patientUsername)
+        std::vector<Model::Prescription>
+        PrescriptionRepository::getByPatient(const std::string &patientUsername)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Prescription> result;
+            std::vector<Model::Prescription> results;
+            std::ranges::copy_if(m_prescriptions, std::back_inserter(results),
+                                 [&patientUsername](const auto &p)
+                                 {
+                                     return p.getPatientUsername() == patientUsername;
+                                 });
 
-            std::copy_if(m_prescriptions.begin(), m_prescriptions.end(),
-                         std::back_inserter(result),
-                         [&patientUsername](const Prescription &p)
-                         {
-                             return p.getPatientUsername() == patientUsername;
-                         });
+            // Sort by date descending (most recent first)
+            std::ranges::sort(results, [](const auto &a, const auto &b)
+                              { return Utils::compareDates(a.getPrescriptionDate(), b.getPrescriptionDate()) > 0; });
 
-            // Sort by date (most recent first)
-            std::sort(result.begin(), result.end(),
-                      [](const Prescription &a, const Prescription &b)
-                      {
-                          return Utils::compareDates(a.getPrescriptionDate(), b.getPrescriptionDate()) > 0;
-                      });
-
-            return result;
+            return results;
         }
 
-        std::vector<Prescription> PrescriptionRepository::getByDoctor(const std::string &doctorID)
+        std::vector<Model::Prescription>
+        PrescriptionRepository::getByDoctor(const std::string &doctorID)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Prescription> result;
+            std::vector<Model::Prescription> results;
+            std::ranges::copy_if(
+                m_prescriptions, std::back_inserter(results),
+                [&doctorID](const auto &p)
+                { return p.getDoctorID() == doctorID; });
 
-            std::copy_if(m_prescriptions.begin(), m_prescriptions.end(),
-                         std::back_inserter(result),
-                         [&doctorID](const Prescription &p)
-                         {
-                             return p.getDoctorID() == doctorID;
-                         });
+            // Sort by date descending (most recent first)
+            std::ranges::sort(results, [](const auto &a, const auto &b)
+                              { return Utils::compareDates(a.getPrescriptionDate(), b.getPrescriptionDate()) > 0; });
 
-            // Sort by date (most recent first)
-            std::sort(result.begin(), result.end(),
-                      [](const Prescription &a, const Prescription &b)
-                      {
-                          return Utils::compareDates(a.getPrescriptionDate(), b.getPrescriptionDate()) > 0;
-                      });
-
-            return result;
+            return results;
         }
 
-        std::vector<Prescription> PrescriptionRepository::getUndispensed()
+        std::vector<Model::Prescription> PrescriptionRepository::getUndispensed()
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Prescription> result;
+            std::vector<Model::Prescription> results;
+            std::ranges::copy_if(m_prescriptions, std::back_inserter(results),
+                                 [](const auto &p)
+                                 { return !p.isDispensed(); });
 
-            std::copy_if(m_prescriptions.begin(), m_prescriptions.end(),
-                         std::back_inserter(result),
-                         [](const Prescription &p)
-                         {
-                             return !p.isDispensed();
-                         });
+            // Sort by date ascending (oldest first - priority for dispensing)
+            std::ranges::sort(results, [](const auto &a, const auto &b)
+                              { return Utils::compareDates(a.getPrescriptionDate(), b.getPrescriptionDate()) < 0; });
 
-            // Sort by date (oldest first - priority for dispensing)
-            std::sort(result.begin(), result.end(),
-                      [](const Prescription &a, const Prescription &b)
-                      {
-                          return Utils::compareDates(a.getPrescriptionDate(), b.getPrescriptionDate()) < 0;
-                      });
-
-            return result;
+            return results;
         }
 
-        std::vector<Prescription> PrescriptionRepository::getDispensed()
+        std::vector<Model::Prescription> PrescriptionRepository::getDispensed()
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Prescription> result;
+            std::vector<Model::Prescription> results;
+            std::ranges::copy_if(m_prescriptions, std::back_inserter(results),
+                                 [](const auto &p)
+                                 { return p.isDispensed(); });
 
-            std::copy_if(m_prescriptions.begin(), m_prescriptions.end(),
-                         std::back_inserter(result),
-                         [](const Prescription &p)
-                         {
-                             return p.isDispensed();
-                         });
+            // Sort by date descending (most recent first)
+            std::ranges::sort(results, [](const auto &a, const auto &b)
+                              { return Utils::compareDates(a.getPrescriptionDate(), b.getPrescriptionDate()) > 0; });
 
-            // Sort by date (most recent first)
-            std::sort(result.begin(), result.end(),
-                      [](const Prescription &a, const Prescription &b)
-                      {
-                          return Utils::compareDates(a.getPrescriptionDate(), b.getPrescriptionDate()) > 0;
-                      });
-
-            return result;
+            return results;
         }
 
-        std::vector<Prescription> PrescriptionRepository::getByDate(const std::string &date)
+        std::vector<Model::Prescription>
+        PrescriptionRepository::getByDate(const std::string &date)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Prescription> result;
-            const Date &targetDate = date; // Using Date type alias for clarity
+            std::vector<Model::Prescription> results;
+            std::ranges::copy_if(
+                m_prescriptions, std::back_inserter(results),
+                [&date](const auto &p)
+                { return p.getPrescriptionDate() == date; });
 
-            std::copy_if(m_prescriptions.begin(), m_prescriptions.end(),
-                         std::back_inserter(result),
-                         [&targetDate](const Prescription &p)
-                         {
-                             return p.getPrescriptionDate() == targetDate;
-                         });
-
-            return result;
+            return results;
         }
 
-        std::vector<Prescription> PrescriptionRepository::getByDateRange(const std::string &startDate,
-                                                                         const std::string &endDate)
+        std::vector<Model::Prescription>
+        PrescriptionRepository::getByDateRange(const std::string &startDate,
+                                               const std::string &endDate)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Prescription> result;
-            const Date &start = startDate; // Using Date type alias
-            const Date &end = endDate;
+            std::vector<Model::Prescription> results;
+            std::ranges::copy_if(m_prescriptions, std::back_inserter(results),
+                                 [&startDate, &endDate](const auto &p)
+                                 {
+                                     const std::string &date = p.getPrescriptionDate();
+                                     return Utils::compareDates(date, startDate) >= 0 &&
+                                            Utils::compareDates(date, endDate) <= 0;
+                                 });
 
-            std::copy_if(m_prescriptions.begin(), m_prescriptions.end(),
-                         std::back_inserter(result),
-                         [&start, &end](const Prescription &p)
-                         {
-                             const Date &prescDate = p.getPrescriptionDate();
-                             return Utils::compareDates(prescDate, start) >= 0 &&
-                                    Utils::compareDates(prescDate, end) <= 0;
-                         });
+            // Sort by date descending (most recent first)
+            std::ranges::sort(results, [](const auto &a, const auto &b)
+                              { return Utils::compareDates(a.getPrescriptionDate(), b.getPrescriptionDate()) > 0; });
 
-            // Sort by date (most recent first)
-            std::sort(result.begin(), result.end(),
-                      [](const Prescription &a, const Prescription &b)
-                      {
-                          return Utils::compareDates(a.getPrescriptionDate(), b.getPrescriptionDate()) > 0;
-                      });
-
-            return result;
+            return results;
         }
 
-        std::vector<Prescription> PrescriptionRepository::getByMedicine(const std::string &medicineID)
+        std::vector<Model::Prescription>
+        PrescriptionRepository::getByMedicine(const std::string &medicineID)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Prescription> result;
-            const ID &targetMedicineId = medicineID; // Using ID type alias
-
+            std::vector<Model::Prescription> results;
             for (const auto &prescription : m_prescriptions)
             {
-                // Check if any item in prescription contains the medicine
                 const auto &items = prescription.getItems();
-                bool hasMedicine = std::any_of(items.begin(), items.end(),
-                                               [&targetMedicineId](const PrescriptionItem &item)
-                                               {
-                                                   return item.medicineID == targetMedicineId;
-                                               });
+                // Check if any item in this prescription contains the medicineID
+                bool hasMedicine =
+                    std::ranges::any_of(items, [&medicineID](const auto &item)
+                                        { return item.medicineID == medicineID; });
 
                 if (hasMedicine)
                 {
-                    result.push_back(prescription);
+                    results.push_back(prescription);
                 }
             }
 
-            // Sort by date (most recent first)
-            std::sort(result.begin(), result.end(),
-                      [](const Prescription &a, const Prescription &b)
-                      {
-                          return Utils::compareDates(a.getPrescriptionDate(), b.getPrescriptionDate()) > 0;
-                      });
-
-            return result;
+            return results;
         }
 
         std::string PrescriptionRepository::getNextId()
         {
-            if (!m_isLoaded)
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            if (m_prescriptions.empty())
             {
-                load();
+                return std::format("{}001", Constants::PRESCRIPTION_ID_PREFIX);
             }
 
-            const std::string prefix(Constants::PRESCRIPTION_ID_PREFIX);
-            const size_t prefixLen = prefix.length();
+            // Find max ID number
+            int maxID = 0;
+            const std::string prefix = Constants::PRESCRIPTION_ID_PREFIX;
 
-            // Find max ID number from existing prescriptions
-            int maxId = 0;
             for (const auto &prescription : m_prescriptions)
             {
-                const ID &currentId = prescription.getPrescriptionID();
+                const std::string &prescriptionID = prescription.getPrescriptionID();
 
-                // Extract and validate numeric part (e.g., "PRE001" -> 1)
-                if (currentId.length() > prefixLen && currentId.starts_with(prefix))
+                // Only process valid format: prefix + digits
+                if (prescriptionID.length() > prefix.length() &&
+                    prescriptionID.starts_with(prefix))
                 {
-                    try
+                    std::string numPart = prescriptionID.substr(prefix.length());
+
+                    // Validate numeric before parsing
+                    if (Utils::isNumeric(numPart))
                     {
-                        int num = std::stoi(currentId.substr(prefixLen));
-                        maxId = std::max(maxId, num);
-                    }
-                    catch (const std::invalid_argument &)
-                    {
-                        // Skip IDs with non-numeric suffix
-                    }
-                    catch (const std::out_of_range &)
-                    {
-                        // Skip IDs with number too large
+                        try
+                        {
+                            int idNum = std::stoi(numPart);
+                            maxID = std::max(maxID, idNum);
+                        }
+                        catch (const std::exception &)
+                        {
+                            // Ignore parse errors
+                        }
                     }
                 }
             }
 
-            // Generate next ID using C++23 format (e.g., "PRE001", "PRE002", ...)
-            return std::format("{}{:03d}", prefix, maxId + 1);
+            return std::format("{}{:03d}", prefix, maxID + 1);
         }
 
         // ==================== Dispensing Operations ====================
-
         bool PrescriptionRepository::markAsDispensed(const std::string &id)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            const ID &prescriptionId = id; // Using ID type alias for clarity
-
-            auto it = std::find_if(m_prescriptions.begin(), m_prescriptions.end(),
-                                   [&prescriptionId](const Prescription &p)
-                                   {
-                                       return p.getPrescriptionID() == prescriptionId;
-                                   });
+            auto it = std::ranges::find_if(m_prescriptions, [&id](const auto &p)
+                                           { return p.getPrescriptionID() == id; });
 
             if (it == m_prescriptions.end())
             {
                 return false;
             }
 
-            // Modify directly via iterator
-            it->setDispensed(true);
+            // Check if already dispensed
+            if (it->isDispensed())
+            {
+                return true; // Already dispensed, consider it a success
+            }
 
-            return save();
+            it->setDispensed(true);
+            return saveInternal();
         }
 
         bool PrescriptionRepository::markAsUndispensed(const std::string &id)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            const ID &prescriptionId = id; // Using ID type alias for clarity
-
-            auto it = std::find_if(m_prescriptions.begin(), m_prescriptions.end(),
-                                   [&prescriptionId](const Prescription &p)
-                                   {
-                                       return p.getPrescriptionID() == prescriptionId;
-                                   });
+            auto it = std::ranges::find_if(m_prescriptions, [&id](const auto &p)
+                                           { return p.getPrescriptionID() == id; });
 
             if (it == m_prescriptions.end())
             {
                 return false;
             }
 
-            // Modify directly via iterator
-            it->setDispensed(false);
+            // Check if already undispensed
+            if (!it->isDispensed())
+            {
+                return true; // Already undispensed, consider it a success
+            }
 
-            return save();
+            it->setDispensed(false);
+            return saveInternal();
         }
 
         // ==================== File Path Management ====================
-
         void PrescriptionRepository::setFilePath(const std::string &filePath)
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             m_filePath = filePath;
-            m_isLoaded = false;
-            load();
+            m_isLoaded = false; // Force reload with new file
         }
 
         std::string PrescriptionRepository::getFilePath() const
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             return m_filePath;
         }
 
