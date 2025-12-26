@@ -1,4 +1,4 @@
-#include "dal/PatientRepository.h"
+#include "dal/DepartmentRepository.h"
 #include "dal/FileHelper.h"
 #include "common/Utils.h"
 #include "common/Constants.h"
@@ -13,155 +13,146 @@ namespace HMS
     namespace DAL
     {
         // ==================== Static Members Initialization ====================
-        std::unique_ptr<PatientRepository> PatientRepository::s_instance = nullptr;
-        std::mutex PatientRepository::s_mutex;
+        std::unique_ptr<DepartmentRepository> DepartmentRepository::s_instance = nullptr;
+        std::mutex DepartmentRepository::s_mutex;
 
         // ==================== Private Constructor ====================
-        PatientRepository::PatientRepository()
-            : m_filePath(Constants::PATIENT_FILE),
+        DepartmentRepository::DepartmentRepository()
+            : m_filePath(Constants::DEPARTMENT_FILE),
               m_isLoaded(false)
         {
         }
 
         // ==================== Singleton Access ====================
-        PatientRepository *PatientRepository::getInstance()
+        DepartmentRepository *DepartmentRepository::getInstance()
         {
             std::lock_guard<std::mutex> lock(s_mutex);
             if (!s_instance)
             {
-                s_instance = std::unique_ptr<PatientRepository>(new PatientRepository());
+                s_instance = std::unique_ptr<DepartmentRepository>(new DepartmentRepository());
             }
             return s_instance.get();
         }
 
-        void PatientRepository::resetInstance()
+        void DepartmentRepository::resetInstance()
         {
             std::lock_guard<std::mutex> lock(s_mutex);
             s_instance.reset();
         }
 
         // ==================== Destructor ====================
-        PatientRepository::~PatientRepository() = default;
+        DepartmentRepository::~DepartmentRepository() = default;
 
         // ==================== Private Helper ====================
-        void PatientRepository::ensureLoaded() const
+        void DepartmentRepository::ensureLoaded() const
         {
             if (!m_isLoaded)
             {
-                const_cast<PatientRepository *>(this)->loadInternal();
+                const_cast<DepartmentRepository *>(this)->loadInternal();
             }
         }
 
         // ==================== CRUD Operations ====================
-        std::vector<Model::Patient> PatientRepository::getAll()
+        std::vector<Model::Department> DepartmentRepository::getAll()
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
-            return m_patients;
+            return m_departments;
         }
 
-        std::optional<Model::Patient> PatientRepository::getById(const std::string &id)
+        std::optional<Model::Department> DepartmentRepository::getById(const std::string &id)
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
             auto it = std::ranges::find_if(
-                m_patients, [&id](const auto &p)
+                m_departments, [&id](const auto &d)
                 {
-                    return p.getPatientID() == id;
+                    return d.getDepartmentID() == id;
                 }
             );
 
-            if (it != m_patients.end())
+            if (it != m_departments.end())
             {
                 return *it;
             }
             return std::nullopt;
         }
 
-        bool PatientRepository::add(const Model::Patient &patient)
+        bool DepartmentRepository::add(const Model::Department &department)
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            // Check if patient ID already exists (inline for efficiency)
-            for (const auto &p : m_patients)
+            // Check if department ID already exists (inline for efficiency)
+            for (const auto &d : m_departments)
             {
-                if (p.getPatientID() == patient.getPatientID())
+                if (d.getDepartmentID() == department.getDepartmentID())
                 {
                     return false;
                 }
             }
 
-            // Check if username already exists (inline for efficiency)
-            for (const auto &p : m_patients)
-            {
-                if (p.getUsername() == patient.getUsername())
-                {
-                    return false;
-                }
-            }
-
-            m_patients.push_back(patient);
+            m_departments.push_back(department);
             return saveInternal();
         }
 
-        bool PatientRepository::update(const Model::Patient &patient)
+        bool DepartmentRepository::update(const Model::Department &department)
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
             auto it = std::ranges::find_if(
-                m_patients, [&patient](const auto &p)
+                m_departments, [&department](const auto &d)
                 {
-                    return p.getPatientID() == patient.getPatientID();
+                    return d.getDepartmentID() == department.getDepartmentID();
                 }
             );
 
-            if (it != m_patients.end())
+            if (it != m_departments.end())
             {
-                *it = patient;
+                *it = department;
                 return saveInternal();
             }
             return false;
         }
 
-        bool PatientRepository::remove(const std::string &id)
+        bool DepartmentRepository::remove(const std::string &id)
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
             auto it = std::ranges::find_if(
-                m_patients, [&id](const auto &p)
+                m_departments, [&id](const auto &d)
                 {
-                    return p.getPatientID() == id;
+                    return d.getDepartmentID() == id;
                 }
             );
 
-            if (it == m_patients.end())
+            if (it == m_departments.end())
             {
-                return false; // Not found
+                return false;
             }
 
-            m_patients.erase(it);
+            m_departments.erase(it);
             return saveInternal();
         }
 
         // ==================== Persistence ====================
-        bool PatientRepository::save()
+        bool DepartmentRepository::save()
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             return saveInternal();
         }
 
-        bool PatientRepository::saveInternal()
+        bool DepartmentRepository::saveInternal()
         {
             try
             {
                 std::vector<std::string> lines;
 
                 // Add header
-                auto header = FileHelper::getFileHeader("Patient");
+                auto header = FileHelper::getFileHeader("Department");
                 std::stringstream hss(header);
                 std::string headerLine;
                 while (std::getline(hss, headerLine))
@@ -173,9 +164,9 @@ namespace HMS
                 }
 
                 // Add data
-                for (const auto &patient : m_patients)
+                for (const auto &department : m_departments)
                 {
-                    lines.push_back(patient.serialize());
+                    lines.push_back(department.serialize());
                 }
 
                 FileHelper::createBackup(m_filePath);
@@ -187,13 +178,13 @@ namespace HMS
             }
         }
 
-        bool PatientRepository::load()
+        bool DepartmentRepository::load()
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             return loadInternal();
         }
 
-        bool PatientRepository::loadInternal()
+        bool DepartmentRepository::loadInternal()
         {
             try
             {
@@ -210,14 +201,14 @@ namespace HMS
 
                 std::vector<std::string> lines = FileHelper::readLines(m_filePath);
 
-                m_patients.clear();
+                m_departments.clear();
 
                 for (const auto &line : lines)
                 {
-                    auto patient = Model::Patient::deserialize(line);
-                    if (patient)
+                    auto department = Model::Department::deserialize(line);
+                    if (department)
                     {
-                        m_patients.push_back(patient.value());
+                        m_departments.push_back(department.value());
                     }
                 }
 
@@ -232,130 +223,164 @@ namespace HMS
         }
 
         // ==================== Query Operations ====================
-        size_t PatientRepository::count() const
+        size_t DepartmentRepository::count() const
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
-            return m_patients.size();
+            return m_departments.size();
         }
 
-        bool PatientRepository::exists(const std::string &id) const
+        bool DepartmentRepository::exists(const std::string &id) const
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
             return std::ranges::any_of(
-                m_patients, [&id](const auto &p)
+                m_departments, [&id](const auto &d)
                 {
-                    return p.getPatientID() == id;
+                    return d.getDepartmentID() == id;
                 }
             );
         }
 
-        bool PatientRepository::clear()
+        bool DepartmentRepository::clear()
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
-            m_patients.clear();
+            m_departments.clear();
             m_isLoaded = true;
             return saveInternal();
         }
 
-        // ==================== Patient-Specific Queries ====================
-        std::optional<Model::Patient> PatientRepository::getByUsername(const std::string &username)
+        // ==================== Department-Specific Queries ====================
+        std::optional<Model::Department> DepartmentRepository::getByName(const std::string &name)
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
             auto it = std::ranges::find_if(
-                m_patients, [&username](const auto &p)
+                m_departments, [&name](const auto &d)
                 {
-                    return p.getUsername() == username;
+                    const std::string &deptName = d.getName();
+                    if (deptName.size() != name.size()) return false;
+                    return std::equal(deptName.begin(), deptName.end(), name.begin(),
+                        [](char a, char b) { return std::tolower(static_cast<unsigned char>(a)) ==
+                                                    std::tolower(static_cast<unsigned char>(b)); });
                 }
             );
 
-            if (it != m_patients.end())
+            if (it != m_departments.end())
             {
                 return *it;
             }
             return std::nullopt;
         }
 
-        std::vector<Model::Patient> PatientRepository::searchByName(const std::string &name)
+        std::optional<Model::Department> DepartmentRepository::getByHeadDoctor(const std::string &doctorID)
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            std::vector<Model::Patient> results;
-            std::ranges::copy_if(
-                m_patients, std::back_inserter(results),
-                [&name](const auto &p)
+            auto it = std::ranges::find_if(
+                m_departments, [&doctorID](const auto &d)
                 {
-                    return Utils::containsIgnoreCase(p.getName(), name);
+                    return d.getHeadDoctorID() == doctorID;
                 }
             );
 
-            return results;
-        }
-
-        std::vector<Model::Patient> PatientRepository::searchByPhone(const std::string &phone)
-        {
-            std::lock_guard<std::mutex> lock(m_dataMutex);
-            ensureLoaded();
-
-            std::vector<Model::Patient> results;
-            std::ranges::copy_if(
-                m_patients, std::back_inserter(results),
-                [&phone](const auto &p)
-                {
-                    return p.getPhone().find(phone) != std::string::npos;
-                }
-            );
-
-            return results;
-        }
-
-        std::vector<Model::Patient> PatientRepository::search(const std::string &keyword)
-        {
-            std::lock_guard<std::mutex> lock(m_dataMutex);
-            ensureLoaded();
-
-            std::vector<Model::Patient> results;
-            std::ranges::copy_if(
-                m_patients, std::back_inserter(results),
-                [&keyword](const auto &p)
-                {
-                    return Utils::containsIgnoreCase(p.getName(), keyword) ||
-                           Utils::containsIgnoreCase(p.getPhone(), keyword) ||
-                           Utils::containsIgnoreCase(p.getAddress(), keyword);
-                }
-            );
-
-            return results;
-        }
-
-        std::string PatientRepository::getNextId()
-        {
-            std::lock_guard<std::mutex> lock(m_dataMutex);
-            ensureLoaded();
-
-            if (m_patients.empty())
+            if (it != m_departments.end())
             {
-                return std::format("{}001", Constants::PATIENT_ID_PREFIX);
+                return *it;
+            }
+            return std::nullopt;
+        }
+
+        std::optional<Model::Department> DepartmentRepository::getDepartmentByDoctor(const std::string &doctorID)
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            for (const auto &d : m_departments)
+            {
+                const auto &doctors = d.getDoctorIDs();
+                if (std::ranges::find(doctors, doctorID) != doctors.end())
+                {
+                    return d;
+                }
+            }
+            return std::nullopt;
+        }
+
+        std::vector<Model::Department> DepartmentRepository::getDepartmentsByDoctor(const std::string &doctorID)
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            std::vector<Model::Department> results;
+            for (const auto &d : m_departments)
+            {
+                const auto &doctors = d.getDoctorIDs();
+                if (std::ranges::find(doctors, doctorID) != doctors.end())
+                {
+                    results.push_back(d);
+                }
+            }
+            return results;
+        }
+
+        std::vector<Model::Department> DepartmentRepository::searchByName(const std::string &name)
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            std::vector<Model::Department> results;
+            std::ranges::copy_if(
+                m_departments, std::back_inserter(results),
+                [&name](const auto &d)
+                {
+                    return Utils::containsIgnoreCase(d.getName(), name);
+                }
+            );
+
+            return results;
+        }
+
+        std::vector<std::string> DepartmentRepository::getAllNames()
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            std::vector<std::string> names;
+            names.reserve(m_departments.size());
+            for (const auto &d : m_departments)
+            {
+                names.push_back(d.getName());
+            }
+            return names;
+        }
+
+        std::string DepartmentRepository::getNextId()
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            if (m_departments.empty())
+            {
+                return std::format("{}001", Constants::DEPARTMENT_ID_PREFIX);
             }
 
             // Find max ID number
             int maxID = 0;
-            const std::string prefix = Constants::PATIENT_ID_PREFIX;
+            const std::string prefix = Constants::DEPARTMENT_ID_PREFIX;
 
-            for (const auto &patient : m_patients)
+            for (const auto &department : m_departments)
             {
-                const std::string &patientID = patient.getPatientID();
+                const std::string &departmentID = department.getDepartmentID();
 
                 // Only process valid format: prefix + digits
-                if (patientID.length() > prefix.length() &&
-                    patientID.starts_with(prefix))
+                if (departmentID.length() > prefix.length() &&
+                    departmentID.starts_with(prefix))
                 {
-                    std::string numPart = patientID.substr(prefix.length());
+                    std::string numPart = departmentID.substr(prefix.length());
 
                     // Validate numeric before parsing
                     if (Utils::isNumeric(numPart))
@@ -377,14 +402,14 @@ namespace HMS
         }
 
         // ==================== File Path Management ====================
-        void PatientRepository::setFilePath(const std::string &filePath)
+        void DepartmentRepository::setFilePath(const std::string &filePath)
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             m_filePath = filePath;
-            m_isLoaded = false; // Force reload with new file
+            m_isLoaded = false;
         }
 
-        std::string PatientRepository::getFilePath() const
+        std::string DepartmentRepository::getFilePath() const
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             return m_filePath;

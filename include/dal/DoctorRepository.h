@@ -31,9 +31,15 @@ namespace HMS
             std::vector<Model::Doctor> m_doctors;
             std::string m_filePath;
             bool m_isLoaded;
+            mutable std::mutex m_dataMutex;
 
             // ==================== Private Constructor ====================
             DoctorRepository();
+
+            // ==================== Private Helpers ====================
+            void ensureLoaded() const;
+            bool loadInternal();
+            bool saveInternal();
 
         public:
             // ==================== Singleton Access ====================

@@ -13,15 +13,13 @@ namespace HMS
 {
     namespace DAL
     {
-
-        // ==================== Static Members ====================
+        // ==================== Static Members Initialization ====================
         std::unique_ptr<DoctorRepository> DoctorRepository::s_instance = nullptr;
         std::mutex DoctorRepository::s_mutex;
 
         // ==================== Private Constructor ====================
         DoctorRepository::DoctorRepository()
-            : m_filePath(Constants::DOCTOR_FILE),
-              m_isLoaded(false)
+            : m_filePath(Constants::DOCTOR_FILE), m_isLoaded(false)
         {
         }
 
@@ -29,12 +27,10 @@ namespace HMS
         DoctorRepository *DoctorRepository::getInstance()
         {
             std::lock_guard<std::mutex> lock(s_mutex);
-
             if (!s_instance)
             {
                 s_instance = std::unique_ptr<DoctorRepository>(new DoctorRepository());
             }
-
             return s_instance.get();
         }
 
@@ -47,120 +43,129 @@ namespace HMS
         // ==================== Destructor ====================
         DoctorRepository::~DoctorRepository() = default;
 
-        // ==================== CRUD Operations ====================
-        std::vector<Model::Doctor> DoctorRepository::getAll()
+        // ==================== Private Helper ====================
+        void DoctorRepository::ensureLoaded() const
         {
             if (!m_isLoaded)
             {
-                load();
+                const_cast<DoctorRepository *>(this)->loadInternal();
             }
+        }
 
+        // ==================== CRUD Operations ====================
+        std::vector<Model::Doctor> DoctorRepository::getAll()
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
             return m_doctors;
         }
 
         std::optional<Model::Doctor> DoctorRepository::getById(const std::string &id)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            auto it = std::find_if(m_doctors.begin(), m_doctors.end(),
-                                   [&id](const Model::Doctor &doctor)
-                                   {
-                                       return doctor.getDoctorID() == id;
-                                   });
+            auto it = std::ranges::find_if(
+                m_doctors, [&id](const auto &d)
+                {
+                    return d.getDoctorID() == id;
+                }
+            );
 
             if (it != m_doctors.end())
             {
                 return *it;
             }
-
             return std::nullopt;
         }
 
         bool DoctorRepository::add(const Model::Doctor &doctor)
         {
-            if (!m_isLoaded)
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            // Check if doctor ID already exists (inline for efficiency)
+            for (const auto &d : m_doctors)
             {
-                load();
+                if (d.getDoctorID() == doctor.getDoctorID())
+                {
+                    return false;
+                }
             }
 
-            // Check if doctor ID already exists
-            if (exists(doctor.getDoctorID()))
+            // Check if username already exists (inline for efficiency)
+            for (const auto &d : m_doctors)
             {
-                return false;
-            }
-
-            // Check if username already exists
-            if (getByUsername(doctor.getUsername()).has_value())
-            {
-                return false;
+                if (d.getUsername() == doctor.getUsername())
+                {
+                    return false;
+                }
             }
 
             m_doctors.push_back(doctor);
-            return save();
+            return saveInternal();
         }
 
         bool DoctorRepository::update(const Model::Doctor &doctor)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            // find doctor to update
-            auto it = std::find_if(m_doctors.begin(), m_doctors.end(),
-                                   [&doctor](const Model::Doctor &d)
-                                   {
-                                       return d.getDoctorID() == doctor.getDoctorID();
-                                   });
+            auto it = std::ranges::find_if(
+                m_doctors, [&doctor](const auto &d)
+                {
+                    return d.getDoctorID() == doctor.getDoctorID();
+                }
+            );
 
             if (it == m_doctors.end())
             {
-                return false; // Doctor not found
+                return false;
             }
 
-            // Check if the new username is duplicated with another doctor
-            auto duplicateUsername = std::find_if(m_doctors.begin(), m_doctors.end(),
-                                                  [&doctor](const Model::Doctor &d)
-                                                  {
-                                                      return d.getUsername() == doctor.getUsername() && d.getDoctorID() != doctor.getDoctorID();
-                                                  });
-
-            if (duplicateUsername != m_doctors.end())
+            // Check if username conflicts with another doctor
+            for (const auto &d : m_doctors)
             {
-                return false; // Username already taken by another doctor
+                if (d.getDoctorID() != doctor.getDoctorID() &&
+                    d.getUsername() == doctor.getUsername())
+                {
+                    return false;
+                }
             }
 
             *it = doctor;
-            return save();
+            return saveInternal();
         }
 
         bool DoctorRepository::remove(const std::string &id)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            auto it = std::find_if(m_doctors.begin(), m_doctors.end(),
-                                   [&id](const Model::Doctor &doctor)
-                                   {
-                                       return doctor.getDoctorID() == id;
-                                   });
+            auto it = std::ranges::find_if(
+                m_doctors, [&id](const auto &d)
+                {
+                    return d.getDoctorID() == id;
+                }
+            );
 
             if (it == m_doctors.end())
             {
-                return false; // Not found
+                return false;
             }
 
             m_doctors.erase(it);
-            return save();
+            return saveInternal();
         }
 
         // ==================== Persistence ====================
         bool DoctorRepository::save()
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            return saveInternal();
+        }
+
+        bool DoctorRepository::saveInternal()
         {
             try
             {
@@ -194,6 +199,12 @@ namespace HMS
         }
 
         bool DoctorRepository::load()
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            return loadInternal();
+        }
+
+        bool DoctorRepository::loadInternal()
         {
             try
             {
@@ -232,150 +243,136 @@ namespace HMS
         }
 
         // ==================== Query Operations ====================
-
         size_t DoctorRepository::count() const
         {
-            if (!m_isLoaded)
-            {
-                const_cast<DoctorRepository *>(this)->load();
-            }
-
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
             return m_doctors.size();
         }
 
         bool DoctorRepository::exists(const std::string &id) const
         {
-            if (!m_isLoaded)
-            {
-                const_cast<DoctorRepository *>(this)->load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            return std::any_of(m_doctors.begin(), m_doctors.end(),
-                               [&id](const Model::Doctor &doctor)
-                               {
-                                   return doctor.getDoctorID() == id;
-                               });
+            return std::ranges::any_of(
+                m_doctors, [&id](const auto &d)
+                {
+                    return d.getDoctorID() == id;
+                }
+            );
         }
 
         bool DoctorRepository::clear()
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             m_doctors.clear();
             m_isLoaded = true;
-            return save();
+            return saveInternal();
         }
 
         // ==================== Doctor-Specific Queries ====================
         std::optional<Model::Doctor> DoctorRepository::getByUsername(const std::string &username)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            auto it = std::find_if(m_doctors.begin(), m_doctors.end(),
-                                   [&username](const Model::Doctor &doctor)
-                                   {
-                                       return doctor.getUsername() == username;
-                                   });
+            auto it = std::ranges::find_if(
+                m_doctors, [&username](const auto &d)
+                {
+                    return d.getUsername() == username;
+                }
+            );
 
             if (it != m_doctors.end())
             {
                 return *it;
             }
-
             return std::nullopt;
         }
 
         std::vector<Model::Doctor> DoctorRepository::getBySpecialization(const std::string &specialization)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<Model::Doctor> results;
-
-            for (const auto &doctor : m_doctors)
-            {
-                if (Utils::containsIgnoreCase(doctor.getSpecialization(), specialization))
+            std::ranges::copy_if(
+                m_doctors, std::back_inserter(results),
+                [&specialization](const auto &d)
                 {
-                    results.push_back(doctor);
+                    return Utils::containsIgnoreCase(d.getSpecialization(), specialization);
                 }
-            }
+            );
 
             return results;
         }
 
         std::vector<Model::Doctor> DoctorRepository::searchByName(const std::string &name)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<Model::Doctor> results;
-
-            for (const auto &doctor : m_doctors)
-            {
-                if (Utils::containsIgnoreCase(doctor.getName(), name))
+            std::ranges::copy_if(
+                m_doctors, std::back_inserter(results),
+                [&name](const auto &d)
                 {
-                    results.push_back(doctor);
+                    return Utils::containsIgnoreCase(d.getName(), name);
                 }
-            }
+            );
 
             return results;
         }
 
         std::vector<Model::Doctor> DoctorRepository::search(const std::string &keyword)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<Model::Doctor> results;
-
-            for (const auto &doctor : m_doctors)
-            {
-                if (Utils::containsIgnoreCase(doctor.getName(), keyword) ||
-                    Utils::containsIgnoreCase(doctor.getSpecialization(), keyword) ||
-                    Utils::containsIgnoreCase(doctor.getDoctorID(), keyword))
+            std::ranges::copy_if(
+                m_doctors, std::back_inserter(results),
+                [&keyword](const auto &d)
                 {
-                    results.push_back(doctor);
+                    return Utils::containsIgnoreCase(d.getDoctorID(), keyword) ||
+                           Utils::containsIgnoreCase(d.getName(), keyword) ||
+                           Utils::containsIgnoreCase(d.getSpecialization(), keyword);
                 }
-            }
+            );
 
             return results;
         }
 
         std::vector<std::string> DoctorRepository::getAllSpecializations()
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::set<std::string> specializations;
-
-            for (const auto &doctor : m_doctors)
+            std::set<std::string> uniqueSpecs;
+            for (const auto &d : m_doctors)
             {
-                std::string spec = Utils::trim(doctor.getSpecialization());
+                std::string spec = Utils::trim(d.getSpecialization());
                 if (!spec.empty())
                 {
-                    specializations.insert(spec);
+                    uniqueSpecs.insert(spec);
                 }
             }
 
-            return std::vector<std::string>(specializations.begin(), specializations.end());
+            return std::vector<std::string>(uniqueSpecs.begin(), uniqueSpecs.end());
         }
 
         std::string DoctorRepository::getNextId()
         {
-            if (!m_isLoaded)
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            if (m_doctors.empty())
             {
-                load();
+                return std::format("{}001", Constants::DOCTOR_ID_PREFIX);
             }
 
+            // Find max ID number
             int maxID = 0;
             const std::string prefix = Constants::DOCTOR_ID_PREFIX;
 
@@ -385,10 +382,11 @@ namespace HMS
 
                 // Only process valid format: prefix + digits
                 if (doctorID.length() > prefix.length() &&
-                    doctorID.substr(0, prefix.length()) == prefix)
+                    doctorID.starts_with(prefix))
                 {
                     std::string numPart = doctorID.substr(prefix.length());
 
+                    // Validate numeric before parsing
                     if (Utils::isNumeric(numPart))
                     {
                         try
@@ -407,15 +405,17 @@ namespace HMS
             return std::format("{}{:03d}", prefix, maxID + 1);
         }
 
-        // ==================== File Path ====================
+        // ==================== File Path Management ====================
         void DoctorRepository::setFilePath(const std::string &filePath)
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             m_filePath = filePath;
             m_isLoaded = false;
         }
 
         std::string DoctorRepository::getFilePath() const
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             return m_filePath;
         }
 
