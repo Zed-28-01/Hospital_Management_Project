@@ -28,9 +28,29 @@ private:
     std::vector<Model::Department> m_departments;
     std::string m_filePath;
     bool m_isLoaded;
+    mutable std::mutex m_dataMutex;
 
     // ==================== Private Constructor ====================
     DepartmentRepository();
+
+    // ==================== Private Helpers ====================
+
+    /**
+     * @brief Ensure data is loaded (const-safe helper)
+     */
+    void ensureLoaded() const;
+
+    /**
+     * @brief Internal load implementation (without lock)
+     * @return True if successful
+     */
+    bool loadInternal();
+
+    /**
+     * @brief Internal save implementation (without lock)
+     * @return True if successful
+     */
+    bool saveInternal();
 
 public:
     // ==================== Singleton Access ====================
