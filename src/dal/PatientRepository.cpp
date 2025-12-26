@@ -12,13 +12,16 @@ namespace HMS
 {
     namespace DAL
     {
+        // ==================== Static Members Initialization ====================
         std::unique_ptr<PatientRepository> PatientRepository::s_instance = nullptr;
         std::mutex PatientRepository::s_mutex;
 
         // ==================== Private Constructor ====================
         PatientRepository::PatientRepository()
             : m_filePath(Constants::PATIENT_FILE),
-              m_isLoaded(false) {}
+              m_isLoaded(false)
+        {
+        }
 
         // ==================== Singleton Access ====================
         PatientRepository *PatientRepository::getInstance()
@@ -37,31 +40,37 @@ namespace HMS
             s_instance.reset();
         }
 
+        // ==================== Destructor ====================
         PatientRepository::~PatientRepository() = default;
+
+        // ==================== Private Helper ====================
+        void PatientRepository::ensureLoaded() const
+        {
+            if (!m_isLoaded)
+            {
+                const_cast<PatientRepository *>(this)->loadInternal();
+            }
+        }
 
         // ==================== CRUD Operations ====================
         std::vector<Model::Patient> PatientRepository::getAll()
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
-
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
             return m_patients;
         }
 
         std::optional<Model::Patient> PatientRepository::getById(const std::string &id)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            auto it = std::find_if(m_patients.begin(), m_patients.end(),
-                                   [&id](const Model::Patient &p)
-                                   {
-                                       return p.getPatientID() == id;
-                                   });
+            auto it = std::ranges::find_if(
+                m_patients, [&id](const auto &p)
+                {
+                    return p.getPatientID() == id;
+                }
+            );
 
             if (it != m_patients.end())
             {
@@ -72,62 +81,62 @@ namespace HMS
 
         bool PatientRepository::add(const Model::Patient &patient)
         {
-            if (!m_isLoaded)
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            // Check if patient ID already exists (inline for efficiency)
+            for (const auto &p : m_patients)
             {
-                load();
+                if (p.getPatientID() == patient.getPatientID())
+                {
+                    return false;
+                }
             }
 
-            // Check if patient ID already exists
-            if (exists(patient.getPatientID()))
+            // Check if username already exists (inline for efficiency)
+            for (const auto &p : m_patients)
             {
-                return false;
-            }
-
-            // Check if username already exists
-            if (getByUsername(patient.getUsername()).has_value())
-            {
-                return false;
+                if (p.getUsername() == patient.getUsername())
+                {
+                    return false;
+                }
             }
 
             m_patients.push_back(patient);
-            return save();
+            return saveInternal();
         }
 
         bool PatientRepository::update(const Model::Patient &patient)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            auto it = std::find_if(m_patients.begin(), m_patients.end(),
-                                   [&patient](const Model::Patient &p)
-                                   {
-                                       return p.getPatientID() == patient.getPatientID();
-                                   });
+            auto it = std::ranges::find_if(
+                m_patients, [&patient](const auto &p)
+                {
+                    return p.getPatientID() == patient.getPatientID();
+                }
+            );
 
             if (it != m_patients.end())
             {
                 *it = patient;
-                return save();
+                return saveInternal();
             }
             return false;
         }
 
         bool PatientRepository::remove(const std::string &id)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            auto it = std::find_if(
-                m_patients.begin(),
-                m_patients.end(),
-                [&id](const Model::Patient &p)
+            auto it = std::ranges::find_if(
+                m_patients, [&id](const auto &p)
                 {
                     return p.getPatientID() == id;
-                });
+                }
+            );
 
             if (it == m_patients.end())
             {
@@ -135,11 +144,17 @@ namespace HMS
             }
 
             m_patients.erase(it);
-            return save();
+            return saveInternal();
         }
 
         // ==================== Persistence ====================
         bool PatientRepository::save()
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            return saveInternal();
+        }
+
+        bool PatientRepository::saveInternal()
         {
             try
             {
@@ -173,6 +188,12 @@ namespace HMS
         }
 
         bool PatientRepository::load()
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            return loadInternal();
+        }
+
+        bool PatientRepository::loadInternal()
         {
             try
             {
@@ -213,48 +234,44 @@ namespace HMS
         // ==================== Query Operations ====================
         size_t PatientRepository::count() const
         {
-            if (!m_isLoaded)
-            {
-                const_cast<PatientRepository *>(this)->load();
-            }
-
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
             return m_patients.size();
         }
 
         bool PatientRepository::exists(const std::string &id) const
         {
-            if (!m_isLoaded)
-            {
-                const_cast<PatientRepository *>(this)->load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            return std::any_of(m_patients.begin(), m_patients.end(),
-                               [&id](const Model::Patient &p)
-                               {
-                                   return p.getPatientID() == id;
-                               });
+            return std::ranges::any_of(
+                m_patients, [&id](const auto &p)
+                {
+                    return p.getPatientID() == id;
+                }
+            );
         }
 
         bool PatientRepository::clear()
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             m_patients.clear();
             m_isLoaded = true;
-            return save();
+            return saveInternal();
         }
 
         // ==================== Patient-Specific Queries ====================
         std::optional<Model::Patient> PatientRepository::getByUsername(const std::string &username)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            auto it = std::find_if(m_patients.begin(), m_patients.end(),
-                                   [&username](const Model::Patient &p)
-                                   {
-                                       return p.getUsername() == username;
-                                   });
+            auto it = std::ranges::find_if(
+                m_patients, [&username](const auto &p)
+                {
+                    return p.getUsername() == username;
+                }
+            );
 
             if (it != m_patients.end())
             {
@@ -265,73 +282,68 @@ namespace HMS
 
         std::vector<Model::Patient> PatientRepository::searchByName(const std::string &name)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<Model::Patient> results;
-
-            for (const auto &p : m_patients)
-            {
-                if (Utils::containsIgnoreCase(p.getName(), name))
+            std::ranges::copy_if(
+                m_patients, std::back_inserter(results),
+                [&name](const auto &p)
                 {
-                    results.push_back(p);
+                    return Utils::containsIgnoreCase(p.getName(), name);
                 }
-            }
+            );
 
             return results;
         }
 
         std::vector<Model::Patient> PatientRepository::searchByPhone(const std::string &phone)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<Model::Patient> results;
-
-            for (const auto &p : m_patients)
-            {
-                if (p.getPhone().find(phone) != std::string::npos)
+            std::ranges::copy_if(
+                m_patients, std::back_inserter(results),
+                [&phone](const auto &p)
                 {
-                    results.push_back(p);
+                    return p.getPhone().find(phone) != std::string::npos;
                 }
-            }
+            );
 
             return results;
         }
 
         std::vector<Model::Patient> PatientRepository::search(const std::string &keyword)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<Model::Patient> results;
-
-            for (const auto &p : m_patients)
-            {
-                if (Utils::containsIgnoreCase(p.getName(), keyword) ||
-                    Utils::containsIgnoreCase(p.getPhone(), keyword) ||
-                    Utils::containsIgnoreCase(p.getAddress(), keyword))
+            std::ranges::copy_if(
+                m_patients, std::back_inserter(results),
+                [&keyword](const auto &p)
                 {
-                    results.push_back(p);
+                    return Utils::containsIgnoreCase(p.getName(), keyword) ||
+                           Utils::containsIgnoreCase(p.getPhone(), keyword) ||
+                           Utils::containsIgnoreCase(p.getAddress(), keyword);
                 }
-            }
+            );
 
             return results;
         }
 
         std::string PatientRepository::getNextId()
         {
-            if (!m_isLoaded)
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            if (m_patients.empty())
             {
-                load();
+                return std::format("{}001", Constants::PATIENT_ID_PREFIX);
             }
 
+            // Find max ID number
             int maxID = 0;
             const std::string prefix = Constants::PATIENT_ID_PREFIX;
 
@@ -341,10 +353,11 @@ namespace HMS
 
                 // Only process valid format: prefix + digits
                 if (patientID.length() > prefix.length() &&
-                    patientID.substr(0, prefix.length()) == prefix)
+                    patientID.starts_with(prefix))
                 {
                     std::string numPart = patientID.substr(prefix.length());
 
+                    // Validate numeric before parsing
                     if (Utils::isNumeric(numPart))
                     {
                         try
@@ -363,16 +376,19 @@ namespace HMS
             return std::format("{}{:03d}", prefix, maxID + 1);
         }
 
-        // ==================== File Path ====================
+        // ==================== File Path Management ====================
         void PatientRepository::setFilePath(const std::string &filePath)
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             m_filePath = filePath;
-            m_isLoaded = false;
+            m_isLoaded = false; // Force reload with new file
         }
 
         std::string PatientRepository::getFilePath() const
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             return m_filePath;
         }
+
     } // namespace DAL
 } // namespace HMS

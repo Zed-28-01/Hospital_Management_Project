@@ -42,7 +42,7 @@ protected:
         const std::string& name = "Cardiology",
         const std::vector<std::string>& doctors = {}
     ) {
-        Department d(id, name);
+        Department d(id, name, "Test Department", "");
         for (const auto& doc : doctors) {
             d.addDoctor(doc);
         }
@@ -59,10 +59,20 @@ TEST_F(DepartmentRepositoryTest, GetInstance_ReturnsSameInstance) {
 
 TEST_F(DepartmentRepositoryTest, ResetInstance_CreatesNewInstance) {
     auto* oldInstance = DepartmentRepository::getInstance();
-    DepartmentRepository::resetInstance();
-    auto* newInstance = DepartmentRepository::getInstance();
+    oldInstance->add(createDepartment("DEP999"));
+    EXPECT_EQ(oldInstance->count(), 1u);
 
-    EXPECT_NE(oldInstance, newInstance);
+    DepartmentRepository::resetInstance();
+
+    // Clear the test file
+    std::ofstream ofs(TEST_FILE, std::ios::trunc);
+    ofs.close();
+
+    auto* newInstance = DepartmentRepository::getInstance();
+    newInstance->setFilePath(TEST_FILE); // Restore test file path
+
+    // New instance should be in fresh state
+    EXPECT_EQ(newInstance->count(), 0u);
 }
 
 /* ===================== ADD ===================== */
@@ -112,7 +122,7 @@ TEST_F(DepartmentRepositoryTest, GetByName_NotFound) {
 TEST_F(DepartmentRepositoryTest, Update_ExistingDepartment) {
     repo->add(createDepartment("D001", "Old"));
 
-    Department updated("D001", "New");
+    Department updated("D001", "New", "Updated Department", "");
     EXPECT_TRUE(repo->update(updated));
 
     auto dep = repo->getById("D001");
@@ -228,23 +238,23 @@ TEST_F(DepartmentRepositoryTest, GetDepartmentByDoctor_NotFound) {
 /* ===================== GET NEXT ID ===================== */
 
 TEST_F(DepartmentRepositoryTest, GetNextId_EmptyRepo) {
-    EXPECT_EQ(repo->getNextId(), "D001");
+    EXPECT_EQ(repo->getNextId(), "DEP001");
 }
 
 TEST_F(DepartmentRepositoryTest, GetNextId_WithGaps) {
-    repo->add(createDepartment("D001"));
-    repo->add(createDepartment("D005"));
-    repo->add(createDepartment("D003"));
+    repo->add(createDepartment("DEP001"));
+    repo->add(createDepartment("DEP005"));
+    repo->add(createDepartment("DEP003"));
 
-    EXPECT_EQ(repo->getNextId(), "D006");
+    EXPECT_EQ(repo->getNextId(), "DEP006");
 }
 
 TEST_F(DepartmentRepositoryTest, GetNextId_IgnoresInvalidIDs) {
-    repo->add(createDepartment("D001"));
+    repo->add(createDepartment("DEP001"));
     repo->add(createDepartment("XYZ"));
-    repo->add(createDepartment("D002"));
+    repo->add(createDepartment("DEP002"));
 
-    EXPECT_EQ(repo->getNextId(), "D003");
+    EXPECT_EQ(repo->getNextId(), "DEP003");
 }
 
 /* ===================== PERSISTENCE ===================== */

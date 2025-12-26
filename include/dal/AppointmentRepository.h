@@ -33,9 +33,15 @@ namespace HMS
             std::vector<Model::Appointment> m_appointments;
             std::string m_filePath;
             bool m_isLoaded;
+            mutable std::mutex m_dataMutex;
 
             // ==================== Private Constructor ====================
             AppointmentRepository();
+
+            // ==================== Private Helpers ====================
+            void ensureLoaded() const;
+            bool loadInternal();
+            bool saveInternal();
 
         public:
             // ==================== Singleton Access ====================
