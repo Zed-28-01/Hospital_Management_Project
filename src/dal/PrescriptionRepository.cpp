@@ -13,9 +13,9 @@ namespace HMS
     namespace DAL
     {
         // Using declarations for cleaner code
-        using HMS::Result;
-        using HMS::ID;
         using HMS::Date;
+        using HMS::ID;
+        using HMS::Result;
         using Model::Prescription;
         using Model::PrescriptionItem;
 
@@ -31,12 +31,13 @@ namespace HMS
         {
             FileHelper::createDirectoryIfNotExists(Constants::DATA_DIR);
             FileHelper::createFileIfNotExists(m_filePath);
-            load();
+            // Note: Lazy loading - data will be loaded on first access
         }
 
         PrescriptionRepository::~PrescriptionRepository()
         {
-            save();
+            // Do NOT save in destructor - let user explicitly save
+            // or save will be called in resetInstance()
         }
 
         // ==================== Singleton Access ====================
@@ -99,7 +100,7 @@ namespace HMS
                 load();
             }
 
-            // Check if prescription ID already exists (single pass)
+            // Check if prescription ID already exists
             const std::string &prescriptionID = prescription.getPrescriptionID();
             auto it = std::find_if(m_prescriptions.begin(), m_prescriptions.end(),
                                    [&prescriptionID](const Prescription &p)
@@ -109,7 +110,23 @@ namespace HMS
 
             if (it != m_prescriptions.end())
             {
-                return false; // Already exists
+                return false; // Prescription ID already exists
+            }
+
+            // Check if appointment already has a prescription
+            const std::string &appointmentID = prescription.getAppointmentID();
+            if (!appointmentID.empty())
+            {
+                auto aptIt = std::find_if(m_prescriptions.begin(), m_prescriptions.end(),
+                                          [&appointmentID](const Prescription &p)
+                                          {
+                                              return p.getAppointmentID() == appointmentID;
+                                          });
+
+                if (aptIt != m_prescriptions.end())
+                {
+                    return false; // Appointment already has a prescription
+                }
             }
 
             m_prescriptions.push_back(prescription);
@@ -201,11 +218,13 @@ namespace HMS
 
         size_t PrescriptionRepository::count() const
         {
+            // Note: Does not lazy load. Call load() or getAll() first if needed.
             return m_prescriptions.size();
         }
 
         bool PrescriptionRepository::exists(const std::string &id) const
         {
+            // Note: Does not lazy load. Call load() or getAll() first if needed.
             return std::any_of(m_prescriptions.begin(), m_prescriptions.end(),
                                [&id](const Prescription &p)
                                {
@@ -216,6 +235,7 @@ namespace HMS
         bool PrescriptionRepository::clear()
         {
             m_prescriptions.clear();
+            m_isLoaded = true; // Still loaded, just empty
             return save();
         }
 
@@ -353,7 +373,7 @@ namespace HMS
             }
 
             std::vector<Prescription> result;
-            const Date &targetDate = date;  // Using Date type alias for clarity
+            const Date &targetDate = date; // Using Date type alias for clarity
 
             std::copy_if(m_prescriptions.begin(), m_prescriptions.end(),
                          std::back_inserter(result),
@@ -366,7 +386,7 @@ namespace HMS
         }
 
         std::vector<Prescription> PrescriptionRepository::getByDateRange(const std::string &startDate,
-                                                                                 const std::string &endDate)
+                                                                         const std::string &endDate)
         {
             if (!m_isLoaded)
             {
@@ -374,7 +394,7 @@ namespace HMS
             }
 
             std::vector<Prescription> result;
-            const Date &start = startDate;  // Using Date type alias
+            const Date &start = startDate; // Using Date type alias
             const Date &end = endDate;
 
             std::copy_if(m_prescriptions.begin(), m_prescriptions.end(),
@@ -404,7 +424,7 @@ namespace HMS
             }
 
             std::vector<Prescription> result;
-            const ID &targetMedicineId = medicineID;  // Using ID type alias
+            const ID &targetMedicineId = medicineID; // Using ID type alias
 
             for (const auto &prescription : m_prescriptions)
             {
@@ -480,7 +500,7 @@ namespace HMS
                 load();
             }
 
-            const ID &prescriptionId = id;  // Using ID type alias for clarity
+            const ID &prescriptionId = id; // Using ID type alias for clarity
 
             auto it = std::find_if(m_prescriptions.begin(), m_prescriptions.end(),
                                    [&prescriptionId](const Prescription &p)
@@ -506,7 +526,7 @@ namespace HMS
                 load();
             }
 
-            const ID &prescriptionId = id;  // Using ID type alias for clarity
+            const ID &prescriptionId = id; // Using ID type alias for clarity
 
             auto it = std::find_if(m_prescriptions.begin(), m_prescriptions.end(),
                                    [&prescriptionId](const Prescription &p)

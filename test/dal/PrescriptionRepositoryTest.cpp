@@ -37,6 +37,7 @@ protected:
         if (repo)
         {
             repo->clear();
+            repo->save(); // Explicit save (destructor no longer saves)
             HMS::DAL::PrescriptionRepository::resetInstance();
         }
 
@@ -139,7 +140,10 @@ TEST_F(PrescriptionRepositoryTest, AddPrescriptionSuccess)
     auto presc = createTestPrescription("PRE001", "APT001", "patient001", "D001");
 
     EXPECT_TRUE(repo->add(presc));
-    EXPECT_EQ(repo->count(), 1);
+
+    // Need to load after getInstance or use getAll()
+    auto all = repo->getAll();
+    EXPECT_EQ(all.size(), 1);
 }
 
 TEST_F(PrescriptionRepositoryTest, AddDuplicatePrescriptionFails)
@@ -148,8 +152,28 @@ TEST_F(PrescriptionRepositoryTest, AddDuplicatePrescriptionFails)
     auto presc2 = createTestPrescription("PRE001", "APT002", "patient002", "D002");
 
     EXPECT_TRUE(repo->add(presc1));
-    EXPECT_FALSE(repo->add(presc2)); // Duplicate ID should fail
-    EXPECT_EQ(repo->count(), 1);
+    EXPECT_FALSE(repo->add(presc2)); // Duplicate prescription ID should fail
+    EXPECT_EQ(repo->getAll().size(), 1);
+}
+
+TEST_F(PrescriptionRepositoryTest, AddDuplicateAppointmentPrescriptionFails)
+{
+    auto presc1 = createTestPrescription("PRE001", "APT001", "patient001", "D001");
+    auto presc2 = createTestPrescription("PRE002", "APT001", "patient002", "D002"); // Same appointment
+
+    EXPECT_TRUE(repo->add(presc1));
+    EXPECT_FALSE(repo->add(presc2)); // Duplicate appointment should fail
+    EXPECT_EQ(repo->getAll().size(), 1);
+}
+
+TEST_F(PrescriptionRepositoryTest, AddWithEmptyAppointmentAllowed)
+{
+    auto presc1 = createTestPrescription("PRE001", "", "patient001", "D001"); // Empty appointment
+    auto presc2 = createTestPrescription("PRE002", "", "patient002", "D002"); // Empty appointment
+
+    EXPECT_TRUE(repo->add(presc1));
+    EXPECT_TRUE(repo->add(presc2)); // Both should succeed (no appointment ID)
+    EXPECT_EQ(repo->getAll().size(), 2);
 }
 
 TEST_F(PrescriptionRepositoryTest, AddMultiplePrescriptionsSuccess)
@@ -161,7 +185,7 @@ TEST_F(PrescriptionRepositoryTest, AddMultiplePrescriptionsSuccess)
     EXPECT_TRUE(repo->add(p1));
     EXPECT_TRUE(repo->add(p2));
     EXPECT_TRUE(repo->add(p3));
-    EXPECT_EQ(repo->count(), 3);
+    EXPECT_EQ(repo->getAll().size(), 3);
 }
 
 TEST_F(PrescriptionRepositoryTest, GetByIdExisting)
@@ -263,9 +287,9 @@ TEST_F(PrescriptionRepositoryTest, RemoveExistingPrescription)
     auto presc = createTestPrescription("PRE001", "APT001", "patient001", "D001");
     repo->add(presc);
 
-    EXPECT_EQ(repo->count(), 1);
+    EXPECT_EQ(repo->getAll().size(), 1);
     EXPECT_TRUE(repo->remove("PRE001"));
-    EXPECT_EQ(repo->count(), 0);
+    EXPECT_EQ(repo->getAll().size(), 0);
 }
 
 TEST_F(PrescriptionRepositoryTest, RemoveNonExistingPrescription)
@@ -341,45 +365,116 @@ TEST_F(PrescriptionRepositoryTest, PersistenceWithComplexItems)
     EXPECT_EQ(items[1].quantity, 10);
 }
 
-// ==================== Query Operations Tests ====================
-
-TEST_F(PrescriptionRepositoryTest, CountEmptyRepository)
+TEST_F(PrescriptionRepositoryTest, ExplicitSaveRequired)
 {
-    EXPECT_EQ(repo->count(), 0);
+    auto presc = createTestPrescription("PRE001", "APT001", "patient001", "D001");
+    repo->add(presc); // add() calls save()
+
+    // Data should be persisted
+    HMS::DAL::PrescriptionRepository::resetInstance();
+    repo = HMS::DAL::PrescriptionRepository::getInstance();
+    repo->setFilePath(testFilePath);
+
+    EXPECT_EQ(repo->getAll().size(), 1);
 }
 
-TEST_F(PrescriptionRepositoryTest, CountMultiplePrescriptions)
-{
-    populateTestData();
-
-    EXPECT_EQ(repo->count(), 4);
-}
-
-TEST_F(PrescriptionRepositoryTest, ExistsTrue)
+TEST_F(PrescriptionRepositoryTest, ResetInstanceSavesData)
 {
     auto presc = createTestPrescription("PRE001", "APT001", "patient001", "D001");
     repo->add(presc);
+
+    // resetInstance() saves before destroying
+    HMS::DAL::PrescriptionRepository::resetInstance();
+
+    // Verify data was saved
+    repo = HMS::DAL::PrescriptionRepository::getInstance();
+    repo->setFilePath(testFilePath);
+    EXPECT_EQ(repo->getAll().size(), 1);
+}
+
+// ==================== Query Operations Tests ====================
+
+TEST_F(PrescriptionRepositoryTest, CountAfterLoad)
+{
+    populateTestData();
+
+    // getAll() loads data
+    repo->getAll();
+
+    // Now count() works correctly
+    EXPECT_EQ(repo->count(), 4);
+}
+
+TEST_F(PrescriptionRepositoryTest, CountEmptyRepository)
+{
+    // After clear, m_isLoaded is true, so count works
+    repo->clear();
+    EXPECT_EQ(repo->count(), 0);
+}
+
+TEST_F(PrescriptionRepositoryTest, CountDoesNotAutoLoad)
+{
+    // Add data and save
+    populateTestData();
+    repo->save();
+
+    // New instance (data not loaded yet)
+    HMS::DAL::PrescriptionRepository::resetInstance();
+    repo = HMS::DAL::PrescriptionRepository::getInstance();
+    repo->setFilePath(testFilePath);
+
+    // count() does NOT auto-load, returns 0
+    EXPECT_EQ(repo->count(), 0);
+
+    // After getAll(), count works
+    repo->getAll();
+    EXPECT_EQ(repo->count(), 4);
+}
+
+TEST_F(PrescriptionRepositoryTest, ExistsAfterLoad)
+{
+    auto presc = createTestPrescription("PRE001", "APT001", "patient001", "D001");
+    repo->add(presc);
+
+    // Load data first
+    repo->getAll();
 
     EXPECT_TRUE(repo->exists("PRE001"));
 }
 
 TEST_F(PrescriptionRepositoryTest, ExistsFalse)
 {
+    repo->getAll(); // Ensure loaded
     EXPECT_FALSE(repo->exists("PRE999"));
 }
 
-TEST_F(PrescriptionRepositoryTest, ExistsEmptyRepository)
+TEST_F(PrescriptionRepositoryTest, ExistsDoesNotAutoLoad)
 {
+    // Add data and save
+    auto presc = createTestPrescription("PRE001", "APT001", "patient001", "D001");
+    repo->add(presc);
+    repo->save();
+
+    // New instance (data not loaded yet)
+    HMS::DAL::PrescriptionRepository::resetInstance();
+    repo = HMS::DAL::PrescriptionRepository::getInstance();
+    repo->setFilePath(testFilePath);
+
+    // exists() does NOT auto-load, returns false
     EXPECT_FALSE(repo->exists("PRE001"));
+
+    // After getAll(), exists works
+    repo->getAll();
+    EXPECT_TRUE(repo->exists("PRE001"));
 }
 
 TEST_F(PrescriptionRepositoryTest, ClearRepository)
 {
     populateTestData();
 
-    EXPECT_EQ(repo->count(), 4);
+    EXPECT_EQ(repo->getAll().size(), 4);
     EXPECT_TRUE(repo->clear());
-    EXPECT_EQ(repo->count(), 0);
+    EXPECT_EQ(repo->count(), 0); // count works after clear (m_isLoaded=true)
 }
 
 TEST_F(PrescriptionRepositoryTest, ClearEmptyRepository)
@@ -388,7 +483,16 @@ TEST_F(PrescriptionRepositoryTest, ClearEmptyRepository)
     EXPECT_EQ(repo->count(), 0);
 }
 
-// ==================== Specialized Queries Tests ====================
+TEST_F(PrescriptionRepositoryTest, ClearMaintainsLoadedState)
+{
+    populateTestData();
+    repo->clear();
+
+    // After clear, m_isLoaded=true, so count works without reload
+    EXPECT_EQ(repo->count(), 0);
+}
+
+// ==================== Prescription-Specific Queries Tests ====================
 
 TEST_F(PrescriptionRepositoryTest, GetByAppointmentFound)
 {
@@ -870,6 +974,21 @@ TEST_F(PrescriptionRepositoryTest, GetFilePathDefault)
     EXPECT_EQ(repo->getFilePath(), HMS::Constants::PRESCRIPTION_FILE);
 }
 
+TEST_F(PrescriptionRepositoryTest, GetFilePathDoesNotLoad)
+{
+    // Create new instance without loading
+    HMS::DAL::PrescriptionRepository::resetInstance();
+    repo = HMS::DAL::PrescriptionRepository::getInstance();
+    repo->setFilePath(testFilePath);
+
+    // getFilePath should not trigger load
+    std::string path = repo->getFilePath();
+    EXPECT_EQ(path, testFilePath);
+
+    // count() would be 0 since no data loaded
+    EXPECT_EQ(repo->count(), 0);
+}
+
 // ==================== Edge Cases & Stress Tests ====================
 
 TEST_F(PrescriptionRepositoryTest, LargePrescriptionItem)
@@ -934,7 +1053,6 @@ TEST_F(PrescriptionRepositoryTest, SpecialCharactersInFields)
 
     auto result = repo->getById("PRE001");
     ASSERT_TRUE(result.has_value());
-    // Note: Pipe character might be escaped in serialization
 }
 
 TEST_F(PrescriptionRepositoryTest, ConcurrentOperations)
@@ -950,13 +1068,13 @@ TEST_F(PrescriptionRepositoryTest, ConcurrentOperations)
         repo->add(presc);
     }
 
-    EXPECT_EQ(repo->count(), 10);
+    EXPECT_EQ(repo->getAll().size(), 10);
 
     // Remove some
     repo->remove("PRE003");
     repo->remove("PRE007");
 
-    EXPECT_EQ(repo->count(), 8);
+    EXPECT_EQ(repo->getAll().size(), 8);
 
     // Update some
     auto presc5 = repo->getById("PRE005");
@@ -981,8 +1099,6 @@ TEST_F(PrescriptionRepositoryTest, EmptyStringFields)
     EXPECT_EQ(result->getPatientUsername(), "");
 }
 
-// ==================== Performance Edge Cases ====================
-
 TEST_F(PrescriptionRepositoryTest, GetByPatientWithManyPrescriptions)
 {
     // Add 50 prescriptions for same patient
@@ -1000,7 +1116,7 @@ TEST_F(PrescriptionRepositoryTest, GetByPatientWithManyPrescriptions)
     auto results = repo->getByPatient("patient001");
 
     EXPECT_EQ(results.size(), 50);
-    // Verify sorted by date
+    // Verify sorted by date (descending)
     for (size_t i = 1; i < results.size(); ++i)
     {
         EXPECT_GE(HMS::Utils::compareDates(
