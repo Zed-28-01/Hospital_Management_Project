@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <sstream>
 #include <format>
+#include <filesystem>
 
 namespace HMS
 {
@@ -175,7 +176,15 @@ namespace HMS
         {
             try
             {
-                FileHelper::createDirectoryIfNotExists(Constants::DATA_DIR);
+                // Create parent directory of the file if it doesn't exist
+                std::filesystem::path filePath(m_filePath);
+                std::filesystem::path parentDir = filePath.parent_path();
+
+                if (!parentDir.empty())
+                {
+                    FileHelper::createDirectoryIfNotExists(parentDir.string());
+                }
+
                 FileHelper::createFileIfNotExists(m_filePath);
 
                 std::vector<std::string> lines = FileHelper::readLines(m_filePath);
