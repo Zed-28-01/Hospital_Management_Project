@@ -1,12 +1,12 @@
 #include "dal/PatientRepository.h"
-#include "dal/FileHelper.h"
-#include "common/Utils.h"
 #include "common/Constants.h"
+#include "common/Utils.h"
+#include "dal/FileHelper.h"
 
 #include <algorithm>
-#include <sstream>
-#include <format>
 #include <filesystem>
+#include <format>
+#include <sstream>
 
 namespace HMS
 {
@@ -84,22 +84,24 @@ namespace HMS
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            // Check if patient ID already exists (inline for efficiency)
-            for (const auto &p : m_patients)
+            // Check if patient ID already exists
+            bool idExists = std::ranges::any_of(
+                m_patients, [&patient](const auto &p)
+                { return p.getPatientID() == patient.getPatientID(); });
+
+            if (idExists)
             {
-                if (p.getPatientID() == patient.getPatientID())
-                {
-                    return false;
-                }
+                return false;
             }
 
-            // Check if username already exists (inline for efficiency)
-            for (const auto &p : m_patients)
+            // Check if username already exists
+            bool usernameExists = std::ranges::any_of(
+                m_patients, [&patient](const auto &p)
+                { return p.getUsername() == patient.getUsername(); });
+
+            if (usernameExists)
             {
-                if (p.getUsername() == patient.getUsername())
-                {
-                    return false;
-                }
+                return false;
             }
 
             m_patients.push_back(patient);

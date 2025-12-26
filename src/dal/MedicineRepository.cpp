@@ -1,12 +1,12 @@
 #include "dal/MedicineRepository.h"
-#include "dal/FileHelper.h"
 #include "common/Constants.h"
 #include "common/Utils.h"
+#include "dal/FileHelper.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <format>
 #include <sstream>
-#include <filesystem>
 
 namespace HMS
 {
@@ -85,27 +85,27 @@ namespace HMS
             ensureLoaded();
 
             // Check if medicine ID already exists
-            for (const auto &med : m_medicines)
+            bool idExists = std::ranges::any_of(
+                m_medicines, [&medicine](const auto &med)
+                { return med.getMedicineID() == medicine.getMedicineID(); });
+
+            if (idExists)
             {
-                if (med.getMedicineID() == medicine.getMedicineID())
-                {
-                    return false;
-                }
+                return false;
             }
 
             // Check for duplicate name + manufacturer combination
             std::string targetName = Utils::trim(Utils::toLower(medicine.getName()));
             std::string targetMfr = Utils::trim(Utils::toLower(medicine.getManufacturer()));
 
-            auto duplicate = std::ranges::find_if(
-                m_medicines,
-                [&](const auto &med) {
+            bool duplicateExists = std::ranges::any_of(
+                m_medicines, [&targetName, &targetMfr](const auto &med)
+                {
                     return Utils::trim(Utils::toLower(med.getName())) == targetName &&
-                            Utils::trim(Utils::toLower(med.getManufacturer())) == targetMfr;
-                }
-            );
+                           Utils::trim(Utils::toLower(med.getManufacturer())) == targetMfr;
+                });
 
-            if (duplicate != m_medicines.end())
+            if (duplicateExists)
             {
                 return false;
             }

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "IRepository.h"
 #include "../advance/Prescription.h"
-#include <vector>
+#include "IRepository.h"
+#include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
-#include <mutex>
-#include <memory>
+#include <vector>
 
 namespace HMS
 {
@@ -31,9 +31,29 @@ namespace HMS
             std::vector<Model::Prescription> m_prescriptions;
             std::string m_filePath;
             bool m_isLoaded;
+            mutable std::mutex m_dataMutex;
 
             // ==================== Private Constructor ====================
             PrescriptionRepository();
+
+            // ==================== Private Helpers ====================
+
+            /**
+             * @brief Ensure data is loaded (const-safe helper)
+             */
+            void ensureLoaded() const;
+
+            /**
+             * @brief Internal load implementation (without lock)
+             * @return True if successful
+             */
+            bool loadInternal();
+
+            /**
+             * @brief Internal save implementation (without lock)
+             * @return True if successful
+             */
+            bool saveInternal();
 
         public:
             // ==================== Singleton Access ====================
@@ -142,14 +162,16 @@ namespace HMS
              * @param appointmentID The appointment ID
              * @return Prescription if found, nullopt otherwise
              */
-            std::optional<Model::Prescription> getByAppointment(const std::string &appointmentID);
+            std::optional<Model::Prescription>
+            getByAppointment(const std::string &appointmentID);
 
             /**
              * @brief Get all prescriptions for a patient
              * @param patientUsername The patient's username
              * @return Vector of prescriptions for this patient
              */
-            std::vector<Model::Prescription> getByPatient(const std::string &patientUsername);
+            std::vector<Model::Prescription>
+            getByPatient(const std::string &patientUsername);
 
             /**
              * @brief Get all prescriptions by a doctor

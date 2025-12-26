@@ -1,12 +1,12 @@
 #include "dal/DepartmentRepository.h"
-#include "dal/FileHelper.h"
-#include "common/Utils.h"
 #include "common/Constants.h"
+#include "common/Utils.h"
+#include "dal/FileHelper.h"
 
 #include <algorithm>
-#include <sstream>
-#include <format>
 #include <filesystem>
+#include <format>
+#include <sstream>
 
 namespace HMS
 {
@@ -67,10 +67,7 @@ namespace HMS
 
             auto it = std::ranges::find_if(
                 m_departments, [&id](const auto &d)
-                {
-                    return d.getDepartmentID() == id;
-                }
-            );
+                { return d.getDepartmentID() == id; });
 
             if (it != m_departments.end())
             {
@@ -84,13 +81,14 @@ namespace HMS
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            // Check if department ID already exists (inline for efficiency)
-            for (const auto &d : m_departments)
+            // Check if department ID already exists
+            bool exists = std::ranges::any_of(
+                m_departments, [&department](const auto &d)
+                { return d.getDepartmentID() == department.getDepartmentID(); });
+
+            if (exists)
             {
-                if (d.getDepartmentID() == department.getDepartmentID())
-                {
-                    return false;
-                }
+                return false;
             }
 
             m_departments.push_back(department);
@@ -104,10 +102,7 @@ namespace HMS
 
             auto it = std::ranges::find_if(
                 m_departments, [&department](const auto &d)
-                {
-                    return d.getDepartmentID() == department.getDepartmentID();
-                }
-            );
+                { return d.getDepartmentID() == department.getDepartmentID(); });
 
             if (it != m_departments.end())
             {
@@ -124,10 +119,7 @@ namespace HMS
 
             auto it = std::ranges::find_if(
                 m_departments, [&id](const auto &d)
-                {
-                    return d.getDepartmentID() == id;
-                }
-            );
+                { return d.getDepartmentID() == id; });
 
             if (it == m_departments.end())
             {
@@ -237,10 +229,7 @@ namespace HMS
 
             return std::ranges::any_of(
                 m_departments, [&id](const auto &d)
-                {
-                    return d.getDepartmentID() == id;
-                }
-            );
+                { return d.getDepartmentID() == id; });
         }
 
         bool DepartmentRepository::clear()
@@ -264,9 +253,7 @@ namespace HMS
                     if (deptName.size() != name.size()) return false;
                     return std::equal(deptName.begin(), deptName.end(), name.begin(),
                         [](char a, char b) { return std::tolower(static_cast<unsigned char>(a)) ==
-                                                    std::tolower(static_cast<unsigned char>(b)); });
-                }
-            );
+                                                    std::tolower(static_cast<unsigned char>(b)); }); });
 
             if (it != m_departments.end())
             {
@@ -282,10 +269,7 @@ namespace HMS
 
             auto it = std::ranges::find_if(
                 m_departments, [&doctorID](const auto &d)
-                {
-                    return d.getHeadDoctorID() == doctorID;
-                }
-            );
+                { return d.getHeadDoctorID() == doctorID; });
 
             if (it != m_departments.end())
             {
@@ -338,8 +322,7 @@ namespace HMS
                 [&name](const auto &d)
                 {
                     return Utils::containsIgnoreCase(d.getName(), name);
-                }
-            );
+                });
 
             return results;
         }
