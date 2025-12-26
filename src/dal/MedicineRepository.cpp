@@ -43,22 +43,27 @@ namespace HMS
         // ==================== Destructor ====================
         MedicineRepository::~MedicineRepository() = default;
 
-        // ==================== CRUD Operations ====================
-        std::vector<Model::Medicine> MedicineRepository::getAll()
+        // ==================== Private Helper ====================
+        void MedicineRepository::ensureLoaded() const
         {
             if (!m_isLoaded)
             {
-                load();
+                const_cast<MedicineRepository *>(this)->loadInternal();
             }
+        }
+
+        // ==================== CRUD Operations ====================
+        std::vector<Model::Medicine> MedicineRepository::getAll()
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
             return m_medicines;
         }
 
         std::optional<Model::Medicine> MedicineRepository::getById(const std::string &id)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             auto it = std::ranges::find_if(
                 m_medicines, [&id](const auto &med) {
@@ -76,17 +81,19 @@ namespace HMS
 
         bool MedicineRepository::add(const Model::Medicine &medicine)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             // Check if medicine ID already exists
-            if (exists(medicine.getMedicineID()))
+            for (const auto &med : m_medicines)
             {
-                return false;
+                if (med.getMedicineID() == medicine.getMedicineID())
+                {
+                    return false;
+                }
             }
 
+            // Check for duplicate name + manufacturer combination
             std::string targetName = Utils::trim(Utils::toLower(medicine.getName()));
             std::string targetMfr = Utils::trim(Utils::toLower(medicine.getManufacturer()));
 
@@ -104,16 +111,13 @@ namespace HMS
             }
 
             m_medicines.push_back(medicine);
-
-            return save();
+            return saveInternal();
         }
 
         bool MedicineRepository::update(const Model::Medicine &medicine)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             auto it = std::ranges::find_if(
                 m_medicines, [&medicine](const auto &med) {
@@ -126,6 +130,7 @@ namespace HMS
                 return false; // Not found
             }
 
+            // Check for duplicate name + manufacturer (excluding current medicine)
             std::string targetName = Utils::trim(Utils::toLower(medicine.getName()));
             std::string targetMfr = Utils::trim(Utils::toLower(medicine.getManufacturer()));
 
@@ -144,15 +149,13 @@ namespace HMS
             }
 
             *it = medicine;
-            return save();
+            return saveInternal();
         }
 
         bool MedicineRepository::remove(const std::string &id)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             auto it = std::ranges::find_if(
                 m_medicines, [&id](const auto &med) {
@@ -166,16 +169,23 @@ namespace HMS
             }
 
             m_medicines.erase(it);
-            return save();
+            return saveInternal();
         }
 
         // ==================== Persistence ====================
         bool MedicineRepository::save()
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            return saveInternal();
+        }
+
+        bool MedicineRepository::saveInternal()
+        {
             try
             {
                 std::vector<std::string> lines;
 
+                // Add header
                 auto header = FileHelper::getFileHeader("Medicine");
                 std::stringstream hss(header);
                 std::string headerLine;
@@ -187,6 +197,7 @@ namespace HMS
                     }
                 }
 
+                // Add data
                 for (const auto &medicine : m_medicines)
                 {
                     lines.push_back(medicine.serialize());
@@ -201,11 +212,24 @@ namespace HMS
             }
         }
 
-        bool MedicineRepository::load() {
+        bool MedicineRepository::load()
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            return loadInternal();
+        }
+
+        bool MedicineRepository::loadInternal()
+        {
             try
             {
-                std::filesystem::path path(m_filePath);
-                FileHelper::createDirectoryIfNotExists(path.parent_path().string());
+                // Create parent directory of the file if it doesn't exist
+                std::filesystem::path filePath(m_filePath);
+                std::filesystem::path parentDir = filePath.parent_path();
+
+                if (!parentDir.empty())
+                {
+                    FileHelper::createDirectoryIfNotExists(parentDir.string());
+                }
 
                 FileHelper::createFileIfNotExists(m_filePath);
 
@@ -235,20 +259,15 @@ namespace HMS
         // ==================== Query Operations ====================
         size_t MedicineRepository::count() const
         {
-            if (!m_isLoaded)
-            {
-                const_cast<MedicineRepository*>(this)->load();
-            }
-
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
             return m_medicines.size();
         }
 
         bool MedicineRepository::exists(const std::string &id) const
         {
-            if (!m_isLoaded)
-            {
-                const_cast<MedicineRepository*>(this)->load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             return std::ranges::any_of(
                 m_medicines, [&id](const auto &med) {
@@ -259,18 +278,17 @@ namespace HMS
 
         bool MedicineRepository::clear()
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             m_medicines.clear();
             m_isLoaded = true;
-            return save();
+            return saveInternal();
         }
 
         // ==================== Medicine-Specific Queries ====================
         std::vector<Model::Medicine> MedicineRepository::getByCategory(const std::string &category)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<Model::Medicine> result;
             std::ranges::copy_if(
@@ -286,10 +304,8 @@ namespace HMS
 
         std::vector<Model::Medicine> MedicineRepository::getLowStock()
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<Model::Medicine> result;
             std::ranges::copy_if(
@@ -305,45 +321,42 @@ namespace HMS
 
         std::vector<Model::Medicine> MedicineRepository::getExpired()
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<Model::Medicine> result;
             std::ranges::copy_if(
                 m_medicines, std::back_inserter(result),
-                    [](const auto &med) {
-                        return med.isExpired();
-                    }
+                [](const auto &med)
+                {
+                    return med.isExpired();
+                }
             );
+
             return result;
         }
 
         std::vector<Model::Medicine> MedicineRepository::getExpiringSoon(int days)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<Model::Medicine> result;
             std::ranges::copy_if(
                 m_medicines, std::back_inserter(result),
-                    [days](const auto &med)
+                [days](const auto &med)
                 {
                     return med.isExpiringSoon(days);
                 }
             );
+
             return result;
         }
 
         std::vector<Model::Medicine> MedicineRepository::searchByName(const std::string &name)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<Model::Medicine> result;
             std::ranges::copy_if(
@@ -354,15 +367,14 @@ namespace HMS
                         Utils::containsIgnoreCase(med.getGenericName(), name);
                 }
             );
+
             return result;
         }
 
         std::vector<Model::Medicine> MedicineRepository::search(const std::string &keyword)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<Model::Medicine> result;
             std::ranges::copy_if(
@@ -375,15 +387,14 @@ namespace HMS
                            Utils::containsIgnoreCase(med.getManufacturer(), keyword);
                 }
             );
+
             return result;
         }
 
         std::vector<std::string> MedicineRepository::getAllCategories()
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<std::string> categories;
             for (const auto &med : m_medicines)
@@ -402,10 +413,8 @@ namespace HMS
 
         std::vector<std::string> MedicineRepository::getAllManufacturers()
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<std::string> manufacturers;
             for (const auto &med : m_medicines)
@@ -424,10 +433,8 @@ namespace HMS
 
         std::string MedicineRepository::getNextId()
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             if (m_medicines.empty())
             {
@@ -436,20 +443,30 @@ namespace HMS
 
             // Find max ID number
             int maxNum = 0;
+            const std::string prefix = Constants::MEDICINE_ID_PREFIX;
+
             for (const auto &med : m_medicines)
             {
                 const auto &id = med.getMedicineID();
-                if (id.starts_with(Constants::MEDICINE_ID_PREFIX))
+
+                // Only process valid format: prefix + digits
+                if (id.length() > prefix.length() &&
+                    id.starts_with(prefix))
                 {
-                    try
+                    std::string numPart = id.substr(prefix.length());
+
+                    // Validate numeric before parsing
+                    if (Utils::isNumeric(numPart))
                     {
-                        std::string prefix = Constants::MEDICINE_ID_PREFIX;
-                        int num = std::stoi(id.substr(prefix.length()));
-                        maxNum = std::max(maxNum, num);
-                    }
-                    catch (...)
-                    {
-                        // Skip invalid IDs
+                        try
+                        {
+                            int num = std::stoi(numPart);
+                            maxNum = std::max(maxNum, num);
+                        }
+                        catch (const std::exception &)
+                        {
+                            // Skip invalid IDs
+                        }
                     }
                 }
             }
@@ -460,10 +477,8 @@ namespace HMS
         // ==================== Stock Operations ====================
         bool MedicineRepository::updateStock(const std::string &id, int quantity)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             if (quantity < 0)
             {
@@ -483,18 +498,20 @@ namespace HMS
             }
 
             it->setQuantityInStock(quantity);
-            return save();
+            return saveInternal();
         }
 
         // ==================== File Path Management ====================
         void MedicineRepository::setFilePath(const std::string &filePath)
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             m_filePath = filePath;
-            m_isLoaded = false;
+            m_isLoaded = false; // Force reload with new file
         }
 
         std::string MedicineRepository::getFilePath() const
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             return m_filePath;
         }
 
