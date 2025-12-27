@@ -16,6 +16,8 @@
  * - Export to PDF/CSV/Excel
  */
 
+#include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 #include "../model/Statistics.h"
@@ -81,7 +83,9 @@ namespace HMS
         class ReportGenerator
         {
         private:
-            static ReportGenerator *s_instance;
+            // ==================== Singleton ====================
+            static std::unique_ptr<ReportGenerator> s_instance;
+            static std::mutex s_mutex;
 
             ReportGenerator() = default;
 
@@ -89,6 +93,11 @@ namespace HMS
             // ==================== Singleton ====================
 
             static ReportGenerator *getInstance();
+
+            /**
+             * @brief Reset the singleton instance (for testing)
+             */
+            static void resetInstance();
 
             ReportGenerator(const ReportGenerator &) = delete;
             ReportGenerator &operator=(const ReportGenerator &) = delete;
