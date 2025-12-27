@@ -78,6 +78,13 @@ namespace HMS
             {
                 return false;
             }
+
+            // Check if username already exists (business rule)
+            if (m_doctorRepo->getByUsername(doctor.getUsername()).has_value())
+            {
+                return false;
+            }
+
             return m_doctorRepo->add(doctor);
         }
 
@@ -117,6 +124,14 @@ namespace HMS
             }
 
             if (!validateDoctor(doctor))
+            {
+                return false;
+            }
+
+            // Check if username conflicts with another doctor (business rule)
+            auto existingDoctor = m_doctorRepo->getByUsername(doctor.getUsername());
+            if (existingDoctor.has_value() &&
+                existingDoctor->getDoctorID() != doctor.getDoctorID())
             {
                 return false;
             }

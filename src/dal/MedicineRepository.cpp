@@ -84,28 +84,12 @@ namespace HMS
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            // Check if medicine ID already exists
+            // DAL only checks for duplicate ID - business rules are in BLL
             bool idExists = std::ranges::any_of(
                 m_medicines, [&medicine](const auto &med)
                 { return med.getMedicineID() == medicine.getMedicineID(); });
 
             if (idExists)
-            {
-                return false;
-            }
-
-            // Check for duplicate name + manufacturer combination
-            std::string targetName = Utils::trim(Utils::toLower(medicine.getName()));
-            std::string targetMfr = Utils::trim(Utils::toLower(medicine.getManufacturer()));
-
-            bool duplicateExists = std::ranges::any_of(
-                m_medicines, [&targetName, &targetMfr](const auto &med)
-                {
-                    return Utils::trim(Utils::toLower(med.getName())) == targetName &&
-                           Utils::trim(Utils::toLower(med.getManufacturer())) == targetMfr;
-                });
-
-            if (duplicateExists)
             {
                 return false;
             }
@@ -119,33 +103,14 @@ namespace HMS
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
+            // DAL only does CRUD - business rules are in BLL
             auto it = std::ranges::find_if(
-                m_medicines, [&medicine](const auto &med) {
-                    return med.getMedicineID() == medicine.getMedicineID();
-                }
-            );
+                m_medicines, [&medicine](const auto &med)
+                { return med.getMedicineID() == medicine.getMedicineID(); });
 
             if (it == m_medicines.end())
             {
                 return false; // Not found
-            }
-
-            // Check for duplicate name + manufacturer (excluding current medicine)
-            std::string targetName = Utils::trim(Utils::toLower(medicine.getName()));
-            std::string targetMfr = Utils::trim(Utils::toLower(medicine.getManufacturer()));
-
-            auto duplicate = std::ranges::find_if(
-                m_medicines,
-                [&](const auto &med) {
-                    return med.getMedicineID() != medicine.getMedicineID() &&
-                        Utils::trim(Utils::toLower(med.getName())) == targetName &&
-                        Utils::trim(Utils::toLower(med.getManufacturer())) == targetMfr;
-                }
-            );
-
-            if (duplicate != m_medicines.end())
-            {
-                return false;
             }
 
             *it = medicine;

@@ -80,7 +80,7 @@ namespace HMS
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            // Check if prescription ID already exists
+            // Check if prescription ID already exists (primary key check only)
             bool idExists = std::ranges::any_of(
                 m_prescriptions, [&prescription](const auto &p)
                 { return p.getPrescriptionID() == prescription.getPrescriptionID(); });
@@ -88,20 +88,6 @@ namespace HMS
             if (idExists)
             {
                 return false;
-            }
-
-            // Check if appointment ID already has a prescription (unless empty)
-            const std::string &appointmentID = prescription.getAppointmentID();
-            if (!appointmentID.empty())
-            {
-                bool appointmentExists = std::ranges::any_of(
-                    m_prescriptions, [&appointmentID](const auto &p)
-                    { return p.getAppointmentID() == appointmentID; });
-
-                if (appointmentExists)
-                {
-                    return false;
-                }
             }
 
             m_prescriptions.push_back(prescription);

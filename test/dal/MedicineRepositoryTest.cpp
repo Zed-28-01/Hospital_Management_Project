@@ -164,16 +164,17 @@ TEST_F(MedicineRepositoryTest, Add_DuplicateID_Fail)
     EXPECT_EQ(repo->count(), 1);
 }
 
-TEST_F(MedicineRepositoryTest, Add_DuplicateNameAndManufacturer_Fail)
+TEST_F(MedicineRepositoryTest, Add_SameNameAndManufacturerDifferentID_Success)
 {
+    // DAL only checks for duplicate ID - business rules (duplicate name+manufacturer) are in BLL
     Medicine med1 = createTestMedicine("MED001", "Paracetamol", "ABC Pharma");
     Medicine med2 = createTestMedicine("MED002", "Paracetamol", "ABC Pharma");
 
     repo->add(med1);
     bool result = repo->add(med2);
 
-    EXPECT_FALSE(result);
-    EXPECT_EQ(repo->count(), 1);
+    EXPECT_TRUE(result);  // DAL allows this - BLL would prevent it
+    EXPECT_EQ(repo->count(), 2);
 }
 
 TEST_F(MedicineRepositoryTest, Add_SameNameDifferentManufacturer_Success)
@@ -189,26 +190,30 @@ TEST_F(MedicineRepositoryTest, Add_SameNameDifferentManufacturer_Success)
     EXPECT_EQ(repo->count(), 2);
 }
 
-TEST_F(MedicineRepositoryTest, Add_NameWithWhitespace_TrimmedAndCompared)
+TEST_F(MedicineRepositoryTest, Add_NameWithWhitespace_AllowedByDAL)
 {
+    // DAL only checks for duplicate ID - name trimming/comparison is BLL responsibility
     Medicine med1 = createTestMedicine("MED001", "  Paracetamol  ", "ABC Pharma");
     Medicine med2 = createTestMedicine("MED002", "Paracetamol", "ABC Pharma");
 
     repo->add(med1);
     bool result = repo->add(med2);
 
-    EXPECT_FALSE(result); // Should detect as duplicate after trimming
+    EXPECT_TRUE(result); // DAL allows different IDs - BLL handles name validation
+    EXPECT_EQ(repo->count(), 2);
 }
 
-TEST_F(MedicineRepositoryTest, Add_NameCaseInsensitive_DetectsDuplicate)
+TEST_F(MedicineRepositoryTest, Add_NameCaseVariant_AllowedByDAL)
 {
+    // DAL only checks for duplicate ID - case-insensitive name comparison is BLL responsibility
     Medicine med1 = createTestMedicine("MED001", "Paracetamol", "ABC Pharma");
     Medicine med2 = createTestMedicine("MED002", "PARACETAMOL", "ABC Pharma");
 
     repo->add(med1);
     bool result = repo->add(med2);
 
-    EXPECT_FALSE(result); // Should detect as duplicate (case-insensitive)
+    EXPECT_TRUE(result); // DAL allows different IDs - BLL handles name validation
+    EXPECT_EQ(repo->count(), 2);
 }
 
 TEST_F(MedicineRepositoryTest, Add_MultipleMedicines_AllAdded)
@@ -278,8 +283,9 @@ TEST_F(MedicineRepositoryTest, Update_NonExistingMedicine_Fail)
     EXPECT_FALSE(result);
 }
 
-TEST_F(MedicineRepositoryTest, Update_ChangeToDuplicateName_Fail)
+TEST_F(MedicineRepositoryTest, Update_ChangeToDuplicateName_AllowedByDAL)
 {
+    // DAL only checks for ID existence - duplicate name check is BLL responsibility
     Medicine med1 = createTestMedicine("MED001", "Paracetamol", "ABC Pharma");
     Medicine med2 = createTestMedicine("MED002", "Ibuprofen", "ABC Pharma");
     repo->add(med1);
@@ -289,7 +295,7 @@ TEST_F(MedicineRepositoryTest, Update_ChangeToDuplicateName_Fail)
     med2.setName("Paracetamol");
     bool result = repo->update(med2);
 
-    EXPECT_FALSE(result);
+    EXPECT_TRUE(result);  // DAL allows this - BLL would prevent it
 }
 
 TEST_F(MedicineRepositoryTest, Update_SameMedicine_Success)
@@ -1181,15 +1187,17 @@ TEST_F(MedicineRepositoryTest, EdgeCase_SpecialCharactersInName_CanBeAdded)
     EXPECT_TRUE(result);
 }
 
-TEST_F(MedicineRepositoryTest, EdgeCase_MultipleSpacesInName_TrimmedCorrectly)
+TEST_F(MedicineRepositoryTest, EdgeCase_MultipleSpacesInName_AllowedByDAL)
 {
+    // DAL only checks for duplicate ID - name trimming is BLL responsibility
     Medicine med1 = createTestMedicine("MED001", "   Paracetamol   ", "ABC");
     Medicine med2 = createTestMedicine("MED002", "Paracetamol", "ABC");
 
     repo->add(med1);
     bool result = repo->add(med2);
 
-    EXPECT_FALSE(result); // Should detect as duplicate after trim
+    EXPECT_TRUE(result); // DAL allows different IDs - BLL handles name validation
+    EXPECT_EQ(repo->count(), 2);
 }
 
 TEST_F(MedicineRepositoryTest, EdgeCase_MaxIntQuantity_HandledCorrectly)

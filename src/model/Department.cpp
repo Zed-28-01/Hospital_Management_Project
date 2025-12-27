@@ -58,11 +58,8 @@ namespace HMS
 
         void Department::setPhone(const std::string &phone)
         {
-            // Validate phone if not empty
-            if (phone.empty() || Utils::isValidPhone(phone))
-            {
-                m_phone = phone;
-            }
+            // Model is a data container - validation is done at BLL layer
+            m_phone = phone;
         }
 
         // ==================== Doctor Management ====================
