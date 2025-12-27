@@ -77,37 +77,37 @@ Implement the advanced features (Department, Medicine, Prescription, ReportGener
 ### Phase 2: Data Access Layer (DAL)
 
 #### 2.1 MedicineRepository
-- [ ] Create `include/dal/MedicineRepository.h`
-  - [ ] Declare class implementing `IRepository<Medicine>`
-  - [ ] Add singleton pattern (static instance, mutex, getInstance, resetInstance)
-  - [ ] Declare specialized queries: `getByCategory()`, `getLowStock()`, `getExpiringSoon()`, `searchByName()`
-  - [ ] Declare `getNextId()` for ID generation
-- [ ] Create `src/dal/MedicineRepository.cpp`
-  - [ ] Implement singleton pattern
-  - [ ] Implement all IRepository methods (getAll, getById, add, update, remove, save, load, count, exists, clear)
-  - [ ] Implement specialized queries
-  - [ ] Implement file I/O using FileHelper
-- [ ] Verify build
+- [x] Create `include/dal/MedicineRepository.h`
+  - [x] Declare class implementing `IRepository<Medicine>`
+  - [x] Add singleton pattern (static instance, mutex, getInstance, resetInstance)
+  - [x] Declare specialized queries: `getByCategory()`, `getLowStock()`, `getExpiringSoon()`, `searchByName()`
+  - [x] Declare `getNextId()` for ID generation
+- [x] Create `src/dal/MedicineRepository.cpp`
+  - [x] Implement singleton pattern
+  - [x] Implement all IRepository methods (getAll, getById, add, update, remove, save, load, count, exists, clear)
+  - [x] Implement specialized queries
+  - [x] Implement file I/O using FileHelper
+- [x] Verify build
 
 #### 2.2 DepartmentRepository
-- [ ] Create `include/dal/DepartmentRepository.h`
-  - [ ] Declare class implementing `IRepository<Department>`
-  - [ ] Add singleton pattern
-  - [ ] Declare specialized queries: `getByName()`, `getByHeadDoctor()`, `getDepartmentByDoctor()`
-- [ ] Create `src/dal/DepartmentRepository.cpp`
-  - [ ] Implement all methods
-  - [ ] Handle doctorIDs vector in serialization
-- [ ] Verify build
+- [x] Create `include/dal/DepartmentRepository.h`
+  - [x] Declare class implementing `IRepository<Department>`
+  - [x] Add singleton pattern
+  - [x] Declare specialized queries: `getByName()`, `getByHeadDoctor()`, `getDepartmentByDoctor()`
+- [x] Create `src/dal/DepartmentRepository.cpp`
+  - [x] Implement all methods
+  - [x] Handle doctorIDs vector in serialization
+- [x] Verify build
 
 #### 2.3 PrescriptionRepository
-- [ ] Create `include/dal/PrescriptionRepository.h`
-  - [ ] Declare class implementing `IRepository<Prescription>`
-  - [ ] Add singleton pattern
-  - [ ] Declare specialized queries: `getByPatient()`, `getByDoctor()`, `getByAppointment()`, `getUndispensed()`
-- [ ] Create `src/dal/PrescriptionRepository.cpp`
-  - [ ] Implement all methods
-  - [ ] Handle complex items serialization
-- [ ] Verify build
+- [x] Create `include/dal/PrescriptionRepository.h`
+  - [x] Declare class implementing `IRepository<Prescription>`
+  - [x] Add singleton pattern
+  - [x] Declare specialized queries: `getByPatient()`, `getByDoctor()`, `getByAppointment()`, `getUndispensed()`
+- [x] Create `src/dal/PrescriptionRepository.cpp`
+  - [x] Implement all methods
+  - [x] Handle complex items serialization
+- [x] Verify build
 
 ---
 
