@@ -77,7 +77,7 @@ TEST_F(DoctorServiceTest, CreateAndGetDoctorSuccess)
     EXPECT_EQ(retrieved->getSpecialization(), "Cardiology");
 }
 
-TEST_F(DoctorServiceTest, CreateDoctorDuplicateFail)
+TEST_F(DoctorServiceTest, CreateDoctorDuplicateIDFail)
 {
     Model::Doctor doc(
         "TEST_D01",
@@ -92,6 +92,34 @@ TEST_F(DoctorServiceTest, CreateDoctorDuplicateFail)
 
     EXPECT_TRUE(service->createDoctor(doc));
     EXPECT_FALSE(service->createDoctor(doc));
+}
+
+TEST_F(DoctorServiceTest, CreateDoctorDuplicateUsernameFail)
+{
+    Model::Doctor doc1(
+        "TEST_D01",
+        "same_username",
+        "Doctor A",
+        "0123456789",
+        Gender::MALE,
+        "1990-05-15",
+        "General",
+        "All",
+        100000);
+
+    Model::Doctor doc2(
+        "TEST_D02",
+        "same_username", // Same username, different ID
+        "Doctor B",
+        "0987654321",
+        Gender::FEMALE,
+        "1985-03-20",
+        "Cardiology",
+        "Mon-Fri",
+        150000);
+
+    EXPECT_TRUE(service->createDoctor(doc1));
+    EXPECT_FALSE(service->createDoctor(doc2)); // Should fail due to duplicate username
 }
 
 TEST_F(DoctorServiceTest, CreateDoctorInvalidPhoneFail)
@@ -467,6 +495,82 @@ TEST_F(DoctorServiceTest, UpdateNonExistentDoctorFail)
         100000);
 
     EXPECT_FALSE(service->updateDoctor(doc));
+}
+
+TEST_F(DoctorServiceTest, UpdateDoctorUsernameConflictFail)
+{
+    Model::Doctor doc1(
+        "TEST_UPDATE1",
+        "user_one",
+        "Dr. One",
+        "0667890123",
+        Gender::MALE,
+        "1979-02-28",
+        "Original",
+        "Mon-Fri",
+        100000);
+
+    Model::Doctor doc2(
+        "TEST_UPDATE2",
+        "user_two",
+        "Dr. Two",
+        "0778901234",
+        Gender::FEMALE,
+        "1985-06-15",
+        "Cardiology",
+        "Tue-Sat",
+        120000);
+
+    service->createDoctor(doc1);
+    service->createDoctor(doc2);
+
+    // Try to update doc1 with doc2's username - should fail
+    Model::Doctor updated(
+        "TEST_UPDATE1",
+        "user_two", // Conflict with doc2
+        "Dr. One Updated",
+        "0667890123",
+        Gender::MALE,
+        "1979-02-28",
+        "Updated Spec",
+        "Mon-Sat",
+        150000);
+
+    EXPECT_FALSE(service->updateDoctor(updated));
+}
+
+TEST_F(DoctorServiceTest, UpdateDoctorSameUsernameSuccess)
+{
+    Model::Doctor doc(
+        "TEST_SAME_USER",
+        "same_user",
+        "Dr. Same",
+        "0889012345",
+        Gender::MALE,
+        "1980-01-01",
+        "General",
+        "All",
+        100000);
+
+    service->createDoctor(doc);
+
+    // Update with same username should succeed
+    Model::Doctor updated(
+        "TEST_SAME_USER",
+        "same_user", // Same username as before
+        "Dr. Same Updated",
+        "0889012345",
+        Gender::MALE,
+        "1980-01-01",
+        "Updated Spec",
+        "Mon-Fri",
+        150000);
+
+    EXPECT_TRUE(service->updateDoctor(updated));
+
+    auto retrieved = service->getDoctorByID("TEST_SAME_USER");
+    ASSERT_TRUE(retrieved.has_value());
+    EXPECT_EQ(retrieved->getName(), "Dr. Same Updated");
 }
 
 TEST_F(DoctorServiceTest, DeleteDoctorSuccess)

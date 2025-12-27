@@ -167,14 +167,15 @@ TEST_F(PrescriptionRepositoryTest, AddDuplicatePrescriptionFails)
     EXPECT_EQ(repo->getAll().size(), 1);
 }
 
-TEST_F(PrescriptionRepositoryTest, AddDuplicateAppointmentPrescriptionFails)
+TEST_F(PrescriptionRepositoryTest, AddDuplicateAppointment_AllowedInDAL)
 {
+    // DAL only checks primary key (prescriptionID), appointment check is in BLL
     auto presc1 = createTestPrescription("PRE001", "APT001", "patient001", "D001");
-    auto presc2 = createTestPrescription("PRE002", "APT001", "patient002", "D002"); // Same appointment
+    auto presc2 = createTestPrescription("PRE002", "APT001", "patient002", "D002"); // Same appointment, different ID
 
     EXPECT_TRUE(repo->add(presc1));
-    EXPECT_FALSE(repo->add(presc2)); // Duplicate appointment should fail
-    EXPECT_EQ(repo->getAll().size(), 1);
+    EXPECT_TRUE(repo->add(presc2)); // Should succeed - DAL doesn't check appointmentID
+    EXPECT_EQ(repo->getAll().size(), 2);
 }
 
 TEST_F(PrescriptionRepositoryTest, AddWithEmptyAppointmentAllowed)

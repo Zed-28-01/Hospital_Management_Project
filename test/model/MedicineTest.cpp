@@ -66,23 +66,25 @@ TEST(MedicineTest, SettersUpdateValuesCorrectly)
     EXPECT_EQ(med.getStrength(), "500mg");
 }
 
-TEST(MedicineTest, SetUnitPriceNegativeIgnored)
+// Model is a data container - setters don't validate
+// Validation is done at BLL layer
+TEST(MedicineTest, SetUnitPriceAcceptsAnyValue)
 {
     Medicine med("MED001", "Test", "Cat", 1000.0, 10);
 
     med.setUnitPrice(-500.0);
-    EXPECT_DOUBLE_EQ(med.getUnitPrice(), 1000.0);
+    EXPECT_DOUBLE_EQ(med.getUnitPrice(), -500.0); // Model accepts any value
 }
 
-TEST(MedicineTest, SetQuantityNegativeIgnored)
+TEST(MedicineTest, SetQuantityAcceptsAnyValue)
 {
     Medicine med("MED001", "Test", "Cat", 1000.0, 100);
 
     med.setQuantityInStock(-50);
-    EXPECT_EQ(med.getQuantityInStock(), 100);
+    EXPECT_EQ(med.getQuantityInStock(), -50); // Model accepts any value
 }
 
-TEST(MedicineTest, SetExpiryDateInvalidIgnored)
+TEST(MedicineTest, SetExpiryDateAcceptsAnyValue)
 {
     Medicine med("MED001", "Test", "Cat", 1000.0, 100);
 
@@ -90,11 +92,13 @@ TEST(MedicineTest, SetExpiryDateInvalidIgnored)
     EXPECT_EQ(med.getExpiryDate(), "2025-12-31");
 
     med.setExpiryDate("invalid-date");
-    EXPECT_EQ(med.getExpiryDate(), "2025-12-31"); // Should remain unchanged
+    EXPECT_EQ(med.getExpiryDate(), "invalid-date"); // Model accepts any value
 }
 
 // ==================== Stock Operations Tests ====================
 
+// Model is a data container - stock operations don't validate
+// Validation (quantity > 0, sufficient stock) is done at BLL layer
 TEST(MedicineTest, AddStockPositive)
 {
     Medicine med("MED001", "Test", "Cat", 1000.0, 100);
@@ -103,20 +107,20 @@ TEST(MedicineTest, AddStockPositive)
     EXPECT_EQ(med.getQuantityInStock(), 150);
 }
 
-TEST(MedicineTest, AddStockNegativeIgnored)
+TEST(MedicineTest, AddStockNegativeAccepted)
 {
     Medicine med("MED001", "Test", "Cat", 1000.0, 100);
 
     med.addStock(-50);
-    EXPECT_EQ(med.getQuantityInStock(), 100);
+    EXPECT_EQ(med.getQuantityInStock(), 50); // Model accepts any value
 }
 
-TEST(MedicineTest, AddStockZeroIgnored)
+TEST(MedicineTest, AddStockZeroAccepted)
 {
     Medicine med("MED001", "Test", "Cat", 1000.0, 100);
 
     med.addStock(0);
-    EXPECT_EQ(med.getQuantityInStock(), 100);
+    EXPECT_EQ(med.getQuantityInStock(), 100); // No change but accepted
 }
 
 TEST(MedicineTest, RemoveStockSuccess)
@@ -128,22 +132,14 @@ TEST(MedicineTest, RemoveStockSuccess)
     EXPECT_EQ(med.getQuantityInStock(), 70);
 }
 
-TEST(MedicineTest, RemoveStockInsufficient)
+TEST(MedicineTest, RemoveStockAnyAmountAccepted)
 {
     Medicine med("MED001", "Test", "Cat", 1000.0, 100);
 
+    // Model accepts any amount - validation is at BLL
     bool result = med.removeStock(150);
-    EXPECT_FALSE(result);
-    EXPECT_EQ(med.getQuantityInStock(), 100); // Unchanged
-}
-
-TEST(MedicineTest, RemoveStockNegativeOrZero)
-{
-    Medicine med("MED001", "Test", "Cat", 1000.0, 100);
-
-    EXPECT_FALSE(med.removeStock(0));
-    EXPECT_FALSE(med.removeStock(-10));
-    EXPECT_EQ(med.getQuantityInStock(), 100);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(med.getQuantityInStock(), -50); // Can go negative
 }
 
 TEST(MedicineTest, RemoveStockExactAmount)

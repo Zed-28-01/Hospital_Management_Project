@@ -19,10 +19,10 @@ using namespace HMS::Model;
 class DepartmentServiceTest : public ::testing::Test
 {
 protected:
-    DepartmentService* service;
-    DepartmentRepository* deptRepo;
-    DoctorRepository* docRepo;
-    AppointmentRepository* appRepo;
+    DepartmentService *service;
+    DepartmentRepository *deptRepo;
+    DoctorRepository *docRepo;
+    AppointmentRepository *appRepo;
 
     std::string testDir;
     std::string deptFilePath;
@@ -90,7 +90,7 @@ protected:
     }
 
     // Helper to clean up test files including backups
-    void cleanupTestFile(const std::string& filePath)
+    void cleanupTestFile(const std::string &filePath)
     {
         if (std::filesystem::exists(filePath))
         {
@@ -105,9 +105,9 @@ protected:
 
     // Helper to create test department
     Department createTestDepartment(
-        const std::string& id = "DEP001",
-        const std::string& name = "Cardiology",
-        const std::string& description = "Heart and cardiovascular care")
+        const std::string &id = "DEP001",
+        const std::string &name = "Cardiology",
+        const std::string &description = "Heart and cardiovascular care")
     {
         Department dept(id, name, description, "");
         dept.setLocation("Building A, Floor 2");
@@ -117,8 +117,8 @@ protected:
 
     // Helper to create test doctor
     Doctor createTestDoctor(
-        const std::string& id = "DOC001",
-        const std::string& name = "Dr. Test")
+        const std::string &id = "DOC001",
+        const std::string &name = "Dr. Test")
     {
         return Doctor(id, "user_" + id, name, "0987654321", Gender::MALE,
                       "1980-01-01", "General Medicine", "Mon-Fri 9:00-17:00",
@@ -127,8 +127,8 @@ protected:
 
     // Helper to create test appointment
     Appointment createTestAppointment(
-        const std::string& id,
-        const std::string& doctorId,
+        const std::string &id,
+        const std::string &doctorId,
         double price,
         AppointmentStatus status)
     {
@@ -141,8 +141,8 @@ protected:
 
 TEST_F(DepartmentServiceTest, GetInstance_ReturnsSameInstance)
 {
-    DepartmentService* instance1 = DepartmentService::getInstance();
-    DepartmentService* instance2 = DepartmentService::getInstance();
+    DepartmentService *instance1 = DepartmentService::getInstance();
+    DepartmentService *instance2 = DepartmentService::getInstance();
 
     EXPECT_EQ(instance1, instance2);
     EXPECT_NE(instance1, nullptr);
@@ -150,11 +150,11 @@ TEST_F(DepartmentServiceTest, GetInstance_ReturnsSameInstance)
 
 TEST_F(DepartmentServiceTest, ResetInstance_CreatesFreshInstance)
 {
-    DepartmentService* instance1 = DepartmentService::getInstance();
+    DepartmentService *instance1 = DepartmentService::getInstance();
     EXPECT_NE(instance1, nullptr);
 
     DepartmentService::resetInstance();
-    DepartmentService* instance2 = DepartmentService::getInstance();
+    DepartmentService *instance2 = DepartmentService::getInstance();
 
     EXPECT_NE(instance2, nullptr);
 }
@@ -833,9 +833,11 @@ TEST_F(DepartmentServiceTest, ValidateDepartment_EmptyName_ReturnsFalse)
 
 TEST_F(DepartmentServiceTest, ValidateDepartment_InvalidPhone_ReturnsFalse)
 {
+    // Model is a data container - validation is done at BLL layer
     Department dept = createTestDepartment("DEP001");
     dept.setPhone("invalid");
 
+    // Service validates and rejects invalid phone
     EXPECT_FALSE(service->validateDepartment(dept));
 }
 

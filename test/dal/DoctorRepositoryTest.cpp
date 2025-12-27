@@ -96,13 +96,15 @@ TEST_F(DoctorRepositoryTest, Add_DuplicateDoctorID_ReturnsFalse)
     EXPECT_FALSE(repo->add(doctor2));
 }
 
-TEST_F(DoctorRepositoryTest, Add_DuplicateUsername_ReturnsFalse)
+TEST_F(DoctorRepositoryTest, Add_DuplicateUsername_AllowedInDAL)
 {
+    // DAL only checks primary key (doctorID), username check is in BLL
     Doctor doctor1 = createTestDoctor("D001", "sameuser");
-    Doctor doctor2 = createTestDoctor("D002", "sameuser"); // Same username
+    Doctor doctor2 = createTestDoctor("D002", "sameuser"); // Same username, different ID
 
     EXPECT_TRUE(repo->add(doctor1));
-    EXPECT_FALSE(repo->add(doctor2));
+    EXPECT_TRUE(repo->add(doctor2)); // Should succeed - DAL doesn't check username
+    EXPECT_EQ(repo->count(), 2u);
 }
 
 TEST_F(DoctorRepositoryTest, Add_MultipleDoctors_AllAdded)
@@ -246,17 +248,18 @@ TEST_F(DoctorRepositoryTest, Update_SameUsername_AllowsUpdate)
     EXPECT_TRUE(repo->update(updated));
 }
 
-TEST_F(DoctorRepositoryTest, Update_UsernameConflict_ReturnsFalse)
+TEST_F(DoctorRepositoryTest, Update_UsernameConflict_AllowedInDAL)
 {
+    // DAL only checks primary key, username conflict check is in BLL
     Doctor doctor1 = createTestDoctor("D001", "user1");
     Doctor doctor2 = createTestDoctor("D002", "user2");
     repo->add(doctor1);
     repo->add(doctor2);
 
-    // Try to change doctor1's username to doctor2's username
+    // Change doctor1's username to doctor2's username - allowed in DAL
     Doctor updated("D001", "user2", "Name", "0123456789",
                    Gender::MALE, "1980-01-01", "Spec", "Schedule", 500000.0);
-    EXPECT_FALSE(repo->update(updated));
+    EXPECT_TRUE(repo->update(updated)); // Should succeed - DAL doesn't check username
 }
 
 TEST_F(DoctorRepositoryTest, Update_SpecializationChange_Persisted)

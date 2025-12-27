@@ -10,11 +10,11 @@ namespace Model {
  * @struct Statistics
  * @brief Data structure for system statistics
  *
- * Used by AdminService to aggregate and report
- * system-wide metrics.
+ * Used by AdminService and ReportGenerator to aggregate and report
+ * system-wide metrics including core entities and advance features.
  */
 struct Statistics {
-    // ==================== Counts ====================
+    // ==================== Core Counts ====================
     int totalPatients = 0;
     int totalDoctors = 0;
     int totalAppointments = 0;
@@ -40,6 +40,27 @@ struct Statistics {
     std::map<std::string, int> doctorsBySpecialization;
     std::map<std::string, int> appointmentsBySpecialization;
 
+    // ==================== Medicine Statistics (Advance) ====================
+    int totalMedicines = 0;
+    int lowStockMedicines = 0;
+    int expiredMedicines = 0;
+    int expiringSoonMedicines = 0;
+    double totalInventoryValue = 0.0;
+    std::map<std::string, int> medicinesByCategory;
+    std::map<std::string, double> inventoryValueByCategory;
+
+    // ==================== Department Statistics (Advance) ====================
+    int totalDepartments = 0;
+    std::map<std::string, int> doctorsByDepartment;
+    std::map<std::string, double> revenueByDepartment;
+    std::map<std::string, int> appointmentsByDepartment;
+
+    // ==================== Prescription Statistics (Advance) ====================
+    int totalPrescriptions = 0;
+    int dispensedPrescriptions = 0;
+    int pendingPrescriptions = 0;
+    int totalPrescriptionItems = 0;
+
     // ==================== Methods ====================
 
     /**
@@ -60,6 +81,8 @@ struct Statistics {
      */
     void calculate();
 
+    // ==================== Rate Calculations ====================
+
     /**
      * @brief Get completion rate as percentage
      * @return Completion rate (0-100)
@@ -77,6 +100,24 @@ struct Statistics {
      * @return Payment rate (0-100)
      */
     double getPaymentRate() const;
+
+    /**
+     * @brief Get low stock rate as percentage
+     * @return Low stock rate (0-100)
+     */
+    double getLowStockRate() const;
+
+    /**
+     * @brief Get expired medicine rate as percentage
+     * @return Expired rate (0-100)
+     */
+    double getExpiredRate() const;
+
+    /**
+     * @brief Get prescription dispense rate as percentage
+     * @return Dispense rate (0-100)
+     */
+    double getDispenseRate() const;
 
     /**
      * @brief Export statistics to formatted string
