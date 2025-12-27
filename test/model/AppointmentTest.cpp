@@ -113,7 +113,9 @@ TEST(AppointmentTest, GetStatusString)
     EXPECT_EQ(apt4.getStatusString(), "no_show");
 }
 
-// ==================== Setters with Validation ====================
+// ==================== Setters ====================
+// Model is a data container - setters don't validate
+// Validation is done at BLL layer
 
 TEST(AppointmentTest, SetDateValid)
 {
@@ -125,14 +127,14 @@ TEST(AppointmentTest, SetDateValid)
     EXPECT_EQ(apt.getDate(), "2025-12-31");
 }
 
-TEST(AppointmentTest, SetDateInvalid)
+TEST(AppointmentTest, SetDateAcceptsAnyValue)
 {
     Appointment apt(
         "APT009", "p", "D", "2025-01-01", "10:00",
         "Disease", 100000.0);
 
     apt.setDate("invalid-date");
-    EXPECT_EQ(apt.getDate(), "2025-01-01");
+    EXPECT_EQ(apt.getDate(), "invalid-date"); // Model accepts any value
 }
 
 TEST(AppointmentTest, SetTimeValid)
@@ -145,14 +147,14 @@ TEST(AppointmentTest, SetTimeValid)
     EXPECT_EQ(apt.getTime(), "15:45");
 }
 
-TEST(AppointmentTest, SetTimeInvalid)
+TEST(AppointmentTest, SetTimeAcceptsAnyValue)
 {
     Appointment apt(
         "APT011", "p", "D", "2025-01-01", "10:00",
         "Disease", 100000.0);
 
     apt.setTime("25:99");
-    EXPECT_EQ(apt.getTime(), "10:00");
+    EXPECT_EQ(apt.getTime(), "25:99"); // Model accepts any value
 }
 
 TEST(AppointmentTest, SetDisease)
@@ -175,14 +177,14 @@ TEST(AppointmentTest, SetPriceValid)
     EXPECT_EQ(apt.getPrice(), 250000.0);
 }
 
-TEST(AppointmentTest, SetPriceNegativeIgnored)
+TEST(AppointmentTest, SetPriceAcceptsAnyValue)
 {
     Appointment apt(
         "APT014", "p", "D", "2025-01-01", "10:00",
         "Disease", 100000.0);
 
     apt.setPrice(-50000.0);
-    EXPECT_EQ(apt.getPrice(), 100000.0);
+    EXPECT_EQ(apt.getPrice(), -50000.0); // Model accepts any value
 }
 
 TEST(AppointmentTest, SetPriceZero)

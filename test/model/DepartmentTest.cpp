@@ -55,13 +55,15 @@ TEST(DepartmentTest, SettersUpdateValuesCorrectly) {
   EXPECT_EQ(dept.getPhone(), "0281234567");
 }
 
-TEST(DepartmentTest, SetPhoneInvalidIgnored) {
+// Model is a data container - setters don't validate
+// Validation is done at BLL layer
+TEST(DepartmentTest, SetPhoneAcceptsAnyValue) {
   Department dept("DEP001", "Test", "Desc", "D001");
   dept.setPhone("0912345678");
 
-  // Try to set invalid phone
+  // Model accepts any value - validation is at BLL
   dept.setPhone("invalid");
-  EXPECT_EQ(dept.getPhone(), "0912345678"); // Should remain unchanged
+  EXPECT_EQ(dept.getPhone(), "invalid");
 }
 
 TEST(DepartmentTest, SetPhoneEmptyAllowed) {

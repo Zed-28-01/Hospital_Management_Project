@@ -235,11 +235,14 @@ TEST_F(MedicineServiceTest, CreateMedicine_DuplicateID_Fail)
     EXPECT_EQ(1u, service->getMedicineCount());
 }
 
-TEST_F(MedicineServiceTest, CreateMedicine_SameNameDifferentID_Success)
+TEST_F(MedicineServiceTest, CreateMedicine_SameNameDifferentManufacturer_Success)
 {
-    // Service allows same name with different IDs
+    // Service allows same name with different manufacturers (different formulations)
     Medicine med1 = createTestMedicine("MED001", "Aspirin");
+    med1.setManufacturer("Pharma Corp A");
+
     Medicine med2 = createTestMedicine("MED002", "Aspirin");
+    med2.setManufacturer("Pharma Corp B");
 
     bool result1 = service->createMedicine(med1);
     bool result2 = service->createMedicine(med2);
@@ -1030,29 +1033,30 @@ TEST_F(MedicineServiceTest, ValidateMedicine_NegativeQuantity_ReturnFalse)
     EXPECT_FALSE(result);
 }
 
-TEST_F(MedicineServiceTest, ValidateMedicine_SetterProtection_ReorderLevel)
+TEST_F(MedicineServiceTest, ValidateMedicine_NegativeReorderLevel_ReturnFalse)
 {
+    // Model accepts any value - BLL validates
     Medicine med = createTestMedicine("MED001", "Aspirin", "Analgesic", 10.0, 100);
-    med.setReorderLevel(10);
+    med.setReorderLevel(-5);  // Model accepts negative value
 
-    // Try to set negative (setter should reject it)
-    med.setReorderLevel(-5);
+    // BLL should detect invalid reorder level
+    bool result = service->validateMedicine(med);
 
-    // Medicine should still be valid with old value
-    EXPECT_TRUE(service->validateMedicine(med));
-    EXPECT_EQ(10, med.getReorderLevel());
+    EXPECT_FALSE(result);  // BLL rejects negative reorder level
+    EXPECT_EQ(-5, med.getReorderLevel());  // Model stored the value
 }
 
-TEST_F(MedicineServiceTest, ValidateMedicine_SetterProtection_ExpiryDate)
+TEST_F(MedicineServiceTest, ValidateMedicine_InvalidExpiryDate_ReturnFalse)
 {
+    // Model accepts any value - BLL validates
     Medicine med = createTestMedicine("MED001", "Aspirin", "Analgesic", 10.0, 100);
+    med.setExpiryDate("invalid-date");  // Model accepts any string
 
-    // Setter rejects invalid date
-    med.setExpiryDate("invalid-date");
+    // BLL should detect invalid expiry date format
+    bool result = service->validateMedicine(med);
 
-    // Medicine is still valid because setter protected it
-    EXPECT_TRUE(service->validateMedicine(med));
-    EXPECT_TRUE(med.getExpiryDate().empty());
+    EXPECT_FALSE(result);  // BLL rejects invalid date format
+    EXPECT_EQ("invalid-date", med.getExpiryDate());  // Model stored the value
 }
 
 TEST_F(MedicineServiceTest, ValidateMedicine_ValidExpiryDate_ReturnTrue)

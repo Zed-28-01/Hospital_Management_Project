@@ -84,22 +84,12 @@ namespace HMS
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            // Check if patient ID already exists
+            // Check if patient ID already exists (primary key check only)
             bool idExists = std::ranges::any_of(
                 m_patients, [&patient](const auto &p)
                 { return p.getPatientID() == patient.getPatientID(); });
 
             if (idExists)
-            {
-                return false;
-            }
-
-            // Check if username already exists
-            bool usernameExists = std::ranges::any_of(
-                m_patients, [&patient](const auto &p)
-                { return p.getUsername() == patient.getUsername(); });
-
-            if (usernameExists)
             {
                 return false;
             }
