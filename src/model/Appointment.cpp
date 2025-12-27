@@ -113,21 +113,16 @@ namespace HMS
         }
 
         // ==================== Setters ====================
+        // Model is a data container - validation is done at BLL layer
 
         void Appointment::setDate(const std::string &date)
         {
-            if (Utils::isValidDate(date))
-            {
-                m_appointmentDate = date;
-            }
+            m_appointmentDate = date;
         }
 
         void Appointment::setTime(const std::string &time)
         {
-            if (Utils::isValidTime(time))
-            {
-                m_appointmentTime = time;
-            }
+            m_appointmentTime = time;
         }
 
         void Appointment::setDisease(const std::string &disease)
@@ -137,10 +132,7 @@ namespace HMS
 
         void Appointment::setPrice(double price)
         {
-            if (price >= 0)
-            {
-                m_price = price;
-            }
+            m_price = price;
         }
 
         void Appointment::setPaid(bool paid)
