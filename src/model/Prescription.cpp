@@ -59,25 +59,9 @@ namespace HMS
         void Prescription::setDispensed(bool dispensed) { m_isDispensed = dispensed; }
 
         // ==================== Item Management ====================
+        // Model is a data container - business logic (duplicate check) is done at BLL layer
         void Prescription::addItem(const PrescriptionItem &item)
         {
-            if (item.medicineID.empty())
-            {
-                return;
-            }
-
-            // Check for duplicate medicine (update existing item instead of adding
-            // duplicate)
-            for (auto &existingItem : m_items)
-            {
-                if (existingItem.medicineID == item.medicineID)
-                {
-                    // Update existing item with new values
-                    existingItem = item;
-                    return;
-                }
-            }
-
             m_items.push_back(item);
         }
 

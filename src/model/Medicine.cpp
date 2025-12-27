@@ -72,34 +72,26 @@ namespace HMS
 
         void Medicine::setUnitPrice(double price)
         {
-            if (price >= 0)
-            {
-                m_unitPrice = price;
-            }
+            // Model is a data container - validation is done at BLL layer
+            m_unitPrice = price;
         }
 
         void Medicine::setQuantityInStock(int quantity)
         {
-            if (quantity >= 0)
-            {
-                m_quantityInStock = quantity;
-            }
+            // Model is a data container - validation is done at BLL layer
+            m_quantityInStock = quantity;
         }
 
         void Medicine::setReorderLevel(int level)
         {
-            if (level >= 0)
-            {
-                m_reorderLevel = level;
-            }
+            // Model is a data container - validation is done at BLL layer
+            m_reorderLevel = level;
         }
 
         void Medicine::setExpiryDate(const std::string &date)
         {
-            if (date.empty() || Utils::isValidDate(date))
-            {
-                m_expiryDate = date;
-            }
+            // Model is a data container - validation is done at BLL layer
+            m_expiryDate = date;
         }
 
         void Medicine::setDosageForm(const std::string &form) { m_dosageForm = form; }
@@ -110,20 +102,15 @@ namespace HMS
         }
 
         // ==================== Inventory Operations ====================
+        // Note: These are simple data operations. Business validation
+        // (e.g., quantity > 0, sufficient stock) is done at BLL layer.
         void Medicine::addStock(int quantity)
         {
-            if (quantity > 0)
-            {
-                m_quantityInStock += quantity;
-            }
+            m_quantityInStock += quantity;
         }
 
         bool Medicine::removeStock(int quantity)
         {
-            if (quantity <= 0 || quantity > m_quantityInStock)
-            {
-                return false;
-            }
             m_quantityInStock -= quantity;
             return true;
         }

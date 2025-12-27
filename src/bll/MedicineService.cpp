@@ -183,11 +183,14 @@ namespace HMS
             }
 
             auto medicine = *medicineOpt;
-            if (!medicine.removeStock(quantity))
+
+            // BLL validates sufficient stock before removing
+            if (quantity > medicine.getQuantityInStock())
             {
                 return false;
             }
 
+            medicine.removeStock(quantity);
             return m_medicineRepo->update(medicine);
         }
 
