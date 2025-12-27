@@ -232,15 +232,7 @@ namespace HMS
 
             return true;
         }
-
-        std::string toDateString(int year, int month, int day) {
-            std::ostringstream oss;
-            oss << year << "-"
-                << std::setw(2) << std::setfill('0') << month << "-"
-                << std::setw(2) << std::setfill('0') << day;
-            return oss.str();
-        }
-
+        
         // ==================== ID Generation ====================
 
         std::string generateID(const std::string &prefix)
