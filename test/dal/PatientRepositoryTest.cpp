@@ -94,13 +94,15 @@ TEST_F(PatientRepositoryTest, Add_DuplicatePatientID_ReturnsFalse)
     EXPECT_FALSE(repo->add(patient2));
 }
 
-TEST_F(PatientRepositoryTest, Add_DuplicateUsername_ReturnsFalse)
+TEST_F(PatientRepositoryTest, Add_DuplicateUsername_AllowedInDAL)
 {
+    // DAL only checks primary key (patientID), username check is in BLL
     Patient patient1 = createTestPatient("P001", "sameuser");
-    Patient patient2 = createTestPatient("P002", "sameuser"); // Same username
+    Patient patient2 = createTestPatient("P002", "sameuser"); // Same username, different ID
 
     EXPECT_TRUE(repo->add(patient1));
-    EXPECT_FALSE(repo->add(patient2));
+    EXPECT_TRUE(repo->add(patient2)); // Should succeed - DAL doesn't check username
+    EXPECT_EQ(repo->count(), 2u);
 }
 
 TEST_F(PatientRepositoryTest, Add_MultiplePatients_AllAdded)
