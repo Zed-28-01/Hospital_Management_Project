@@ -69,6 +69,7 @@ Result<Model::Medicine> MedicineService::createMedicine(
 
     medicine.setGenericName(genericName);
     medicine.setManufacturer(manufacturer);
+    medicine.setReorderLevel(Constants::DEFAULT_REORDER_LEVEL);
 
     return m_medicineRepo->add(medicine)
         ? Result<Model::Medicine>(medicine)
@@ -163,6 +164,10 @@ bool MedicineService::removeStock(const std::string& medicineID, int quantity) {
 }
 
 bool MedicineService::hasEnoughStock(const std::string& medicineID, int quantity) const {
+    if (quantity <= 0) {
+        return true;  // Zero or negative quantity always satisfiable
+    }
+
     auto medicineOpt = m_medicineRepo->getById(medicineID);
     if (!medicineOpt) {
         return false;
@@ -214,11 +219,10 @@ List<Model::Medicine> MedicineService::getOutOfStock() {
     auto allMedicines = m_medicineRepo->getAll();
     List<Model::Medicine> outOfStock;
 
-    std::copy_if(allMedicines.begin(), allMedicines.end(),
-                 std::back_inserter(outOfStock),
-                 [](const Model::Medicine& med) {
-                     return med.getQuantityInStock() == 0;
-                 });
+    std::ranges::copy_if(allMedicines, std::back_inserter(outOfStock),
+                         [](const auto& med) {
+                             return med.getQuantityInStock() == 0;
+                         });
 
     return outOfStock;
 }
@@ -337,12 +341,13 @@ bool MedicineService::medicineExists(const std::string& medicineID) const {
 
 bool MedicineService::medicineNameExists(const std::string& name, const std::string& excludeID) const {
     auto allMedicines = m_medicineRepo->getAll();
+    std::string normalizedName = Utils::trim(Utils::toLower(name));
 
-    return std::any_of(allMedicines.begin(), allMedicines.end(),
-                       [&name, &excludeID](const Model::Medicine& med) {
-                           return Utils::toLower(med.getName()) == Utils::toLower(name) &&
-                                  med.getMedicineID() != excludeID;
-                       });
+    return std::ranges::any_of(allMedicines,
+                               [&normalizedName, &excludeID](const auto& med) {
+                                   return Utils::trim(Utils::toLower(med.getName())) == normalizedName &&
+                                          med.getMedicineID() != excludeID;
+                               });
 }
 
 // ==================== Data Persistence ====================
