@@ -1,24 +1,24 @@
 #include "dal/AppointmentRepository.h"
-#include "dal/FileHelper.h"
-#include "common/Utils.h"
 #include "common/Constants.h"
+#include "common/Utils.h"
+#include "dal/FileHelper.h"
 
 #include <algorithm>
+#include <filesystem>
+#include <format>
 #include <sstream>
 
 namespace HMS
 {
     namespace DAL
     {
-
-        // ==================== Singleton Instance ====================
+        // ==================== Static Members Initialization ====================
         std::unique_ptr<AppointmentRepository> AppointmentRepository::s_instance = nullptr;
         std::mutex AppointmentRepository::s_mutex;
 
         // ==================== Private Constructor ====================
         AppointmentRepository::AppointmentRepository()
-            : m_filePath(Constants::APPOINTMENT_FILE),
-              m_isLoaded(false)
+            : m_filePath(Constants::APPOINTMENT_FILE), m_isLoaded(false)
         {
         }
 
@@ -26,7 +26,6 @@ namespace HMS
         AppointmentRepository *AppointmentRepository::getInstance()
         {
             std::lock_guard<std::mutex> lock(s_mutex);
-
             if (!s_instance)
             {
                 s_instance = std::unique_ptr<AppointmentRepository>(new AppointmentRepository());
@@ -40,30 +39,37 @@ namespace HMS
             s_instance.reset();
         }
 
+        // ==================== Destructor ====================
         AppointmentRepository::~AppointmentRepository() = default;
+
+        // ==================== Private Helper ====================
+        void AppointmentRepository::ensureLoaded() const
+        {
+            if (!m_isLoaded)
+            {
+                const_cast<AppointmentRepository *>(this)->loadInternal();
+            }
+        }
 
         // ==================== CRUD Operations ====================
         std::vector<Model::Appointment> AppointmentRepository::getAll()
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
             return m_appointments;
         }
 
         std::optional<Model::Appointment> AppointmentRepository::getById(const std::string &id)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            auto it = std::find_if(m_appointments.begin(), m_appointments.end(),
-                                   [&id](const Model::Appointment &apt)
-                                   {
-                                       return apt.getAppointmentID() == id;
-                                   });
+            auto it = std::ranges::find_if(
+                m_appointments, [&id](const auto &a)
+                {
+                    return a.getAppointmentID() == id;
+                }
+            );
 
             if (it != m_appointments.end())
             {
@@ -74,69 +80,77 @@ namespace HMS
 
         bool AppointmentRepository::add(const Model::Appointment &appointment)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            if (exists(appointment.getAppointmentID()))
+            // Check if appointment ID already exists (inline for efficiency)
+            for (const auto &a : m_appointments)
             {
-                return false;
+                if (a.getAppointmentID() == appointment.getAppointmentID())
+                {
+                    return false;
+                }
             }
 
             m_appointments.push_back(appointment);
-            return save();
+            return saveInternal();
         }
 
         bool AppointmentRepository::update(const Model::Appointment &appointment)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            auto it = std::find_if(m_appointments.begin(), m_appointments.end(),
-                                   [&appointment](const Model::Appointment &apt)
-                                   {
-                                       return apt.getAppointmentID() == appointment.getAppointmentID();
-                                   });
+            auto it = std::ranges::find_if(
+                m_appointments, [&appointment](const auto &a)
+                {
+                    return a.getAppointmentID() == appointment.getAppointmentID();
+                }
+            );
 
             if (it != m_appointments.end())
             {
                 *it = appointment;
-                return save();
+                return saveInternal();
             }
             return false;
         }
 
         bool AppointmentRepository::remove(const std::string &id)
         {
-            if (!m_isLoaded)
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            auto it = std::ranges::find_if(
+                m_appointments, [&id](const auto &a)
+                {
+                    return a.getAppointmentID() == id;
+                }
+            );
+
+            if (it == m_appointments.end())
             {
-                load();
+                return false;
             }
 
-            auto it = std::find_if(m_appointments.begin(), m_appointments.end(),
-                                   [&id](const Model::Appointment &apt)
-                                   {
-                                       return apt.getAppointmentID() == id;
-                                   });
-
-            if (it != m_appointments.end())
-            {
-                m_appointments.erase(it);
-                return save();
-            }
-            return false;
+            m_appointments.erase(it);
+            return saveInternal();
         }
 
         // ==================== Persistence ====================
         bool AppointmentRepository::save()
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            return saveInternal();
+        }
+
+        bool AppointmentRepository::saveInternal()
+        {
             try
             {
                 std::vector<std::string> lines;
 
+                // Add header
                 auto header = FileHelper::getFileHeader("Appointment");
                 std::stringstream hss(header);
                 std::string headerLine;
@@ -148,9 +162,10 @@ namespace HMS
                     }
                 }
 
-                for (const auto &apt : m_appointments)
+                // Add data
+                for (const auto &appointment : m_appointments)
                 {
-                    lines.push_back(apt.serialize());
+                    lines.push_back(appointment.serialize());
                 }
 
                 FileHelper::createBackup(m_filePath);
@@ -164,9 +179,23 @@ namespace HMS
 
         bool AppointmentRepository::load()
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            return loadInternal();
+        }
+
+        bool AppointmentRepository::loadInternal()
+        {
             try
             {
-                FileHelper::createDirectoryIfNotExists(Constants::DATA_DIR);
+                // Create parent directory of the file if it doesn't exist
+                std::filesystem::path filePath(m_filePath);
+                std::filesystem::path parentDir = filePath.parent_path();
+
+                if (!parentDir.empty())
+                {
+                    FileHelper::createDirectoryIfNotExists(parentDir.string());
+                }
+
                 FileHelper::createFileIfNotExists(m_filePath);
 
                 std::vector<std::string> lines = FileHelper::readLines(m_filePath);
@@ -193,258 +222,247 @@ namespace HMS
         }
 
         // ==================== Query Operations ====================
-
         size_t AppointmentRepository::count() const
         {
-            if (!m_isLoaded)
-            {
-                const_cast<AppointmentRepository *>(this)->load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
             return m_appointments.size();
         }
 
         bool AppointmentRepository::exists(const std::string &id) const
         {
-            if (!m_isLoaded)
-            {
-                const_cast<AppointmentRepository *>(this)->load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            return std::any_of(m_appointments.begin(), m_appointments.end(),
-                               [&id](const Model::Appointment &apt)
-                               {
-                                   return apt.getAppointmentID() == id;
-                               });
+            return std::ranges::any_of(
+                m_appointments, [&id](const auto &a)
+                {
+                    return a.getAppointmentID() == id;
+                }
+            );
         }
 
         bool AppointmentRepository::clear()
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             m_appointments.clear();
             m_isLoaded = true;
-            return save();
+            return saveInternal();
         }
 
         // ==================== Patient-Related Queries ====================
         std::vector<Model::Appointment> AppointmentRepository::getByPatient(const std::string &patientUsername)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Model::Appointment> result;
-            std::copy_if(m_appointments.begin(), m_appointments.end(),
-                         std::back_inserter(result),
-                         [&patientUsername](const Model::Appointment &apt)
-                         {
-                             return apt.getPatientUsername() == patientUsername;
-                         });
-            return result;
+            std::vector<Model::Appointment> results;
+            std::ranges::copy_if(
+                m_appointments, std::back_inserter(results),
+                [&patientUsername](const auto &a)
+                {
+                    return a.getPatientUsername() == patientUsername;
+                }
+            );
+
+            return results;
         }
 
         std::vector<Model::Appointment> AppointmentRepository::getUpcomingByPatient(const std::string &patientUsername)
         {
-            if (!m_isLoaded)
-            {
-                load();
-            }
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Model::Appointment> result;
             std::string today = Utils::getCurrentDate();
+            std::vector<Model::Appointment> results;
 
-            std::copy_if(m_appointments.begin(), m_appointments.end(),
-                         std::back_inserter(result),
-                         [&patientUsername, &today](const Model::Appointment &apt)
-                         {
-                             return apt.getPatientUsername() == patientUsername &&
-                                    apt.getStatus() == AppointmentStatus::SCHEDULED &&
-                                    Utils::compareDates(apt.getDate(), today) >= 0;
-                         });
+            std::ranges::copy_if(
+                m_appointments, std::back_inserter(results),
+                [&patientUsername, &today](const auto &a)
+                {
+                    return a.getPatientUsername() == patientUsername &&
+                           a.getStatus() == AppointmentStatus::SCHEDULED &&
+                           a.getDate() >= today;
+                }
+            );
 
-            std::sort(result.begin(), result.end(),
-                      [](const Model::Appointment &a, const Model::Appointment &b)
-                      {
-                          if (a.getDate() != b.getDate())
-                          {
-                              return Utils::compareDates(a.getDate(), b.getDate()) < 0;
-                          }
-                          return a.getTime() < b.getTime();
-                      });
+            // Sort by date and time
+            std::ranges::sort(results, [](const auto &a, const auto &b)
+            {
+                if (a.getDate() != b.getDate())
+                    return a.getDate() < b.getDate();
+                return a.getTime() < b.getTime();
+            });
 
-            return result;
+            return results;
         }
 
         std::vector<Model::Appointment> AppointmentRepository::getHistoryByPatient(const std::string &patientUsername)
         {
-            if (!m_isLoaded)
-                load();
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Model::Appointment> result;
+            std::vector<Model::Appointment> results;
+            std::ranges::copy_if(
+                m_appointments, std::back_inserter(results),
+                [&patientUsername](const auto &a)
+                {
+                    return a.getPatientUsername() == patientUsername &&
+                           (a.getStatus() == AppointmentStatus::COMPLETED ||
+                            a.getStatus() == AppointmentStatus::CANCELLED ||
+                            a.getStatus() == AppointmentStatus::NO_SHOW);
+                }
+            );
 
-            std::copy_if(m_appointments.begin(), m_appointments.end(),
-                         std::back_inserter(result),
-                         [&patientUsername](const Model::Appointment &apt)
-                         {
-                             return apt.getPatientUsername() == patientUsername &&
-                                    (apt.getStatus() == AppointmentStatus::COMPLETED ||
-                                     apt.getStatus() == AppointmentStatus::CANCELLED ||
-                                     apt.getStatus() == AppointmentStatus::NO_SHOW);
-                         });
+            // Sort by date descending (most recent first)
+            std::ranges::sort(results, [](const auto &a, const auto &b)
+            {
+                if (a.getDate() != b.getDate())
+                    return a.getDate() > b.getDate();
+                return a.getTime() > b.getTime();
+            });
 
-            std::sort(result.begin(), result.end(),
-                      [](const Model::Appointment &a, const Model::Appointment &b)
-                      {
-                          if (a.getDate() != b.getDate())
-                          {
-                              return Utils::compareDates(a.getDate(), b.getDate()) > 0;
-                          }
-                          return a.getTime() > b.getTime();
-                      });
-
-            return result;
+            return results;
         }
 
         std::vector<Model::Appointment> AppointmentRepository::getUnpaidByPatient(const std::string &patientUsername)
         {
-            if (!m_isLoaded)
-                load();
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Model::Appointment> result;
+            std::vector<Model::Appointment> results;
+            std::ranges::copy_if(
+                m_appointments, std::back_inserter(results),
+                [&patientUsername](const auto &a)
+                {
+                    return a.getPatientUsername() == patientUsername && !a.isPaid();
+                }
+            );
 
-            std::copy_if(m_appointments.begin(), m_appointments.end(),
-                         std::back_inserter(result),
-                         [&patientUsername](const Model::Appointment &apt)
-                         {
-                             return apt.getPatientUsername() == patientUsername && !apt.isPaid();
-                         });
-
-            return result;
+            return results;
         }
 
         // ==================== Doctor-Related Queries ====================
         std::vector<Model::Appointment> AppointmentRepository::getByDoctor(const std::string &doctorID)
         {
-            if (!m_isLoaded)
-                load();
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Model::Appointment> result;
+            std::vector<Model::Appointment> results;
+            std::ranges::copy_if(
+                m_appointments, std::back_inserter(results),
+                [&doctorID](const auto &a)
+                {
+                    return a.getDoctorID() == doctorID;
+                }
+            );
 
-            std::copy_if(m_appointments.begin(), m_appointments.end(),
-                         std::back_inserter(result),
-                         [&doctorID](const Model::Appointment &apt)
-                         {
-                             return apt.getDoctorID() == doctorID;
-                         });
-
-            return result;
+            return results;
         }
 
-        std::vector<Model::Appointment> AppointmentRepository::getByDoctorAndDate(const std::string &doctorID,
-                                                                                  const std::string &date)
+        std::vector<Model::Appointment> AppointmentRepository::getByDoctorAndDate(
+            const std::string &doctorID, const std::string &date)
         {
-            if (!m_isLoaded)
-                load();
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Model::Appointment> result;
+            std::vector<Model::Appointment> results;
+            std::ranges::copy_if(
+                m_appointments, std::back_inserter(results),
+                [&doctorID, &date](const auto &a)
+                {
+                    return a.getDoctorID() == doctorID &&
+                           a.getDate() == date &&
+                           a.getStatus() != AppointmentStatus::CANCELLED;
+                }
+            );
 
-            std::copy_if(m_appointments.begin(), m_appointments.end(),
-                         std::back_inserter(result),
-                         [&doctorID, &date](const Model::Appointment &apt)
-                         {
-                             return apt.getDoctorID() == doctorID && apt.getDate() == date;
-                         });
+            // Sort by time
+            std::ranges::sort(results, [](const auto &a, const auto &b)
+            {
+                return a.getTime() < b.getTime();
+            });
 
-            std::sort(result.begin(), result.end(),
-                      [](const Model::Appointment &a, const Model::Appointment &b)
-                      {
-                          return a.getTime() < b.getTime();
-                      });
-
-            return result;
+            return results;
         }
 
         std::vector<Model::Appointment> AppointmentRepository::getUpcomingByDoctor(const std::string &doctorID)
         {
-            if (!m_isLoaded)
-                load();
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Model::Appointment> result;
             std::string today = Utils::getCurrentDate();
+            std::vector<Model::Appointment> results;
 
-            std::copy_if(m_appointments.begin(), m_appointments.end(),
-                         std::back_inserter(result),
-                         [&doctorID, &today](const Model::Appointment &apt)
-                         {
-                             return apt.getDoctorID() == doctorID &&
-                                    apt.getStatus() == AppointmentStatus::SCHEDULED &&
-                                    Utils::compareDates(apt.getDate(), today) >= 0;
-                         });
+            std::ranges::copy_if(
+                m_appointments, std::back_inserter(results),
+                [&doctorID, &today](const auto &a)
+                {
+                    return a.getDoctorID() == doctorID &&
+                           a.getStatus() == AppointmentStatus::SCHEDULED &&
+                           a.getDate() >= today;
+                }
+            );
 
-            std::sort(result.begin(), result.end(),
-                      [](const Model::Appointment &a, const Model::Appointment &b)
-                      {
-                          if (a.getDate() != b.getDate())
-                          {
-                              return Utils::compareDates(a.getDate(), b.getDate()) < 0;
-                          }
-                          return a.getTime() < b.getTime();
-                      });
+            // Sort by date and time
+            std::ranges::sort(results, [](const auto &a, const auto &b)
+            {
+                if (a.getDate() != b.getDate())
+                    return a.getDate() < b.getDate();
+                return a.getTime() < b.getTime();
+            });
 
-            return result;
+            return results;
         }
 
         // ==================== Date-Based Queries ====================
         std::vector<Model::Appointment> AppointmentRepository::getByDate(const std::string &date)
         {
-            if (!m_isLoaded)
-                load();
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Model::Appointment> result;
+            std::vector<Model::Appointment> results;
+            std::ranges::copy_if(
+                m_appointments, std::back_inserter(results),
+                [&date](const auto &a)
+                {
+                    return a.getDate() == date;
+                }
+            );
 
-            std::copy_if(m_appointments.begin(), m_appointments.end(),
-                         std::back_inserter(result),
-                         [&date](const Model::Appointment &apt)
-                         {
-                             return apt.getDate() == date;
-                         });
+            // Sort by time
+            std::ranges::sort(results, [](const auto &a, const auto &b)
+            {
+                return a.getTime() < b.getTime();
+            });
 
-            std::sort(result.begin(), result.end(),
-                      [](const Model::Appointment &a, const Model::Appointment &b)
-                      {
-                          return a.getTime() < b.getTime();
-                      });
-
-            return result;
+            return results;
         }
 
-        std::vector<Model::Appointment> AppointmentRepository::getByDateRange(const std::string &startDate,
-                                                                              const std::string &endDate)
+        std::vector<Model::Appointment> AppointmentRepository::getByDateRange(
+            const std::string &startDate, const std::string &endDate)
         {
-            if (!m_isLoaded)
-                load();
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Model::Appointment> result;
+            std::vector<Model::Appointment> results;
+            std::ranges::copy_if(
+                m_appointments, std::back_inserter(results),
+                [&startDate, &endDate](const auto &a)
+                {
+                    return a.getDate() >= startDate && a.getDate() <= endDate;
+                }
+            );
 
-            std::copy_if(m_appointments.begin(), m_appointments.end(),
-                         std::back_inserter(result),
-                         [&startDate, &endDate](const Model::Appointment &apt)
-                         {
-                             int cmpStart = Utils::compareDates(apt.getDate(), startDate);
-                             int cmpEnd = Utils::compareDates(apt.getDate(), endDate);
-                             return cmpStart >= 0 && cmpEnd <= 0;
-                         });
+            // Sort by date and time
+            std::ranges::sort(results, [](const auto &a, const auto &b)
+            {
+                if (a.getDate() != b.getDate())
+                    return a.getDate() < b.getDate();
+                return a.getTime() < b.getTime();
+            });
 
-            std::sort(result.begin(), result.end(),
-                      [](const Model::Appointment &a, const Model::Appointment &b)
-                      {
-                          if (a.getDate() != b.getDate())
-                          {
-                              return Utils::compareDates(a.getDate(), b.getDate()) < 0;
-                          }
-                          return a.getTime() < b.getTime();
-                      });
-
-            return result;
+            return results;
         }
 
         std::vector<Model::Appointment> AppointmentRepository::getToday()
@@ -455,19 +473,19 @@ namespace HMS
         // ==================== Status-Based Queries ====================
         std::vector<Model::Appointment> AppointmentRepository::getByStatus(AppointmentStatus status)
         {
-            if (!m_isLoaded)
-                load();
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            std::vector<Model::Appointment> result;
+            std::vector<Model::Appointment> results;
+            std::ranges::copy_if(
+                m_appointments, std::back_inserter(results),
+                [status](const auto &a)
+                {
+                    return a.getStatus() == status;
+                }
+            );
 
-            std::copy_if(m_appointments.begin(), m_appointments.end(),
-                         std::back_inserter(result),
-                         [&status](const Model::Appointment &apt)
-                         {
-                             return apt.getStatus() == status;
-                         });
-
-            return result;
+            return results;
         }
 
         std::vector<Model::Appointment> AppointmentRepository::getScheduled()
@@ -486,75 +504,119 @@ namespace HMS
         }
 
         // ==================== Slot Availability ====================
-        bool AppointmentRepository::isSlotAvailable(const std::string &doctorID,
-                                                    const std::string &date,
-                                                    const std::string &time)
+        bool AppointmentRepository::isSlotAvailable(
+            const std::string &doctorID, const std::string &date, const std::string &time)
         {
-            return isSlotAvailable(doctorID, date, time, "");
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            return std::ranges::none_of(
+                m_appointments, [&doctorID, &date, &time](const auto &a)
+                {
+                    return a.getDoctorID() == doctorID &&
+                           a.getDate() == date &&
+                           a.getTime() == time &&
+                           a.getStatus() != AppointmentStatus::CANCELLED;
+                }
+            );
         }
 
-        bool AppointmentRepository::isSlotAvailable(const std::string &doctorID,
-                                                    const std::string &date,
-                                                    const std::string &time,
-                                                    const std::string &excludeAppointmentID)
+        bool AppointmentRepository::isSlotAvailable(
+            const std::string &doctorID, const std::string &date,
+            const std::string &time, const std::string &excludeAppointmentID)
         {
-            if (!m_isLoaded)
-                load();
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
-            return std::none_of(m_appointments.begin(), m_appointments.end(),
-                                [&doctorID, &date, &time, &excludeAppointmentID](const Model::Appointment &apt)
-                                {
-                                    // Skip the excluded appointment (for edit scenarios)
-                                    if (!excludeAppointmentID.empty() && apt.getAppointmentID() == excludeAppointmentID)
-                                    {
-                                        return false;
-                                    }
-                                    return apt.getDoctorID() == doctorID &&
-                                           apt.getDate() == date &&
-                                           apt.getTime() == time &&
-                                           apt.getStatus() == AppointmentStatus::SCHEDULED;
-                                });
+            return std::ranges::none_of(
+                m_appointments, [&doctorID, &date, &time, &excludeAppointmentID](const auto &a)
+                {
+                    return a.getDoctorID() == doctorID &&
+                           a.getDate() == date &&
+                           a.getTime() == time &&
+                           a.getAppointmentID() != excludeAppointmentID &&
+                           a.getStatus() != AppointmentStatus::CANCELLED;
+                }
+            );
         }
 
-        std::vector<std::string> AppointmentRepository::getBookedSlots(const std::string &doctorID,
-                                                                       const std::string &date)
+        std::vector<std::string> AppointmentRepository::getBookedSlots(
+            const std::string &doctorID, const std::string &date)
         {
-            if (!m_isLoaded)
-                load();
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
 
             std::vector<std::string> slots;
-
-            for (const auto &apt : m_appointments)
+            for (const auto &a : m_appointments)
             {
-                if (apt.getDoctorID() == doctorID &&
-                    apt.getDate() == date &&
-                    apt.getStatus() == AppointmentStatus::SCHEDULED)
+                if (a.getDoctorID() == doctorID &&
+                    a.getDate() == date &&
+                    a.getStatus() != AppointmentStatus::CANCELLED)
                 {
-                    slots.push_back(apt.getTime());
+                    slots.push_back(a.getTime());
                 }
             }
 
-            std::sort(slots.begin(), slots.end());
-            slots.erase(std::unique(slots.begin(), slots.end()), slots.end());
-
+            // Sort the slots
+            std::ranges::sort(slots);
             return slots;
         }
 
         // ==================== ID Generation ====================
         std::string AppointmentRepository::getNextId()
         {
-            return Utils::generateAppointmentID();
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            if (m_appointments.empty())
+            {
+                return std::format("{}001", Constants::APPOINTMENT_ID_PREFIX);
+            }
+
+            // Find max ID number
+            int maxID = 0;
+            const std::string prefix = Constants::APPOINTMENT_ID_PREFIX;
+
+            for (const auto &appointment : m_appointments)
+            {
+                const std::string &appointmentID = appointment.getAppointmentID();
+
+                // Only process valid format: prefix + digits
+                if (appointmentID.length() > prefix.length() &&
+                    appointmentID.starts_with(prefix))
+                {
+                    std::string numPart = appointmentID.substr(prefix.length());
+
+                    // Validate numeric before parsing
+                    if (Utils::isNumeric(numPart))
+                    {
+                        try
+                        {
+                            int idNum = std::stoi(numPart);
+                            maxID = std::max(maxID, idNum);
+                        }
+                        catch (const std::exception &)
+                        {
+                            // Ignore parse errors
+                        }
+                    }
+                }
+            }
+
+            return std::format("{}{:03d}", prefix, maxID + 1);
         }
 
-        // ==================== File Path ====================
+        // ==================== File Path Management ====================
         void AppointmentRepository::setFilePath(const std::string &filePath)
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             m_filePath = filePath;
             m_isLoaded = false;
         }
 
         std::string AppointmentRepository::getFilePath() const
         {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
             return m_filePath;
         }
 

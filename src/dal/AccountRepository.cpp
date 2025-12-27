@@ -1,31 +1,33 @@
 #include "dal/AccountRepository.h"
-#include "dal/FileHelper.h"
-#include "common/Types.h"
 #include "common/Constants.h"
+#include "common/Types.h"
+#include "common/Utils.h"
+#include "dal/FileHelper.h"
 
 #include <algorithm>
+#include <filesystem>
+#include <format>
 #include <sstream>
 
 namespace HMS
 {
     namespace DAL
     {
-
+        // ==================== Static Members Initialization ====================
         std::unique_ptr<AccountRepository> AccountRepository::s_instance = nullptr;
         std::mutex AccountRepository::s_mutex;
 
-        // ==================== Constructor ====================
-
+        // ==================== Private Constructor ====================
         AccountRepository::AccountRepository()
             : m_filePath(Constants::ACCOUNT_FILE),
-              m_isLoaded(false) {}
+              m_isLoaded(false)
+        {
+        }
 
         // ==================== Destructor ====================
-
         AccountRepository::~AccountRepository() = default;
 
-        // ==================== Singleton ====================
-
+        // ==================== Singleton Access ====================
         AccountRepository *AccountRepository::getInstance()
         {
             std::lock_guard<std::mutex> lock(s_mutex);
@@ -43,7 +45,6 @@ namespace HMS
         }
 
         // ==================== Private Helper ====================
-
         void AccountRepository::ensureLoaded() const
         {
             if (!m_isLoaded)
@@ -52,8 +53,7 @@ namespace HMS
             }
         }
 
-        // ==================== CRUD ====================
-
+        // ==================== CRUD Operations ====================
         std::vector<Model::Account> AccountRepository::getAll()
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
@@ -65,10 +65,14 @@ namespace HMS
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
-            for (const auto &acc : m_accounts)
+
+            auto it = std::ranges::find_if(
+                m_accounts, [&id](const auto &acc)
+                { return acc.getUsername() == id; });
+
+            if (it != m_accounts.end())
             {
-                if (acc.getUsername() == id)
-                    return acc;
+                return *it;
             }
             return std::nullopt;
         }
@@ -84,11 +88,14 @@ namespace HMS
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            // Check if already exists
-            for (const auto &acc : m_accounts)
+            // Check if username already exists
+            bool exists = std::ranges::any_of(
+                m_accounts, [&account](const auto &acc)
+                { return acc.getUsername() == account.getUsername(); });
+
+            if (exists)
             {
-                if (acc.getUsername() == account.getUsername())
-                    return false;
+                return false;
             }
 
             m_accounts.push_back(account);
@@ -100,13 +107,14 @@ namespace HMS
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            for (auto &acc : m_accounts)
+            auto it = std::ranges::find_if(
+                m_accounts, [&account](const auto &acc)
+                { return acc.getUsername() == account.getUsername(); });
+
+            if (it != m_accounts.end())
             {
-                if (acc.getUsername() == account.getUsername())
-                {
-                    acc = account;
-                    return saveInternal();
-                }
+                *it = account;
+                return saveInternal();
             }
             return false;
         }
@@ -116,21 +124,20 @@ namespace HMS
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            auto it = std::remove_if(
-                m_accounts.begin(), m_accounts.end(),
-                [&](const Model::Account &acc)
-                {
-                    return acc.getUsername() == id;
-                });
+            auto it = std::ranges::find_if(
+                m_accounts, [&id](const auto &acc)
+                { return acc.getUsername() == id; });
 
             if (it == m_accounts.end())
+            {
                 return false;
-            m_accounts.erase(it, m_accounts.end());
+            }
+
+            m_accounts.erase(it);
             return saveInternal();
         }
 
         // ==================== Persistence ====================
-
         bool AccountRepository::load()
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
@@ -141,7 +148,15 @@ namespace HMS
         {
             try
             {
-                FileHelper::createDirectoryIfNotExists(Constants::DATA_DIR);
+                // Create parent directory of the file if it doesn't exist
+                std::filesystem::path filePath(m_filePath);
+                std::filesystem::path parentDir = filePath.parent_path();
+
+                if (!parentDir.empty())
+                {
+                    FileHelper::createDirectoryIfNotExists(parentDir.string());
+                }
+
                 FileHelper::createFileIfNotExists(m_filePath);
 
                 std::vector<std::string> lines = FileHelper::readLines(m_filePath);
@@ -206,8 +221,7 @@ namespace HMS
             }
         }
 
-        // ==================== Queries ====================
-
+        // ==================== Query Operations ====================
         size_t AccountRepository::count() const
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
@@ -220,12 +234,9 @@ namespace HMS
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            return std::any_of(
-                m_accounts.begin(), m_accounts.end(),
-                [&](const Model::Account &acc)
-                {
-                    return acc.getUsername() == id;
-                });
+            return std::ranges::any_of(
+                m_accounts, [&id](const auto &acc)
+                { return acc.getUsername() == id; });
         }
 
         bool AccountRepository::clear()
@@ -236,58 +247,54 @@ namespace HMS
             return saveInternal();
         }
 
-        // ==================== Account-specific ====================
-
-        std::vector<Model::Account>
-        AccountRepository::getByRole(Role role)
+        // ==================== Account-Specific Queries ====================
+        std::vector<Model::Account> AccountRepository::getByRole(Role role)
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            std::vector<Model::Account> result;
-            for (const auto &acc : m_accounts)
-            {
-                if (acc.getRole() == role)
-                    result.push_back(acc);
-            }
-            return result;
+            std::vector<Model::Account> results;
+            std::ranges::copy_if(
+                m_accounts, std::back_inserter(results),
+                [role](const auto &acc)
+                { return acc.getRole() == role; });
+
+            return results;
         }
 
-        std::vector<Model::Account>
-        AccountRepository::getActiveAccounts()
+        std::vector<Model::Account> AccountRepository::getActiveAccounts()
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            std::vector<Model::Account> result;
-            for (const auto &acc : m_accounts)
-            {
-                if (acc.isActive())
-                    result.push_back(acc);
-            }
-            return result;
+            std::vector<Model::Account> results;
+            std::ranges::copy_if(
+                m_accounts, std::back_inserter(results),
+                [](const auto &acc)
+                { return acc.isActive(); });
+
+            return results;
         }
 
         bool AccountRepository::validateCredentials(
             const std::string &username,
             const std::string &passwordHash)
         {
-
             std::lock_guard<std::mutex> lock(m_dataMutex);
             ensureLoaded();
 
-            for (const auto &acc : m_accounts)
+            auto it = std::ranges::find_if(
+                m_accounts, [&username](const auto &acc)
+                { return acc.getUsername() == username; });
+
+            if (it != m_accounts.end())
             {
-                if (acc.getUsername() == username)
-                {
-                    return acc.getPasswordHash() == passwordHash && acc.isActive();
-                }
+                return it->getPasswordHash() == passwordHash && it->isActive();
             }
             return false;
         }
 
-        // ==================== File Path ====================
-
+        // ==================== File Path Management ====================
         void AccountRepository::setFilePath(const std::string &filePath)
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);
