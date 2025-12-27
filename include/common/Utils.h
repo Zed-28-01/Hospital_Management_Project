@@ -124,6 +124,15 @@ int getDaysInMonth(int month, int year);
  */
 bool getWeekRange(const std::string& date, std::string& startDate, std::string& endDate);
 
+/**
+ * @brief Convert a date to string format (YYYY-MM-DD)
+ * @param year Year value
+ * @param month Month value (1–12)
+ * @param day Day value (1–31)
+ * @return Date string in format YYYY-MM-DD
+ */
+std::string toDateString(int year, int month, int day);
+
 // ==================== ID Generation ====================
 
 /**
