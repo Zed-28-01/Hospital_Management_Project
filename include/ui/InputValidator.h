@@ -195,6 +195,142 @@ public:
      */
     static bool validateAppointmentID(const std::string& id);
 
+    /**
+     * @brief Validate medicine ID format
+     * @param id The ID to validate
+     * @return True if valid (MED followed by digits)
+     */
+    static bool validateMedicineID(const std::string& id);
+
+    /**
+     * @brief Validate department ID format
+     * @param id The ID to validate
+     * @return True if valid (DEP followed by digits)
+     */
+    static bool validateDepartmentID(const std::string& id);
+
+    /**
+     * @brief Validate prescription ID format
+     * @param id The ID to validate
+     * @return True if valid (PRE followed by digits)
+     */
+    static bool validatePrescriptionID(const std::string& id);
+
+    /**
+     * @brief Get medicine ID validation error message
+     * @param id The invalid ID
+     * @return Error message describing the issue
+     */
+    static std::string getMedicineIDError(const std::string& id);
+
+    /**
+     * @brief Get department ID validation error message
+     * @param id The invalid ID
+     * @return Error message describing the issue
+     */
+    static std::string getDepartmentIDError(const std::string& id);
+
+    /**
+     * @brief Get prescription ID validation error message
+     * @param id The invalid ID
+     * @return Error message describing the issue
+     */
+    static std::string getPrescriptionIDError(const std::string& id);
+
+    // ==================== Advanced Data Validation ====================
+
+    /**
+     * @brief Validate quantity (stock, items, etc.)
+     * @param quantity The quantity string to validate
+     * @return True if valid non-negative integer
+     */
+    static bool validateQuantity(const std::string& quantity);
+
+    /**
+     * @brief Validate price/cost amount
+     * @param price The price string to validate
+     * @return True if valid positive number
+     */
+    static bool validatePrice(const std::string& price);
+
+    /**
+     * @brief Validate category name
+     * @param category The category string to validate
+     * @return True if valid non-empty string
+     */
+    static bool validateCategory(const std::string& category);
+
+    /**
+     * @brief Validate reorder level
+     * @param level The reorder level string to validate
+     * @return True if valid non-negative integer
+     */
+    static bool validateReorderLevel(const std::string& level);
+
+    /**
+     * @brief Validate dosage instructions
+     * @param dosage The dosage string to validate
+     * @return True if valid non-empty string
+     */
+    static bool validateDosage(const std::string& dosage);
+
+    /**
+     * @brief Validate duration (e.g., "5 days", "2 weeks")
+     * @param duration The duration string to validate
+     * @return True if valid format
+     */
+    static bool validateDuration(const std::string& duration);
+
+    /**
+     * @brief Validate prescription instructions
+     * @param instructions The instructions to validate
+     * @return True if valid (non-empty, < 500 chars)
+     */
+    static bool validateInstructions(const std::string& instructions);
+
+    /**
+     * @brief Parse quantity string to integer
+     * @param quantity The quantity string
+     * @return Parsed quantity or -1 if invalid
+     */
+    static int parseQuantity(const std::string& quantity);
+
+    /**
+     * @brief Parse price string to double
+     * @param price The price string
+     * @return Parsed price or -1.0 if invalid
+     */
+    static double parsePrice(const std::string& price);
+
+    /**
+     * @brief Validate positive integer (> 0)
+     * @param value The value string to validate
+     * @return True if valid positive integer
+     */
+    static bool validatePositiveInteger(const std::string& value);
+
+    /**
+     * @brief Validate non-negative integer (>= 0)
+     * @param value The value string to validate
+     * @return True if valid non-negative integer
+     */
+    static bool validateNonNegativeInteger(const std::string& value);
+
+    /**
+     * @brief Validate positive double (> 0.0)
+     * @param value The value string to validate
+     * @return True if valid positive double
+     */
+    static bool validatePositiveDouble(const std::string& value);
+
+    /**
+     * @brief Validate non-empty string
+     * @param str The string to validate
+     * @param maxLength Maximum allowed length
+     * @return True if non-empty and within length
+     */
+    static bool validateNonEmptyString(const std::string& str, size_t maxLength = 500);
+
     // ==================== Menu Choice Validation ====================
 
     /**

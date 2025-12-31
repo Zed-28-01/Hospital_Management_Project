@@ -4,6 +4,10 @@
 #include "../model/Doctor.h"
 #include "../model/Appointment.h"
 #include "../model/Statistics.h"
+#include "../advance/Medicine.h"
+#include "../advance/Department.h"
+#include "../advance/Prescription.h"
+#include "../bll/MedicineService.h"
 #include "../common/Types.h"
 #include <string>
 #include <vector>
@@ -170,6 +174,36 @@ public:
      */
     static void printStatistics(const Model::Statistics& stats);
 
+    /**
+     * @brief Print medicine information
+     * @param medicine The medicine to display
+     */
+    static void printMedicineInfo(const Model::Medicine& medicine);
+
+    /**
+     * @brief Print department information
+     * @param department The department to display
+     */
+    static void printDepartmentInfo(const Model::Department& department);
+
+    /**
+     * @brief Print prescription information
+     * @param prescription The prescription to display
+     */
+    static void printPrescriptionInfo(const Model::Prescription& prescription);
+
+    /**
+     * @brief Print stock alert
+     * @param alert The stock alert to display
+     */
+    static void printStockAlert(const BLL::StockAlert& alert);
+
+    /**
+     * @brief Print expiry alert
+     * @param alert The expiry alert to display
+     */
+    static void printExpiryAlert(const BLL::ExpiryAlert& alert);
+
     // ==================== Table Display ====================
 
     /**
@@ -200,6 +234,36 @@ public:
      */
     static void printAppointmentTable(const std::vector<Model::Appointment>& appointments);
 
+    /**
+     * @brief Print medicine list as table
+     * @param medicines Vector of medicines
+     */
+    static void printMedicineTable(const std::vector<Model::Medicine>& medicines);
+
+    /**
+     * @brief Print department list as table
+     * @param departments Vector of departments
+     */
+    static void printDepartmentTable(const std::vector<Model::Department>& departments);
+
+    /**
+     * @brief Print prescription list as table
+     * @param prescriptions Vector of prescriptions
+     */
+    static void printPrescriptionTable(const std::vector<Model::Prescription>& prescriptions);
+
+    /**
+     * @brief Print stock alerts as table
+     * @param alerts Vector of stock alerts
+     */
+    static void printStockAlertTable(const std::vector<BLL::StockAlert>& alerts);
+
+    /**
+     * @brief Print expiry alerts as table
+     * @param alerts Vector of expiry alerts
+     */
+    static void printExpiryAlertTable(const std::vector<BLL::ExpiryAlert>& alerts);
+
     // ==================== List Display (with numbering) ====================
 
     /**
@@ -225,6 +289,46 @@ public:
      * @param slots Vector of time slots
      */
     static void printTimeSlotList(const std::vector<std::string>& slots);
+
+    /**
+     * @brief Print numbered medicine list for selection
+     * @param medicines Vector of medicines
+     */
+    static void printMedicineList(const std::vector<Model::Medicine>& medicines);
+
+    /**
+     * @brief Print numbered department list for selection
+     * @param departments Vector of departments
+     */
+    static void printDepartmentList(const std::vector<Model::Department>& departments);
+
+    /**
+     * @brief Print numbered prescription list for selection
+     * @param prescriptions Vector of prescriptions
+     */
+    static void printPrescriptionList(const std::vector<Model::Prescription>& prescriptions);
+
+    // ==================== Menu Display (Advanced Features) ====================
+
+    /**
+     * @brief Print medicine management menu
+     */
+    static void printMedicineMenu();
+
+    /**
+     * @brief Print department management menu
+     */
+    static void printDepartmentMenu();
+
+    /**
+     * @brief Print prescription menu
+     */
+    static void printPrescriptionMenu();
+
+    /**
+     * @brief Print report generation menu
+     */
+    static void printReportMenu();
 
     // ==================== Messages ====================
 

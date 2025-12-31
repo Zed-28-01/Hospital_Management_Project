@@ -5,6 +5,14 @@
 #include "DisplayHelper.h"
 #include "../common/Types.h"
 #include <string>
+#include <vector>
+
+namespace HMS {
+namespace Model {
+    class Appointment;
+    class Prescription;
+}
+}
 
 namespace HMS {
 namespace UI {
@@ -215,6 +223,129 @@ private:
      */
     void viewReports();
 
+    // ==================== Medicine Management (Admin) ====================
+
+    /**
+     * @brief View all medicines
+     */
+    void viewMedicines();
+
+    /**
+     * @brief Add a new medicine
+     */
+    void addMedicine();
+
+    /**
+     * @brief Edit medicine information
+     */
+    void editMedicine();
+
+    /**
+     * @brief Delete a medicine
+     */
+    void deleteMedicine();
+
+    /**
+     * @brief Search for medicines
+     */
+    void searchMedicine();
+
+    /**
+     * @brief Update medicine stock
+     */
+    void updateMedicineStock();
+
+    /**
+     * @brief View low stock alerts
+     */
+    void viewLowStockAlerts();
+
+    /**
+     * @brief View expiry alerts
+     */
+    void viewExpiryAlerts();
+
+    // ==================== Department Management (Admin) ====================
+
+    /**
+     * @brief View all departments
+     */
+    void viewDepartments();
+
+    /**
+     * @brief Add a new department
+     */
+    void addDepartment();
+
+    /**
+     * @brief Edit department information
+     */
+    void editDepartment();
+
+    /**
+     * @brief Delete a department
+     */
+    void deleteDepartment();
+
+    /**
+     * @brief Assign doctor to department
+     */
+    void assignDoctorToDepartment();
+
+    /**
+     * @brief View department statistics
+     */
+    void viewDepartmentStats();
+
+    // ==================== Prescription Management (Doctor) ====================
+
+    /**
+     * @brief Create a new prescription
+     */
+    void createPrescription();
+
+    /**
+     * @brief View prescriptions
+     */
+    void viewPrescriptions();
+
+    /**
+     * @brief Dispense a prescription
+     */
+    void dispensePrescription();
+
+    /**
+     * @brief Print prescription details
+     */
+    void printPrescription();
+
+    // ==================== Report Generation (Admin) ====================
+
+    /**
+     * @brief Generate daily report
+     */
+    void generateDailyReport();
+
+    /**
+     * @brief Generate weekly report
+     */
+    void generateWeeklyReport();
+
+    /**
+     * @brief Generate monthly report
+     */
+    void generateMonthlyReport();
+
+    /**
+     * @brief Generate revenue report
+     */
+    void generateRevenueReport();
+
+    /**
+     * @brief Export report to file
+     */
+    void exportReport();
+
     // ==================== Helper Methods ====================
 
     /**
@@ -248,6 +379,24 @@ private:
      * @return Selected time or empty string if cancelled
      */
     std::string selectTimeSlot(const std::vector<std::string>& slots);
+
+    /**
+     * @brief Display medicine selection list
+     * @return Selected medicine ID or empty string if cancelled
+     */
+    std::string selectMedicine();
+
+    /**
+     * @brief Display department selection list
+     * @return Selected department ID or empty string if cancelled
+     */
+    std::string selectDepartment();
+
+    /**
+     * @brief Display prescription selection list
+     * @return Selected prescription ID or empty string if cancelled
+     */
+    std::string selectPrescription();
 
     /**
      * @brief Route user to appropriate menu based on role

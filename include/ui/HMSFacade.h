@@ -5,10 +5,17 @@
 #include "../bll/DoctorService.h"
 #include "../bll/AppointmentService.h"
 #include "../bll/AdminService.h"
+#include "../bll/MedicineService.h"
+#include "../bll/DepartmentService.h"
+#include "../bll/PrescriptionService.h"
+#include "../advance/ReportGenerator.h"
 #include "../model/Patient.h"
 #include "../model/Doctor.h"
 #include "../model/Appointment.h"
 #include "../model/Statistics.h"
+#include "../advance/Medicine.h"
+#include "../advance/Department.h"
+#include "../advance/Prescription.h"
 #include "../common/Types.h"
 #include <string>
 #include <vector>
@@ -41,6 +48,10 @@ private:
     BLL::DoctorService* m_doctorService;
     BLL::AppointmentService* m_appointmentService;
     BLL::AdminService* m_adminService;
+    BLL::MedicineService* m_medicineService;
+    BLL::DepartmentService* m_departmentService;
+    BLL::PrescriptionService* m_prescriptionService;
+    BLL::ReportGenerator* m_reportGenerator;
 
     // ==================== State ====================
     bool m_isInitialized;
@@ -384,6 +395,294 @@ public:
      * @return Report string
      */
     std::string generateReport();
+
+    // ==================== Medicine Management ====================
+
+    /**
+     * @brief Get all medicines
+     * @return Vector of all medicines
+     */
+    std::vector<Model::Medicine> getAllMedicines();
+
+    /**
+     * @brief Get medicine by ID
+     * @param medicineID Medicine's ID
+     * @return Medicine if found, nullopt otherwise
+     */
+    std::optional<Model::Medicine> getMedicineByID(const std::string& medicineID);
+
+    /**
+     * @brief Search medicines by keyword
+     * @param keyword Search keyword (name, category, etc.)
+     * @return Vector of matching medicines
+     */
+    std::vector<Model::Medicine> searchMedicines(const std::string& keyword);
+
+    /**
+     * @brief Add a new medicine
+     * @param medicineID Medicine ID (e.g., MED001)
+     * @param name Brand/trade name
+     * @param genericName Generic name
+     * @param category Category
+     * @param manufacturer Manufacturer name
+     * @param description Description
+     * @param unitPrice Price per unit
+     * @param quantityInStock Initial stock
+     * @param reorderLevel Reorder alert level
+     * @param expiryDate Expiry date (YYYY-MM-DD)
+     * @param dosageForm Dosage form (e.g., Tablet)
+     * @param strength Strength (e.g., 500mg)
+     * @return True if successful
+     */
+    bool createMedicine(const std::string& medicineID,
+                        const std::string& name,
+                        const std::string& genericName,
+                        const std::string& category,
+                        const std::string& manufacturer,
+                        const std::string& description,
+                        double unitPrice,
+                        int quantityInStock,
+                        int reorderLevel,
+                        const std::string& expiryDate,
+                        const std::string& dosageForm,
+                        const std::string& strength);
+
+    /**
+     * @brief Update medicine information
+     * @param medicineID Medicine ID
+     * @param name New name
+     * @param category New category
+     * @param unitPrice New unit price
+     * @param reorderLevel New reorder level
+     * @param expiryDate New expiry date
+     * @return True if successful
+     */
+    bool updateMedicine(const std::string& medicineID,
+                        const std::string& name,
+                        const std::string& category,
+                        double unitPrice,
+                        int reorderLevel,
+                        const std::string& expiryDate);
+
+    /**
+     * @brief Delete a medicine
+     * @param medicineID Medicine ID
+     * @return True if successful
+     */
+    bool deleteMedicine(const std::string& medicineID);
+
+    /**
+     * @brief Add stock to a medicine
+     * @param medicineID Medicine ID
+     * @param quantity Quantity to add
+     * @return True if successful
+     */
+    bool addMedicineStock(const std::string& medicineID, int quantity);
+
+    /**
+     * @brief Remove stock from a medicine
+     * @param medicineID Medicine ID
+     * @param quantity Quantity to remove
+     * @return True if successful
+     */
+    bool removeMedicineStock(const std::string& medicineID, int quantity);
+
+    /**
+     * @brief Get low stock alerts
+     * @return Vector of stock alerts
+     */
+    std::vector<BLL::StockAlert> getLowStockAlerts();
+
+    /**
+     * @brief Get expiry alerts
+     * @return Vector of expiry alerts
+     */
+    std::vector<BLL::ExpiryAlert> getExpiryAlerts();
+
+    // ==================== Department Management ====================
+
+    /**
+     * @brief Get all departments
+     * @return Vector of all departments
+     */
+    std::vector<Model::Department> getAllDepartments();
+
+    /**
+     * @brief Get department by ID
+     * @param departmentID Department ID
+     * @return Department if found, nullopt otherwise
+     */
+    std::optional<Model::Department> getDepartmentByID(const std::string& departmentID);
+
+    /**
+     * @brief Create a new department
+     * @param departmentID Department ID (e.g., DEP001)
+     * @param name Department name
+     * @param description Description
+     * @param headDoctorID Head doctor ID (optional)
+     * @param location Location
+     * @param contactNumber Contact phone
+     * @return True if successful
+     */
+    bool createDepartment(const std::string& departmentID,
+                          const std::string& name,
+                          const std::string& description,
+                          const std::string& headDoctorID,
+                          const std::string& location,
+                          const std::string& contactNumber);
+
+    /**
+     * @brief Update department information
+     * @param departmentID Department ID
+     * @param name New name
+     * @param description New description
+     * @param headDoctorID New head doctor ID
+     * @param location New location
+     * @param contactNumber New contact number
+     * @return True if successful
+     */
+    bool updateDepartment(const std::string& departmentID,
+                          const std::string& name,
+                          const std::string& description,
+                          const std::string& headDoctorID,
+                          const std::string& location,
+                          const std::string& contactNumber);
+
+    /**
+     * @brief Delete a department
+     * @param departmentID Department ID
+     * @return True if successful
+     */
+    bool deleteDepartment(const std::string& departmentID);
+
+    /**
+     * @brief Assign a doctor to a department
+     * @param doctorID Doctor ID
+     * @param departmentID Department ID
+     * @return True if successful
+     */
+    bool assignDoctorToDepartment(const std::string& doctorID,
+                                   const std::string& departmentID);
+
+    /**
+     * @brief Get department statistics
+     * @param departmentID Department ID
+     * @return Department statistics struct
+     */
+    BLL::DepartmentStats getDepartmentStats(const std::string& departmentID);
+
+    // ==================== Prescription Management ====================
+
+    /**
+     * @brief Create a new prescription
+     * @param prescriptionID Prescription ID (e.g., PRE001)
+     * @param patientID Patient ID
+     * @param doctorID Doctor ID
+     * @param appointmentID Appointment ID
+     * @param date Prescription date
+     * @param diagnosis Diagnosis
+     * @param instructions Instructions
+     * @return True if successful
+     */
+    bool createPrescription(const std::string& prescriptionID,
+                            const std::string& patientID,
+                            const std::string& doctorID,
+                            const std::string& appointmentID,
+                            const std::string& date,
+                            const std::string& diagnosis,
+                            const std::string& instructions);
+
+    /**
+     * @brief Add item to prescription
+     * @param prescriptionID Prescription ID
+     * @param medicineID Medicine ID
+     * @param dosage Dosage instructions
+     * @param duration Duration (e.g., "5 days")
+     * @param quantity Quantity to dispense
+     * @return True if successful
+     */
+    bool addPrescriptionItem(const std::string& prescriptionID,
+                             const std::string& medicineID,
+                             const std::string& dosage,
+                             const std::string& duration,
+                             int quantity);
+
+    /**
+     * @brief Get prescriptions for a patient
+     * @param patientID Patient ID
+     * @return Vector of prescriptions
+     */
+    std::vector<Model::Prescription> getPatientPrescriptions(const std::string& patientID);
+
+    /**
+     * @brief Get prescriptions created by a doctor
+     * @param doctorID Doctor ID
+     * @return Vector of prescriptions
+     */
+    std::vector<Model::Prescription> getDoctorPrescriptions(const std::string& doctorID);
+
+    /**
+     * @brief Get prescription by ID
+     * @param prescriptionID Prescription ID
+     * @return Prescription if found, nullopt otherwise
+     */
+    std::optional<Model::Prescription> getPrescriptionByID(const std::string& prescriptionID);
+
+    /**
+     * @brief Dispense a prescription
+     * @param prescriptionID Prescription ID
+     * @return True if successful
+     */
+    bool dispensePrescription(const std::string& prescriptionID);
+
+    // ==================== Report Generation ====================
+
+    /**
+     * @brief Generate daily report for a specific date
+     * @param date Date (YYYY-MM-DD)
+     * @param format Format ("txt", "csv", or "html")
+     * @return Report content
+     */
+    std::string generateDailyReport(const std::string& date, const std::string& format);
+
+    /**
+     * @brief Generate weekly report
+     * @param startDate Week start date (YYYY-MM-DD)
+     * @param format Format ("txt", "csv", or "html")
+     * @return Report content
+     */
+    std::string generateWeeklyReport(const std::string& startDate, const std::string& format);
+
+    /**
+     * @brief Generate monthly report
+     * @param year Year (YYYY)
+     * @param month Month (1-12)
+     * @param format Format ("txt", "csv", or "html")
+     * @return Report content
+     */
+    std::string generateMonthlyReport(int year, int month, const std::string& format);
+
+    /**
+     * @brief Generate revenue report
+     * @param startDate Start date (YYYY-MM-DD)
+     * @param endDate End date (YYYY-MM-DD)
+     * @param format Format ("txt", "csv", or "html")
+     * @return Report content
+     */
+    std::string generateRevenueReport(const std::string& startDate,
+                                       const std::string& endDate,
+                                       const std::string& format);
+
+    /**
+     * @brief Export report to file
+     * @param reportContent Report content
+     * @param filename Output filename
+     * @param format Format ("txt", "csv", or "html")
+     * @return True if successful
+     */
+    bool exportReport(const std::string& reportContent,
+                      const std::string& filename,
+                      const std::string& format);
 
     // ==================== Data Operations ====================
 
