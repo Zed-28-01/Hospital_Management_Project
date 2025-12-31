@@ -68,8 +68,8 @@ For visual representation of the architecture:
 | Tầng | Trách Nhiệm | Các Thành Phần |
 |------|-------------|----------------|
 | **Presentation** | Tương tác người dùng, input/output | ConsoleUI, DisplayHelper, InputValidator, HMSFacade |
-| **Business Logic** | Quy tắc nghiệp vụ, validation, điều phối | AuthService, PatientService, DoctorService, AppointmentService, AdminService |
-| **Data Access** | Lưu trữ dữ liệu, thao tác CRUD | Các Repository classes, FileHelper |
+| **Business Logic** | Quy tắc nghiệp vụ, validation, điều phối | AuthService, PatientService, DoctorService, AppointmentService, AdminService, **MedicineService**, **DepartmentService**, **PrescriptionService**, **ReportGenerator** |
+| **Data Access** | Lưu trữ dữ liệu, thao tác CRUD | AccountRepository, PatientRepository, DoctorRepository, AppointmentRepository, **MedicineRepository**, **DepartmentRepository**, **PrescriptionRepository**, FileHelper |
 
 ### Luồng Dữ Liệu
 
@@ -182,12 +182,19 @@ Hospital_Management_Project/
 │   ├── Patient.txt                 # Hồ sơ bệnh nhân
 │   ├── Doctor.txt                  # Hồ sơ bác sĩ
 │   ├── Appointment.txt             # Hồ sơ cuộc hẹn
+│   ├── Department.txt              # Hồ sơ khoa/phòng ban
+│   ├── Medicine.txt                # Hồ sơ thuốc/kho
+│   ├── Prescription.txt            # Hồ sơ đơn thuốc
 │   ├── backup/                     # Thư mục backup
+│   ├── reports/                    # Thư mục báo cáo
 │   └── sample/                     # Dữ liệu mẫu để test
 │       ├── Account_sample.txt
 │       ├── Patient_sample.txt
 │       ├── Doctor_sample.txt
-│       └── Appointment_sample.txt
+│       ├── Appointment_sample.txt
+│       ├── Department_sample.txt
+│       ├── Medicine_sample.txt
+│       └── Prescription_sample.txt
 │
 ├── include/                        # Header files
 │   │
@@ -213,7 +220,10 @@ Hospital_Management_Project/
 │   │   ├── PatientService.h
 │   │   ├── DoctorService.h
 │   │   ├── AppointmentService.h
-│   │   └── AdminService.h
+│   │   ├── AdminService.h
+│   │   ├── MedicineService.h       # Quản lý thuốc
+│   │   ├── DepartmentService.h     # Quản lý khoa
+│   │   └── PrescriptionService.h   # Quản lý đơn thuốc
 │   │
 │   ├── ui/                         # Tầng Presentation
 │   │   ├── HMSFacade.h             # Facade pattern
@@ -226,11 +236,8 @@ Hospital_Management_Project/
 │   │   ├── Types.h                 # Type aliases và enums
 │   │   └── Utils.h                 # Các hàm tiện ích
 │   │
-│   └── advance/                     # Các tính năng tương lai
-│       ├── Department.h
-│       ├── Medicine.h
-│       ├── Prescription.h
-│       └── ReportGenerator.h
+│   └── advance/                     # Tính năng nâng cao
+│       └── ReportGenerator.h       # Công cụ tạo báo cáo
 │
 ├── src/                            # Source files
 │   │
@@ -346,6 +353,10 @@ Hospital_Management_Project/
 | `DoctorService.h/cpp` | Business logic bác sĩ, quản lý lịch làm việc |
 | `AppointmentService.h/cpp` | Logic booking, kiểm tra slot trống, quản lý trạng thái |
 | `AdminService.h/cpp` | Thao tác admin, tạo thống kê |
+| `MedicineService.h/cpp` | Quản lý thuốc, tồn kho, cảnh báo hết hạn |
+| `DepartmentService.h/cpp` | Quản lý khoa, phân công bác sĩ |
+| `PrescriptionService.h/cpp` | Tạo đơn thuốc, xuất thuốc, cập nhật kho |
+| `ReportGenerator.h/cpp` | Tạo báo cáo hàng ngày/tuần/tháng, xuất các định dạng |
 
 ### 5.4 Tầng Presentation (`include/ui/`, `src/ui/`)
 
@@ -462,15 +473,31 @@ make clean
 | **I**nterface Segregation | IRepository cung cấp interface tập trung; Services có methods cụ thể |
 | **D**ependency Inversion | Services phụ thuộc vào Repository interfaces, không phải concrete implementations |
 
-## Phụ Lục B: Tích Hợp Các Tính Năng Nâng cao (nếu có đủ thời gian)
+## Phụ Lục B: Các Tính Năng Nâng Cao (ĐÃ TRIỂN KHAI ✅)
 
-Khi thêm tính năng mới:
+Các tính năng nâng cao sau đã được triển khai đầy đủ:
 
-1. **Department**: Thêm `Department.h/cpp` vào model/, `DepartmentRepository` vào dal/, `DepartmentService` vào bll/
-2. **Medicine**: Thêm `Medicine.h/cpp`, `Prescription.h/cpp` vào model/, các repositories và services tương ứng
-3. **ReportGenerator**: Thêm vào tầng bll/, sử dụng các services hiện có để tổng hợp dữ liệu
+### Quản Lý Khoa/Phòng Ban
+- **Model**: `Department.h/cpp` - Entity khoa với phân công bác sĩ
+- **DAL**: `DepartmentRepository.h/cpp` - Thao tác CRUD, tra cứu bác sĩ
+- **BLL**: `DepartmentService.h/cpp` - Quản lý khoa, thống kê
 
-Kiến trúc hỗ trợ các bổ sung này mà không cần sửa code hiện có (Nguyên tắc Open/Closed).
+### Thuốc & Kho
+- **Model**: `Medicine.h/cpp` - Entity thuốc với theo dõi tồn kho, hạn sử dụng
+- **DAL**: `MedicineRepository.h/cpp` - CRUD, cảnh báo hết hàng, tra cứu hạn sử dụng
+- **BLL**: `MedicineService.h/cpp` - Quản lý tồn kho, cảnh báo, validation
+
+### Hệ Thống Đơn Thuốc
+- **Model**: `Prescription.h/cpp` - Đơn thuốc với các mục, liều dùng
+- **DAL**: `PrescriptionRepository.h/cpp` - CRUD, tra cứu theo bệnh nhân/bác sĩ
+- **BLL**: `PrescriptionService.h/cpp` - Tạo đơn, xuất thuốc, tích hợp kho
+
+### Tạo Báo Cáo
+- **BLL**: `ReportGenerator.h/cpp` - Báo cáo hàng ngày/tuần/tháng
+- **Tính năng**: Xuất ra TXT, CSV, HTML
+- **Báo cáo**: Doanh thu, thống kê bệnh nhân, hiệu suất bác sĩ, phân tích cuộc hẹn
+
+Kiến trúc đã hỗ trợ thành công các bổ sung này mà không cần sửa code lõi hiện có (Nguyên tắc Open/Closed).
 
 ---
 

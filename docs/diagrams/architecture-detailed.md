@@ -350,6 +350,143 @@ classDiagram
     }
 ```
 
+### Department
+
+```mermaid
+classDiagram
+    class Department {
+        -string m_departmentID
+        -string m_name
+        -string m_headDoctorID
+        -string m_phone
+        -string m_location
+        -string m_description
+        -vector~string~ m_doctorIDs
+        +Department()
+        +Department(departmentID, name, headDoctorID, phone, location, description)
+        +~Department()
+        +getDepartmentID() string
+        +getName() string
+        +getHeadDoctorID() string
+        +getPhone() string
+        +getLocation() string
+        +getDescription() string
+        +getDoctorIDs() vector~string~
+        +setName(name) void
+        +setHeadDoctorID(id) void
+        +setPhone(phone) void
+        +setLocation(location) void
+        +setDescription(desc) void
+        +addDoctor(doctorID) void
+        +removeDoctor(doctorID) bool
+        +hasDoctor(doctorID) bool
+        +getDoctorCount() size_t
+        +displayInfo() void
+        +serialize() string
+        +deserialize(line)$ Result~Department~
+    }
+```
+
+### Medicine
+
+```mermaid
+classDiagram
+    class Medicine {
+        -string m_medicineID
+        -string m_name
+        -string m_category
+        -string m_manufacturer
+        -double m_unitPrice
+        -int m_stockQuantity
+        -int m_reorderLevel
+        -string m_expiryDate
+        -string m_description
+        +Medicine()
+        +Medicine(medicineID, name, category, manufacturer, unitPrice, stockQuantity, reorderLevel, expiryDate, description)
+        +~Medicine()
+        +getMedicineID() string
+        +getName() string
+        +getCategory() string
+        +getManufacturer() string
+        +getUnitPrice() double
+        +getStockQuantity() int
+        +getReorderLevel() int
+        +getExpiryDate() string
+        +getDescription() string
+        +setName(name) void
+        +setCategory(category) void
+        +setManufacturer(manufacturer) void
+        +setUnitPrice(price) void
+        +setStockQuantity(quantity) void
+        +setReorderLevel(level) void
+        +setExpiryDate(date) void
+        +setDescription(desc) void
+        +addStock(quantity) void
+        +removeStock(quantity) bool
+        +isLowStock() bool
+        +isExpired() bool
+        +isExpiringSoon(days) bool
+        +displayInfo() void
+        +serialize() string
+        +deserialize(line)$ Result~Medicine~
+    }
+```
+
+### Prescription & PrescriptionItem
+
+```mermaid
+classDiagram
+    class PrescriptionItem {
+        <<struct>>
+        +string medicineID
+        +string medicineName
+        +int quantity
+        +double unitPrice
+        +string dosage
+        +getTotalPrice() double
+        +serialize() string
+        +deserialize(str)$ Result~PrescriptionItem~
+    }
+
+    class Prescription {
+        -string m_prescriptionID
+        -string m_appointmentID
+        -string m_patientID
+        -string m_doctorID
+        -string m_diagnosis
+        -string m_notes
+        -bool m_isDispensed
+        -string m_createdDate
+        -vector~PrescriptionItem~ m_items
+        +Prescription()
+        +Prescription(prescriptionID, appointmentID, patientID, doctorID, diagnosis, notes, createdDate)
+        +~Prescription()
+        +getPrescriptionID() string
+        +getAppointmentID() string
+        +getPatientID() string
+        +getDoctorID() string
+        +getDiagnosis() string
+        +getNotes() string
+        +isDispensed() bool
+        +getCreatedDate() string
+        +getItems() vector~PrescriptionItem~
+        +setDiagnosis(diagnosis) void
+        +setNotes(notes) void
+        +setDispensed(dispensed) void
+        +addItem(item) void
+        +removeItem(medicineID) bool
+        +clearItems() void
+        +getItemCount() size_t
+        +calculateTotalCost() double
+        +displayInfo() void
+        +toPrintFormat() string
+        +serialize() string
+        +deserialize(line)$ Result~Prescription~
+    }
+
+    Prescription "1" *-- "*" PrescriptionItem
+```
+
 ---
 
 ## 🏗️ Class Diagrams - Data Access Layer
@@ -530,6 +667,114 @@ classDiagram
     }
 
     IRepository <|.. AppointmentRepository
+```
+
+### DepartmentRepository
+
+```mermaid
+classDiagram
+    class DepartmentRepository {
+        <<Singleton>>
+        -static DepartmentRepository* s_instance
+        -static mutex s_mutex
+        -vector~Department~ m_departments
+        -string m_filePath
+        -bool m_isLoaded
+        -DepartmentRepository()
+        +getInstance()$ DepartmentRepository*
+        +~DepartmentRepository()
+        +getAll() vector~Department~
+        +getById(id) optional~Department~
+        +add(department) bool
+        +update(department) bool
+        +remove(id) bool
+        +save() bool
+        +load() bool
+        +count() size_t
+        +exists(id) bool
+        +clear() bool
+        +getByName(name) optional~Department~
+        +getByHeadDoctor(doctorID) optional~Department~
+        +getDepartmentByDoctor(doctorID) optional~Department~
+        +getNextId() string
+        +setFilePath(path) void
+        +getFilePath() string
+    }
+
+    IRepository <|.. DepartmentRepository
+```
+
+### MedicineRepository
+
+```mermaid
+classDiagram
+    class MedicineRepository {
+        <<Singleton>>
+        -static MedicineRepository* s_instance
+        -static mutex s_mutex
+        -vector~Medicine~ m_medicines
+        -string m_filePath
+        -bool m_isLoaded
+        -MedicineRepository()
+        +getInstance()$ MedicineRepository*
+        +~MedicineRepository()
+        +getAll() vector~Medicine~
+        +getById(id) optional~Medicine~
+        +add(medicine) bool
+        +update(medicine) bool
+        +remove(id) bool
+        +save() bool
+        +load() bool
+        +count() size_t
+        +exists(id) bool
+        +clear() bool
+        +getByCategory(category) vector~Medicine~
+        +getLowStock() vector~Medicine~
+        +getExpiringSoon(days) vector~Medicine~
+        +getExpired() vector~Medicine~
+        +searchByName(name) vector~Medicine~
+        +getNextId() string
+        +setFilePath(path) void
+        +getFilePath() string
+    }
+
+    IRepository <|.. MedicineRepository
+```
+
+### PrescriptionRepository
+
+```mermaid
+classDiagram
+    class PrescriptionRepository {
+        <<Singleton>>
+        -static PrescriptionRepository* s_instance
+        -static mutex s_mutex
+        -vector~Prescription~ m_prescriptions
+        -string m_filePath
+        -bool m_isLoaded
+        -PrescriptionRepository()
+        +getInstance()$ PrescriptionRepository*
+        +~PrescriptionRepository()
+        +getAll() vector~Prescription~
+        +getById(id) optional~Prescription~
+        +add(prescription) bool
+        +update(prescription) bool
+        +remove(id) bool
+        +save() bool
+        +load() bool
+        +count() size_t
+        +exists(id) bool
+        +clear() bool
+        +getByPatient(patientID) vector~Prescription~
+        +getByDoctor(doctorID) vector~Prescription~
+        +getByAppointment(appointmentID) optional~Prescription~
+        +getUndispensed() vector~Prescription~
+        +getNextId() string
+        +setFilePath(path) void
+        +getFilePath() string
+    }
+
+    IRepository <|.. PrescriptionRepository
 ```
 
 ### FileHelper
@@ -793,6 +1038,152 @@ classDiagram
     AdminService --> DoctorService
     AdminService --> AppointmentService
     AdminService ..> Statistics
+```
+
+### MedicineService
+
+```mermaid
+classDiagram
+    class MedicineService {
+        <<Singleton>>
+        -static MedicineService* s_instance
+        -static mutex s_mutex
+        -MedicineRepository* m_medicineRepo
+        -MedicineService()
+        +getInstance()$ MedicineService*
+        +~MedicineService()
+        +createMedicine(name, category, manufacturer, price, quantity, reorderLevel, expiryDate, description) optional~Medicine~
+        +updateMedicine(medicine) bool
+        +deleteMedicine(medicineID) bool
+        +getMedicineByID(medicineID) optional~Medicine~
+        +getAllMedicines() vector~Medicine~
+        +searchMedicines(keyword) vector~Medicine~
+        +getByCategory(category) vector~Medicine~
+        +getMedicineCount() size_t
+        +addStock(medicineID, quantity) bool
+        +removeStock(medicineID, quantity) bool
+        +transferStock(fromMedicineID, toMedicineID, quantity) bool
+        +getLowStockAlerts() vector~Medicine~
+        +getExpiryAlerts(days) vector~Medicine~
+        +getExpiredMedicines() vector~Medicine~
+        +validateMedicine(medicine) bool
+        +medicineExists(medicineID) bool
+        +saveData() bool
+        +loadData() bool
+    }
+
+    MedicineService --> MedicineRepository
+```
+
+### DepartmentService
+
+```mermaid
+classDiagram
+    class DepartmentService {
+        <<Singleton>>
+        -static DepartmentService* s_instance
+        -static mutex s_mutex
+        -DepartmentRepository* m_departmentRepo
+        -DoctorRepository* m_doctorRepo
+        -DepartmentService()
+        +getInstance()$ DepartmentService*
+        +~DepartmentService()
+        +createDepartment(name, headDoctorID, phone, location, description) optional~Department~
+        +updateDepartment(department) bool
+        +deleteDepartment(departmentID) bool
+        +getDepartmentByID(departmentID) optional~Department~
+        +getAllDepartments() vector~Department~
+        +searchDepartments(keyword) vector~Department~
+        +getDepartmentCount() size_t
+        +assignDoctor(departmentID, doctorID) bool
+        +unassignDoctor(departmentID, doctorID) bool
+        +setDepartmentHead(departmentID, doctorID) bool
+        +getDepartmentByDoctor(doctorID) optional~Department~
+        +getDepartmentStats(departmentID) map~string,int~
+        +validateDepartment(department) bool
+        +departmentExists(departmentID) bool
+        +saveData() bool
+        +loadData() bool
+    }
+
+    DepartmentService --> DepartmentRepository
+    DepartmentService --> DoctorRepository
+```
+
+### PrescriptionService
+
+```mermaid
+classDiagram
+    class PrescriptionService {
+        <<Singleton>>
+        -static PrescriptionService* s_instance
+        -static mutex s_mutex
+        -PrescriptionRepository* m_prescriptionRepo
+        -AppointmentRepository* m_appointmentRepo
+        -MedicineRepository* m_medicineRepo
+        -PrescriptionService()
+        +getInstance()$ PrescriptionService*
+        +~PrescriptionService()
+        +createPrescription(appointmentID, diagnosis, notes) optional~Prescription~
+        +updatePrescription(prescription) bool
+        +deletePrescription(prescriptionID) bool
+        +getPrescriptionByID(prescriptionID) optional~Prescription~
+        +getByAppointment(appointmentID) optional~Prescription~
+        +getAllPrescriptions() vector~Prescription~
+        +getPrescriptionCount() size_t
+        +addPrescriptionItem(prescriptionID, medicineID, quantity, dosage) bool
+        +removePrescriptionItem(prescriptionID, medicineID) bool
+        +dispensePrescription(prescriptionID) bool
+        +getPatientPrescriptions(patientID) vector~Prescription~
+        +getDoctorPrescriptions(doctorID) vector~Prescription~
+        +getUndispensedPrescriptions() vector~Prescription~
+        +printPrescription(prescriptionID) string
+        +validatePrescription(prescription) bool
+        +prescriptionExists(prescriptionID) bool
+        +saveData() bool
+        +loadData() bool
+    }
+
+    PrescriptionService --> PrescriptionRepository
+    PrescriptionService --> AppointmentRepository
+    PrescriptionService --> MedicineRepository
+```
+
+### ReportGenerator
+
+```mermaid
+classDiagram
+    class ReportGenerator {
+        <<Singleton>>
+        -static ReportGenerator* s_instance
+        -static mutex s_mutex
+        -AppointmentService* m_appointmentService
+        -PatientService* m_patientService
+        -DoctorService* m_doctorService
+        -MedicineService* m_medicineService
+        -ReportGenerator()
+        +getInstance()$ ReportGenerator*
+        +~ReportGenerator()
+        +generateDailyReport(date) string
+        +generateWeeklyReport(startDate) string
+        +generateMonthlyReport(month, year) string
+        +generateRevenueReport(startDate, endDate) string
+        +generatePatientReport() string
+        +generateDoctorPerformanceReport() string
+        +generateAppointmentAnalysis() string
+        +generateMedicineReport() string
+        +generatePrescriptionReport() string
+        +exportToText(report, filename) bool
+        +exportToCSV(report, filename) bool
+        +exportToHTML(report, filename) bool
+        +exportReport(report, filename, format) bool
+        +displayReport(report) void
+    }
+
+    ReportGenerator --> AppointmentService
+    ReportGenerator --> PatientService
+    ReportGenerator --> DoctorService
+    ReportGenerator --> MedicineService
 ```
 
 ---

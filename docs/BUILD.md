@@ -152,7 +152,11 @@ src/
 │   ├── PatientService.cpp
 │   ├── DoctorService.cpp
 │   ├── AppointmentService.cpp
-│   └── AdminService.cpp
+│   ├── AdminService.cpp
+│   ├── MedicineService.cpp
+│   ├── DepartmentService.cpp
+│   ├── PrescriptionService.cpp
+│   └── ReportGenerator.cpp
 │
 ├── ui/             # Presentation Layer
 │   ├── HMSFacade.cpp

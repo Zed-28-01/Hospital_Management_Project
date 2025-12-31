@@ -27,6 +27,10 @@ graph TB
         DoctorService[DoctorService<br/>Singleton]
         AppointmentService[AppointmentService<br/>Singleton]
         AdminService[AdminService<br/>Singleton]
+        MedicineService[MedicineService<br/>Singleton]
+        DepartmentService[DepartmentService<br/>Singleton]
+        PrescriptionService[PrescriptionService<br/>Singleton]
+        ReportGenerator[ReportGenerator<br/>Singleton]
     end
 
     subgraph DAL["💾 DATA ACCESS LAYER"]
@@ -34,6 +38,9 @@ graph TB
         PatientRepo[PatientRepository<br/>Singleton]
         DoctorRepo[DoctorRepository<br/>Singleton]
         AppointmentRepo[AppointmentRepository<br/>Singleton]
+        DepartmentRepo[DepartmentRepository<br/>Singleton]
+        MedicineRepo[MedicineRepository<br/>Singleton]
+        PrescriptionRepo[PrescriptionRepository<br/>Singleton]
 
         FileHelper[FileHelper<br/>Static Utility]
     end
@@ -43,6 +50,9 @@ graph TB
         PatientTxt[(Patient.txt)]
         DoctorTxt[(Doctor.txt)]
         AppointmentTxt[(Appointment.txt)]
+        DepartmentTxt[(Department.txt)]
+        MedicineTxt[(Medicine.txt)]
+        PrescriptionTxt[(Prescription.txt)]
     end
 
     %% Facade to Services
@@ -51,6 +61,9 @@ graph TB
     Facade --> DoctorService
     Facade --> AppointmentService
     Facade --> AdminService
+    Facade --> MedicineService
+    Facade --> DepartmentService
+    Facade --> PrescriptionService
 
     %% Services to Repos (chỉ hiển thị main connections)
     AuthService --> AccountRepo
@@ -69,17 +82,34 @@ graph TB
     AdminService -.aggregates.-> DoctorService
     AdminService -.aggregates.-> AppointmentService
 
+    MedicineService --> MedicineRepo
+    DepartmentService --> DepartmentRepo
+    DepartmentService -.validate.-> DoctorRepo
+    PrescriptionService --> PrescriptionRepo
+    PrescriptionService -.uses.-> MedicineRepo
+    PrescriptionService -.uses.-> AppointmentRepo
+
+    ReportGenerator -.aggregates.-> AppointmentService
+    ReportGenerator -.aggregates.-> PatientService
+    ReportGenerator -.aggregates.-> DoctorService
+
     %% Repos to FileHelper
     AccountRepo --> FileHelper
     PatientRepo --> FileHelper
     DoctorRepo --> FileHelper
     AppointmentRepo --> FileHelper
+    DepartmentRepo --> FileHelper
+    MedicineRepo --> FileHelper
+    PrescriptionRepo --> FileHelper
 
     %% FileHelper to Files
     FileHelper --> AccountTxt
     FileHelper --> PatientTxt
     FileHelper --> DoctorTxt
     FileHelper --> AppointmentTxt
+    FileHelper --> DepartmentTxt
+    FileHelper --> MedicineTxt
+    FileHelper --> PrescriptionTxt
 
     style UI fill:#e3f2fd
     style BLL fill:#fff8e1
@@ -88,6 +118,7 @@ graph TB
 
     style Facade fill:#ffd54f
     style AdminService fill:#ffab91
+    style ReportGenerator fill:#a5d6a7
 ```
 
 ---
@@ -120,6 +151,10 @@ graph TB
 | **DoctorService** | CRUD doctors, schedule management, activity tracking |
 | **AppointmentService** | Booking, cancellation, status management, slot availability |
 | **AdminService** | Statistics aggregation, reports generation, system health |
+| **MedicineService** | CRUD medicines, stock management, low stock alerts, expiry tracking |
+| **DepartmentService** | CRUD departments, doctor assignment, department statistics |
+| **PrescriptionService** | Create prescriptions, add items, dispense, inventory updates |
+| **ReportGenerator** | Daily/weekly/monthly reports, revenue analysis, export to various formats |
 
 **Đặc điểm:** Tất cả đều là **Singleton** với thread-safe `std::mutex`
 
@@ -135,6 +170,9 @@ graph TB
 | **PatientRepository** | Patient.txt | Search by name/phone/keyword |
 | **DoctorRepository** | Doctor.txt | Filter by specialization |
 | **AppointmentRepository** | Appointment.txt | Rich queries (by patient/doctor/date/status) |
+| **DepartmentRepository** | Department.txt | Doctor assignment queries, head doctor lookup |
+| **MedicineRepository** | Medicine.txt | Low stock alerts, expiry queries, category filter |
+| **PrescriptionRepository** | Prescription.txt | Patient/doctor queries, undispensed lookup |
 | **FileHelper** | All files | Static utility for I/O, backup/restore |
 
 **Đặc điểm:**
@@ -151,7 +189,11 @@ data/
 ├── Account.txt        # username|passwordHash|role|isActive|createdDate
 ├── Patient.txt        # patientID|username|name|phone|gender|dob|address|history
 ├── Doctor.txt         # doctorID|username|name|phone|gender|dob|spec|schedule|fee
-└── Appointment.txt    # appointmentID|patientUsername|doctorID|date|time|disease|price|isPaid|status|notes
+├── Appointment.txt    # appointmentID|patientUsername|doctorID|date|time|disease|price|isPaid|status|notes
+├── Department.txt     # departmentID|name|headDoctorID|phone|location|description|doctorIDs
+├── Medicine.txt       # medicineID|name|category|manufacturer|unitPrice|stockQuantity|reorderLevel|expiryDate|description
+├── Prescription.txt   # prescriptionID|appointmentID|patientID|doctorID|diagnosis|notes|isDispensed|createdDate|items
+└── reports/           # Generated reports directory
 ```
 
 ---
@@ -294,7 +336,7 @@ AdminService
 ✅ **Testability:** Dễ test từng tầng riêng biệt
 ✅ **Maintainability:** Dễ sửa và mở rộng
 ✅ **Reusability:** Services có thể dùng cho nhiều UI khác nhau
-✅ **Scalability:** Dễ thêm features mới (Department, Medicine...)
+✅ **Scalability:** Đã mở rộng thành công với Department, Medicine, Prescription, ReportGenerator
 ✅ **Thread Safety:** Mutex protection cho Singleton instances
 
 ---

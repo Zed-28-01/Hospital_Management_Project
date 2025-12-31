@@ -69,8 +69,8 @@ For visual representation of the architecture:
 | Layer | Responsibility | Components |
 |-------|---------------|------------|
 | **Presentation** | User interaction, input/output | ConsoleUI, DisplayHelper, InputValidator, HMSFacade |
-| **Business Logic** | Business rules, validation, orchestration | AuthService, PatientService, DoctorService, AppointmentService, AdminService |
-| **Data Access** | Data persistence, CRUD operations | *Repository classes, FileHelper |
+| **Business Logic** | Business rules, validation, orchestration | AuthService, PatientService, DoctorService, AppointmentService, AdminService, **MedicineService**, **DepartmentService**, **PrescriptionService**, **ReportGenerator** |
+| **Data Access** | Data persistence, CRUD operations | AccountRepository, PatientRepository, DoctorRepository, AppointmentRepository, **MedicineRepository**, **DepartmentRepository**, **PrescriptionRepository**, FileHelper |
 
 ### Data Flow
 
@@ -176,17 +176,24 @@ Hospital_Management_Project/
 │   ├── CLASS_DIAGRAM.md            # Mermaid class diagrams
 │   └── API.md                      # Internal API documentation
 │
-├── data/                           # Data files (NEW)
+├── data/                           # Data files
 │   ├── Account.txt                 # User accounts
 │   ├── Patient.txt                 # Patient records
 │   ├── Doctor.txt                  # Doctor records
 │   ├── Appointment.txt             # Appointment records
+│   ├── Department.txt              # Department records
+│   ├── Medicine.txt                # Medicine/inventory records
+│   ├── Prescription.txt            # Prescription records
 │   ├── backup/                     # Backup directory
+│   ├── reports/                    # Generated reports directory
 │   └── sample/                     # Sample data for testing
 │       ├── Account_sample.txt
 │       ├── Patient_sample.txt
 │       ├── Doctor_sample.txt
-│       └── Appointment_sample.txt
+│       ├── Appointment_sample.txt
+│       ├── Department_sample.txt
+│       ├── Medicine_sample.txt
+│       └── Prescription_sample.txt
 │
 ├── include/                        # Header files (RESTRUCTURED)
 │   │
@@ -197,7 +204,10 @@ Hospital_Management_Project/
 │   │   ├── Admin.h
 │   │   ├── Account.h
 │   │   ├── Appointment.h
-│   │   └── Statistics.h
+│   │   ├── Statistics.h
+│   │   ├── Department.h            # Department entity
+│   │   ├── Medicine.h              # Medicine/inventory entity
+│   │   └── Prescription.h          # Prescription entity
 │   │
 │   ├── dal/                        # Data Access Layer
 │   │   ├── IRepository.h           # Repository interface (template)
@@ -205,6 +215,9 @@ Hospital_Management_Project/
 │   │   ├── PatientRepository.h
 │   │   ├── DoctorRepository.h
 │   │   ├── AppointmentRepository.h
+│   │   ├── DepartmentRepository.h  # Department data access
+│   │   ├── MedicineRepository.h    # Medicine data access
+│   │   ├── PrescriptionRepository.h # Prescription data access
 │   │   └── FileHelper.h
 │   │
 │   ├── bll/                        # Business Logic Layer
@@ -212,7 +225,10 @@ Hospital_Management_Project/
 │   │   ├── PatientService.h
 │   │   ├── DoctorService.h
 │   │   ├── AppointmentService.h
-│   │   └── AdminService.h
+│   │   ├── AdminService.h
+│   │   ├── DepartmentService.h     # Department management
+│   │   ├── MedicineService.h       # Medicine/inventory management
+│   │   └── PrescriptionService.h   # Prescription management
 │   │
 │   ├── ui/                         # Presentation Layer
 │   │   ├── HMSFacade.h             # Facade pattern
@@ -225,11 +241,8 @@ Hospital_Management_Project/
 │   │   ├── Types.h                 # Type aliases and enums
 │   │   └── Utils.h                 # Utility functions
 │   │
-│   └── advance/                     # Future extensions (placeholders)
-│       ├── Department.h
-│       ├── Medicine.h
-│       ├── Prescription.h
-│       └── ReportGenerator.h
+│   └── advance/                     # Advanced features
+│       └── ReportGenerator.h       # Report generation utilities
 │
 ├── src/                            # Source files (RESTRUCTURED)
 │   │
@@ -239,13 +252,19 @@ Hospital_Management_Project/
 │   │   ├── Doctor.cpp
 │   │   ├── Admin.cpp
 │   │   ├── Account.cpp
-│   │   └── Appointment.cpp
+│   │   ├── Appointment.cpp
+│   │   ├── Department.cpp
+│   │   ├── Medicine.cpp
+│   │   └── Prescription.cpp
 │   │
 │   ├── dal/                        # Data Access implementations
 │   │   ├── AccountRepository.cpp
 │   │   ├── PatientRepository.cpp
 │   │   ├── DoctorRepository.cpp
 │   │   ├── AppointmentRepository.cpp
+│   │   ├── DepartmentRepository.cpp
+│   │   ├── MedicineRepository.cpp
+│   │   ├── PrescriptionRepository.cpp
 │   │   └── FileHelper.cpp
 │   │
 │   ├── bll/                        # Business Logic implementations
@@ -253,7 +272,11 @@ Hospital_Management_Project/
 │   │   ├── PatientService.cpp
 │   │   ├── DoctorService.cpp
 │   │   ├── AppointmentService.cpp
-│   │   └── AdminService.cpp
+│   │   ├── AdminService.cpp
+│   │   ├── DepartmentService.cpp
+│   │   ├── MedicineService.cpp
+│   │   ├── PrescriptionService.cpp
+│   │   └── ReportGenerator.cpp
 │   │
 │   ├── ui/                         # Presentation implementations
 │   │   ├── HMSFacade.cpp
@@ -324,6 +347,9 @@ Hospital_Management_Project/
 | `Account.h/cpp` | User account with authentication data |
 | `Appointment.h/cpp` | Appointment entity with booking details |
 | `Statistics.h` | Statistics data structure (no .cpp needed) |
+| `Department.h/cpp` | Department entity with doctor assignments |
+| `Medicine.h/cpp` | Medicine entity with stock management |
+| `Prescription.h/cpp` | Prescription entity with items and dispensing |
 
 ### 5.2 Data Access Layer (`include/dal/`, `src/dal/`)
 
@@ -334,6 +360,9 @@ Hospital_Management_Project/
 | `PatientRepository.h/cpp` | Patient CRUD operations + file persistence |
 | `DoctorRepository.h/cpp` | Doctor CRUD operations + file persistence |
 | `AppointmentRepository.h/cpp` | Appointment CRUD + queries by patient/doctor |
+| `DepartmentRepository.h/cpp` | Department CRUD + doctor assignment queries |
+| `MedicineRepository.h/cpp` | Medicine CRUD + stock queries, expiry alerts |
+| `PrescriptionRepository.h/cpp` | Prescription CRUD + patient/doctor queries |
 | `FileHelper.h/cpp` | Low-level file I/O utilities |
 
 ### 5.3 Business Logic Layer (`include/bll/`, `src/bll/`)
@@ -345,6 +374,10 @@ Hospital_Management_Project/
 | `DoctorService.h/cpp` | Doctor business logic, schedule management |
 | `AppointmentService.h/cpp` | Booking logic, slot availability, status management |
 | `AdminService.h/cpp` | Admin operations, statistics generation |
+| `DepartmentService.h/cpp` | Department management, doctor assignments |
+| `MedicineService.h/cpp` | Medicine CRUD, stock management, alerts |
+| `PrescriptionService.h/cpp` | Prescription creation, dispensing, inventory updates |
+| `ReportGenerator.h/cpp` | Generate daily/weekly/monthly reports, export to various formats |
 
 ### 5.4 Presentation Layer (`include/ui/`, `src/ui/`)
 
@@ -397,7 +430,30 @@ A001|patient001|D001|2024-03-15|09:00|Chest pain|500000|1|completed|Regular chec
 A002|patient002|D002|2024-03-16|10:30|Fever|400000|0|scheduled|Follow-up visit
 ```
 
-### 6.5 Status Values
+### 6.5 Department.txt
+```
+# Format: departmentID|name|headDoctorID|phone|location|description|doctorIDs
+# doctorIDs is comma-separated list
+DEP001|Cardiology|D001|0901234567|Building A, Floor 2|Heart and cardiovascular care|D001,D003
+DEP002|Pediatrics|D002|0912345678|Building B, Floor 1|Child healthcare|D002,D004
+```
+
+### 6.6 Medicine.txt
+```
+# Format: medicineID|name|category|manufacturer|unitPrice|stockQuantity|reorderLevel|expiryDate|description
+MED001|Paracetamol|Pain Relief|PharmaCorp|15000|500|50|2025-12-31|Pain and fever relief
+MED002|Amoxicillin|Antibiotic|MediLab|25000|200|30|2025-06-30|Bacterial infection treatment
+```
+
+### 6.7 Prescription.txt
+```
+# Format: prescriptionID|appointmentID|patientID|doctorID|diagnosis|notes|isDispensed|createdDate|items
+# items format: medicineID:quantity:dosage;medicineID:quantity:dosage
+PRE001|APT001|P001|D001|Hypertension|Take with food|1|2024-03-15|MED001:30:2 tablets daily;MED003:15:1 tablet daily
+PRE002|APT002|P002|D002|Common Cold|Rest recommended|0|2024-03-16|MED001:10:1 tablet as needed
+```
+
+### 6.8 Status Values
 - `scheduled` - Appointment booked, not yet occurred
 - `completed` - Appointment finished
 - `cancelled` - Appointment cancelled by patient or doctor
@@ -461,12 +517,28 @@ make clean
 | **I**nterface Segregation | IRepository provides focused interface; Services have specific methods |
 | **D**ependency Inversion | Services depend on Repository interfaces, not concrete implementations |
 
-## Appendix B: Advanced Extensions Integration (If the time is abundant)
+## Appendix B: Advanced Features (IMPLEMENTED ✅)
 
-When adding new features:
+The following advanced features have been fully implemented:
 
-1. **Department**: Add `Department.h/cpp` in model/, `DepartmentRepository` in dal/, `DepartmentService` in bll/
-2. **Medicine**: Add `Medicine.h/cpp`, `Prescription.h/cpp` in model/, corresponding repositories and services
-3. **ReportGenerator**: Add in bll/ layer, uses existing services to aggregate data
+### Department Management
+- **Model**: `Department.h/cpp` - Department entity with doctor assignments
+- **DAL**: `DepartmentRepository.h/cpp` - CRUD operations, doctor lookup
+- **BLL**: `DepartmentService.h/cpp` - Department management, statistics
 
-The architecture supports these additions without modifying existing code (Open/Closed Principle).
+### Medicine & Inventory
+- **Model**: `Medicine.h/cpp` - Medicine entity with stock tracking, expiry
+- **DAL**: `MedicineRepository.h/cpp` - CRUD, low stock alerts, expiry queries
+- **BLL**: `MedicineService.h/cpp` - Stock management, alerts, validation
+
+### Prescription System
+- **Model**: `Prescription.h/cpp` - Prescription with items, dosage
+- **DAL**: `PrescriptionRepository.h/cpp` - CRUD, patient/doctor queries
+- **BLL**: `PrescriptionService.h/cpp` - Creation, dispensing, inventory integration
+
+### Report Generation
+- **BLL**: `ReportGenerator.h/cpp` - Daily/weekly/monthly reports
+- **Features**: Export to TXT, CSV, HTML formats
+- **Reports**: Revenue, patient statistics, doctor performance, appointment analysis
+
+The architecture successfully supported these additions without modifying existing core code (Open/Closed Principle).
