@@ -220,18 +220,32 @@ namespace HMS
         bool InputValidator::validateGender(const std::string &gender)
         {
             std::string lower = Utils::toLower(gender);
-            return lower == "male" || lower == "female" || lower == "other" ||
-                   lower == "m" || lower == "f" || lower == "o";
+            // English
+            if (lower == "male" || lower == "female" || lower == "other" ||
+                lower == "m" || lower == "f" || lower == "o")
+                return true;
+            // Vietnamese
+            if (lower == "nam" || lower == "nu" || lower == "nữ" || lower == "khac" || lower == "khác")
+                return true;
+            return false;
         }
 
         std::string InputValidator::normalizeGender(const std::string &gender)
         {
             std::string lower = Utils::toLower(gender);
+            // English
             if (lower == "male" || lower == "m")
                 return "Male";
             if (lower == "female" || lower == "f")
                 return "Female";
             if (lower == "other" || lower == "o")
+                return "Other";
+            // Vietnamese
+            if (lower == "nam")
+                return "Male";
+            if (lower == "nu" || lower == "nữ")
+                return "Female";
+            if (lower == "khac" || lower == "khác")
                 return "Other";
             return "Unknown";
         }

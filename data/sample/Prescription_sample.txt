@@ -1,9 +1,21 @@
-# Hospital Management System - Prescription Sample Data
+# Hospital Management System - Sample Prescription Data
 # Format: prescriptionID|appointmentID|patientUsername|doctorID|date|diagnosis|notes|isDispensed|items
 # Items format: medicineID:quantity:dosage:duration:instructions;...
-PRE001|APT001|patient001|D001|2024-03-15|Viral Fever with mild headache|Rest recommended, drink plenty of fluids|1|MED001:20:2 tablets 3 times daily:5 days:After meals;MED007:10:1 tablet daily:10 days:Before bedtime
-PRE002|APT002|patient002|D002|2024-03-16|Common Cold and Cough|Avoid cold beverages, get adequate rest|1|MED001:15:1 tablet twice daily:5 days:As needed for fever;MED007:7:1 tablet daily:7 days:Morning
-PRE003|APT003|patient001|D003|2024-03-18|Migraine with Nausea|Avoid bright lights and loud sounds|0|MED004:10:1 tablet every 6 hours:3 days:With food;MED003:14:1 capsule daily:14 days:Before breakfast
-PRE004|APT004|patient003|D001|2024-03-20|Hypertension Stage 1|Regular BP monitoring, reduce salt intake|1|MED006:30:1 tablet daily:30 days:Morning;MED011:30:1 tablet daily:30 days:Evening
-PRE005|APT005|patient004|D002|2024-03-22|Acute Bronchitis|Avoid smoking, steam inhalation recommended|0|MED008:6:1 tablet daily:6 days:After dinner;MED009:1:2 puffs every 4-6 hours:Until better:As needed
-PRE006|APT006|patient002|D004|2024-03-25|Muscle Strain - Lower Back|Apply ice for first 48 hours, then heat|1|MED004:21:1 tablet 3 times daily:7 days:After meals;MED010:1:Apply thin layer 3 times daily:14 days:Affected area only
+
+PRE001|APT001|anhnguyen|D001|2024-02-15|Cao huyết áp nhẹ|Kiểm soát huyết áp, theo dõi tại nhà, giảm muối|1|MED006:30:1 viên mỗi sáng:30 ngày:Uống trước bữa sáng;MED011:30:1 viên mỗi tối:30 ngày:Uống trước bữa tối
+PRE002|APT002|binhtran|D006|2024-02-16|Tiểu đường type 2 ổn định|Tiếp tục chế độ ăn kiêng, tập thể dục đều đặn|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Uống cùng bữa ăn sáng và tối
+PRE003|APT003|cuongle|D007|2024-02-18|Viêm loét dạ dày HP dương tính|Tránh thức ăn cay nóng, không uống rượu bia|1|MED012:30:1 viên mỗi sáng:30 ngày:Uống trước ăn 30 phút;MED002:60:2 viên 2 lần/ngày:7 ngày:Uống sau ăn;MED008:6:1 viên/ngày:6 ngày:Uống sau bữa tối
+PRE004|APT004|dungpham|D010|2024-02-20|Hen suyễn phát tác do thời tiết|Tránh khói bụi, giữ ấm cơ thể|1|MED009:2:2 nhát mỗi 4-6 giờ:30 ngày:Khi khó thở;MED016:30:1 viên/ngày:10 ngày:Uống sau bữa sáng
+PRE005|APT005|emvo|D005|2024-02-22|Dị ứng thức ăn cấp tính|Kiêng hải sản hoàn toàn, ghi nhật ký ăn uống|1|MED007:14:1 viên/ngày:14 ngày:Trước khi ngủ;MED024:14:1 viên 2 lần/ngày:7 ngày:Sáng và tối
+PRE006|APT006|phuonghoang|D002|2024-02-25|Thai kỳ 20 tuần bình thường|Thai phụ cần nghỉ ngơi đầy đủ, ăn nhiều rau củ|1|MED018:30:1 viên sủi/ngày:30 ngày:Hòa tan trong nước, uống buổi sáng;MED020:30:1 viên/ngày:30 ngày:Uống sau bữa ăn
+PRE007|APT007|giangdo|D001|2024-02-28|Bệnh tim mạch vành sau đặt stent|Tuyệt đối tuân thủ thuốc, tái khám đúng hẹn|1|MED014:30:1 viên/ngày:30 ngày:Sau bữa sáng;MED015:30:1 viên/ngày:30 ngày:Trước khi ngủ;MED011:30:1 viên/ngày:30 ngày:Buổi tối
+PRE008|APT008|hienmai|D007|2024-03-01|Sau điều trị HP thành công|Duy trì chế độ ăn nhẹ, tái khám sau 3 tháng|1|MED003:30:1 viên/ngày:30 ngày:Trước bữa sáng 30 phút
+PRE009|APT009|khanhluong|D003|2024-03-03|Migraine mãn tính|Tránh stress, ngủ đủ giấc, tránh ánh sáng mạnh|1|MED004:30:1 viên khi đau:30 ngày:Uống khi đau đầu, tối đa 3 viên/ngày;MED016:20:1 viên/ngày:20 ngày:Phòng ngừa
+PRE010|APT010|lamngo|D001|2024-03-05|Rối loạn lipid máu, cholesterol cao|Ăn ít mỡ động vật, tăng vận động|1|MED013:30:1 viên/ngày:30 ngày:Uống trước khi ngủ;MED015:30:1 viên/ngày:30 ngày:Buổi tối
+PRE011|APT011|myduong|D006|2024-03-20|Thiếu máu do thiếu sắt|Ăn nhiều thịt đỏ, rau xanh, hoa quả|0|MED020:60:1 viên/ngày:60 ngày:Sau bữa ăn, không uống với sữa;MED017:30:1 viên/ngày:30 ngày:Buổi sáng
+PRE012|APT012|namtruong|D006|2024-03-22|Suy giáp|Uống thuốc đúng giờ, không bỏ liều|0|MED019:30:1 viên/ngày:30 ngày:Uống lúc 6-7 giờ sáng, đói bụng
+PRE013|APT013|oanhdang|D004|2024-03-23|Đau lưng do thoái hóa cột sống|Tập vật lý trị liệu, không mang vác nặng|0|MED004:21:1 viên 3 lần/ngày:7 ngày:Sau bữa ăn;MED010:1:Bôi 3 lần/ngày:14 ngày:Vùng đau;MED017:30:1 viên/ngày:30 ngày:Buổi sáng
+PRE014|APT014|phatbui|D007|2024-03-25|Viêm gan B mạn tính|Kiêng rượu bia hoàn toàn, nghỉ ngơi đầy đủ|0|MED017:90:1 viên/ngày:90 ngày:Buổi sáng
+PRE015|APT015|quynhly|D003|2024-03-26|Migraine tái phát|Ghi nhật ký cơn đau để xác định yếu tố kích thích|0|MED004:20:1 viên khi đau:30 ngày:Uống ngay khi có tiền triệu;MED007:30:1 viên/ngày:30 ngày:Trước ngủ
+PRE016|APT016|anhnguyen|D001|2024-03-28|Tái khám cao huyết áp|Huyết áp được kiểm soát tốt, tiếp tục điều trị|0|MED006:30:1 viên/ngày:30 ngày:Buổi sáng;MED011:30:1 viên/ngày:30 ngày:Buổi tối
+PRE017|APT017|binhtran|D006|2024-03-29|Tiểu đường type 2|Đường huyết ổn định, duy trì|0|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng và tối cùng bữa ăn

@@ -8,7 +8,16 @@ namespace UI {
 namespace {
     Gender stringToGender(const std::string& genderStr) {
         std::string lower = Utils::toLower(genderStr);
-        if (lower == "male" || lower == "m") {
+        // Vietnamese
+        if (lower == "nam") {
+            return Gender::MALE;
+        } else if (lower == "nu" || lower == "nữ") {
+            return Gender::FEMALE;
+        } else if (lower == "khac" || lower == "khác") {
+            return Gender::OTHER;
+        }
+        // English (backward compatibility)
+        else if (lower == "male" || lower == "m") {
             return Gender::MALE;
         } else if (lower == "female" || lower == "f") {
             return Gender::FEMALE;
