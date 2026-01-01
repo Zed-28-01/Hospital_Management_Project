@@ -1,12 +1,41 @@
 # Hospital Management System - Sample Account Data
 # Format: username|passwordHash|role|isActive|createdDate
 # Roles: patient, doctor, admin
-# Password for all accounts: "password123" (hashed)
-# Note: In production, use proper password hashing (bcrypt, argon2)
+# Password for all accounts: "password123"
+# Note: Hash format is HASH_password (simple demo hash)
 
-admin|5f4dcc3b5aa765d61d8327deb882cf99|admin|1|2024-01-01
-doctor001|5f4dcc3b5aa765d61d8327deb882cf99|doctor|1|2024-01-15
-doctor002|5f4dcc3b5aa765d61d8327deb882cf99|doctor|1|2024-01-20
-patient001|5f4dcc3b5aa765d61d8327deb882cf99|patient|1|2024-02-01
-patient002|5f4dcc3b5aa765d61d8327deb882cf99|patient|1|2024-02-05
-patient003|5f4dcc3b5aa765d61d8327deb882cf99|patient|1|2024-02-10
+# ===== ADMIN ACCOUNTS (Team Members) =====
+vannhat|HASH_password123|admin|1|2024-01-01
+minhthư|HASH_password123|admin|1|2024-01-02
+nghia|HASH_password123|admin|1|2024-01-03
+chauly|HASH_password123|admin|1|2024-01-04
+tuankiet|HASH_password123|admin|1|2024-01-05
+
+# ===== DOCTOR ACCOUNTS =====
+bslinhcardio|HASH_password123|doctor|1|2024-01-10
+bshaipediatrics|HASH_password123|doctor|1|2024-01-11
+bstuanneuro|HASH_password123|doctor|1|2024-01-12
+bsquynhortho|HASH_password123|doctor|1|2024-01-13
+bshungderm|HASH_password123|doctor|1|2024-01-14
+bsthaoendo|HASH_password123|doctor|1|2024-01-15
+bsnamgastro|HASH_password123|doctor|1|2024-01-16
+bslanoncology|HASH_password123|doctor|1|2024-01-17
+bsdungoph|HASH_password123|doctor|1|2024-01-18
+bsphirespiratory|HASH_password123|doctor|1|2024-01-19
+
+# ===== PATIENT ACCOUNTS =====
+anhnguyen|HASH_password123|patient|1|2024-02-01
+binhtran|HASH_password123|patient|1|2024-02-02
+cuongle|HASH_password123|patient|1|2024-02-03
+dungpham|HASH_password123|patient|1|2024-02-04
+emvo|HASH_password123|patient|1|2024-02-05
+phuonghoang|HASH_password123|patient|1|2024-02-06
+giangdo|HASH_password123|patient|1|2024-02-07
+hienmai|HASH_password123|patient|1|2024-02-08
+khanhluong|HASH_password123|patient|1|2024-02-09
+lamngo|HASH_password123|patient|1|2024-02-10
+myduong|HASH_password123|patient|1|2024-02-11
+namtruong|HASH_password123|patient|1|2024-02-12
+oanhdang|HASH_password123|patient|1|2024-02-13
+phatbui|HASH_password123|patient|1|2024-02-14
+quynhly|HASH_password123|patient|1|2024-02-15

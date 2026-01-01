@@ -61,6 +61,10 @@ constexpr const char* DATE_FORMAT = "YYYY-MM-DD";
 constexpr const char* TIME_FORMAT = "HH:MM";
 constexpr const char* DATETIME_FORMAT = "YYYY-MM-DD HH:MM";
 
+// Working Hours
+constexpr int WORKING_HOUR_START = 8;   // 8:00 AM
+constexpr int WORKING_HOUR_END = 17;    // 5:00 PM
+
 // ==================== Menu Options ====================
 namespace Menu {
     constexpr int EXIT = 0;

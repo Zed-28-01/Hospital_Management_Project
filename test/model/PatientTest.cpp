@@ -112,7 +112,7 @@ TEST(PatientTest, Serialize)
 
     EXPECT_EQ(
         serialized,
-        "P006|user06|Hoang Van F|0444555666|Male|1990-10-10|Hue|Healthy");
+        "P006|user06|Hoang Van F|0444555666|Nam|1990-10-10|Hue|Healthy");
 }
 
 // ==================== Deserialize ====================
@@ -169,7 +169,7 @@ TEST(PatientTest, PersonBaseClassGetters)
     EXPECT_EQ(p.getName(), "Nguyen Van Test");
     EXPECT_EQ(p.getPhone(), "0123456789");
     EXPECT_EQ(p.getGender(), Gender::MALE);
-    EXPECT_EQ(p.getGenderString(), "Male");
+    EXPECT_EQ(p.getGenderString(), "Nam");
     EXPECT_EQ(p.getDateOfBirth(), "2000-01-01");
 }
 
@@ -212,7 +212,7 @@ TEST(PatientTest, SerializeEmptyMedicalHistory)
 
     std::string serialized = p.serialize();
     EXPECT_EQ(serialized,
-              "P012|user12|Test Name|0123456789|Male|2000-01-01|Address|");
+              "P012|user12|Test Name|0123456789|Nam|2000-01-01|Address|");
 }
 
 TEST(PatientTest, DeserializeEmptyMedicalHistory)
@@ -247,7 +247,7 @@ TEST(PatientTest, DeserializeValidatesAllFields)
     EXPECT_EQ(p.getName(), "Full Test");
     EXPECT_EQ(p.getPhone(), "0777888999");
     EXPECT_EQ(p.getGender(), Gender::FEMALE);
-    EXPECT_EQ(p.getGenderString(), "Female");
+    EXPECT_EQ(p.getGenderString(), "Nữ");
     EXPECT_EQ(p.getDateOfBirth(), "1995-05-15");
     EXPECT_EQ(p.getAddress(), "Full Address");
     EXPECT_EQ(p.getMedicalHistory(), "Complete History");

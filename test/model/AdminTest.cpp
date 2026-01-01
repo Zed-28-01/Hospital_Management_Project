@@ -120,7 +120,7 @@ TEST_F(AdminTest, Serialize_AllFields_CorrectFormat)
 
     std::string serialized = admin.serialize();
 
-    EXPECT_EQ(serialized, "A001|admin_user|John Doe|0123456789|Male|1990-01-01");
+    EXPECT_EQ(serialized, "A001|admin_user|John Doe|0123456789|Nam|1990-01-01");
 }
 
 TEST_F(AdminTest, Serialize_FemaleGender_CorrectFormat)
@@ -130,7 +130,7 @@ TEST_F(AdminTest, Serialize_FemaleGender_CorrectFormat)
 
     std::string serialized = admin.serialize();
 
-    EXPECT_EQ(serialized, "A002|jane_admin|Jane Smith|0987654321|Female|1992-03-15");
+    EXPECT_EQ(serialized, "A002|jane_admin|Jane Smith|0987654321|Nữ|1992-03-15");
 }
 
 TEST_F(AdminTest, Serialize_OtherGender_CorrectFormat)
@@ -140,7 +140,7 @@ TEST_F(AdminTest, Serialize_OtherGender_CorrectFormat)
 
     std::string serialized = admin.serialize();
 
-    EXPECT_EQ(serialized, "A003|other_admin|Alex Jones|0555555555|Other|1988-12-25");
+    EXPECT_EQ(serialized, "A003|other_admin|Alex Jones|0555555555|Khác|1988-12-25");
 }
 
 TEST_F(AdminTest, Serialize_UnknownGender_CorrectFormat)
@@ -150,7 +150,7 @@ TEST_F(AdminTest, Serialize_UnknownGender_CorrectFormat)
 
     std::string serialized = admin.serialize();
 
-    EXPECT_EQ(serialized, "A004|unknown_admin|Unknown Person|0111111111|Unknown|2000-01-01");
+    EXPECT_EQ(serialized, "A004|unknown_admin|Unknown Person|0111111111|Không xác định|2000-01-01");
 }
 
 TEST_F(AdminTest, Serialize_EmptyFields_HandlesCorrectly)
@@ -161,7 +161,7 @@ TEST_F(AdminTest, Serialize_EmptyFields_HandlesCorrectly)
 
     // Format: adminID|username|name|phone|gender|dateOfBirth
     // 6 fields = 5 pipes
-    EXPECT_EQ(serialized, "||||Unknown|");
+    EXPECT_EQ(serialized, "||||Không xác định|");
 }
 
 TEST_F(AdminTest, Serialize_SpecialCharactersInName_PreservesData)

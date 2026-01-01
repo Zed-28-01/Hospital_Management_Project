@@ -161,7 +161,7 @@ namespace HMS
                 return false;
 
             int hour = std::stoi(time.substr(0, 2));
-            return hour >= 8 && hour < 17;
+            return hour >= Constants::WORKING_HOUR_START && hour < Constants::WORKING_HOUR_END;
         }
 
         std::string InputValidator::getTimeError(const std::string &time)
@@ -220,18 +220,32 @@ namespace HMS
         bool InputValidator::validateGender(const std::string &gender)
         {
             std::string lower = Utils::toLower(gender);
-            return lower == "male" || lower == "female" || lower == "other" ||
-                   lower == "m" || lower == "f" || lower == "o";
+            // English
+            if (lower == "male" || lower == "female" || lower == "other" ||
+                lower == "m" || lower == "f" || lower == "o")
+                return true;
+            // Vietnamese
+            if (lower == "nam" || lower == "nu" || lower == "nữ" || lower == "khac" || lower == "khác")
+                return true;
+            return false;
         }
 
         std::string InputValidator::normalizeGender(const std::string &gender)
         {
             std::string lower = Utils::toLower(gender);
+            // English
             if (lower == "male" || lower == "m")
                 return "Male";
             if (lower == "female" || lower == "f")
                 return "Female";
             if (lower == "other" || lower == "o")
+                return "Other";
+            // Vietnamese
+            if (lower == "nam")
+                return "Male";
+            if (lower == "nu" || lower == "nữ")
+                return "Female";
+            if (lower == "khac" || lower == "khác")
                 return "Other";
             return "Unknown";
         }
@@ -278,6 +292,216 @@ namespace HMS
             if (id.length() < 4 || id.substr(0, 3) != "APT")
                 return false;
             return Utils::isNumeric(id.substr(3));
+        }
+
+        bool InputValidator::validateMedicineID(const std::string &id)
+        {
+            if (id.length() < 4 || id.substr(0, 3) != "MED")
+                return false;
+            return Utils::isNumeric(id.substr(3));
+        }
+
+        bool InputValidator::validateDepartmentID(const std::string &id)
+        {
+            if (id.length() < 4 || id.substr(0, 3) != "DEP")
+                return false;
+            return Utils::isNumeric(id.substr(3));
+        }
+
+        bool InputValidator::validatePrescriptionID(const std::string &id)
+        {
+            if (id.length() < 4 || id.substr(0, 3) != "PRE")
+                return false;
+            return Utils::isNumeric(id.substr(3));
+        }
+
+        std::string InputValidator::getMedicineIDError(const std::string &id)
+        {
+            if (id.empty())
+            {
+                return "Medicine ID cannot be empty.";
+            }
+            if (id.length() < 4)
+            {
+                return "Medicine ID must be at least 4 characters (e.g., MED001).";
+            }
+            if (id.substr(0, 3) != "MED")
+            {
+                return "Medicine ID must start with 'MED'.";
+            }
+            return "Medicine ID must be in format: MED followed by digits (e.g., MED001).";
+        }
+
+        std::string InputValidator::getDepartmentIDError(const std::string &id)
+        {
+            if (id.empty())
+            {
+                return "Department ID cannot be empty.";
+            }
+            if (id.length() < 4)
+            {
+                return "Department ID must be at least 4 characters (e.g., DEP001).";
+            }
+            if (id.substr(0, 3) != "DEP")
+            {
+                return "Department ID must start with 'DEP'.";
+            }
+            return "Department ID must be in format: DEP followed by digits (e.g., DEP001).";
+        }
+
+        std::string InputValidator::getPrescriptionIDError(const std::string &id)
+        {
+            if (id.empty())
+            {
+                return "Prescription ID cannot be empty.";
+            }
+            if (id.length() < 4)
+            {
+                return "Prescription ID must be at least 4 characters (e.g., PRE001).";
+            }
+            if (id.substr(0, 3) != "PRE")
+            {
+                return "Prescription ID must start with 'PRE'.";
+            }
+            return "Prescription ID must be in format: PRE followed by digits (e.g., PRE001).";
+        }
+
+        // ==================== Advanced Data Validation ====================
+
+        bool InputValidator::validateQuantity(const std::string &quantity)
+        {
+            return validateNonNegativeInteger(quantity);
+        }
+
+        bool InputValidator::validatePrice(const std::string &price)
+        {
+            return validatePositiveDouble(price);
+        }
+
+        bool InputValidator::validateCategory(const std::string &category)
+        {
+            return validateNonEmptyString(category, 100);
+        }
+
+        bool InputValidator::validateReorderLevel(const std::string &level)
+        {
+            return validateNonNegativeInteger(level);
+        }
+
+        bool InputValidator::validateDosage(const std::string &dosage)
+        {
+            return validateNonEmptyString(dosage, 200);
+        }
+
+        bool InputValidator::validateDuration(const std::string &duration)
+        {
+            if (duration.empty() || duration.length() > 50)
+                return false;
+
+            // Allow formats like: "5 days", "2 weeks", "1 month", etc.
+            std::string lower = Utils::toLower(Utils::trim(duration));
+
+            // Simple validation: should contain a number and a time unit
+            bool hasDigit = false;
+            for (char c : lower)
+            {
+                if (std::isdigit(c))
+                {
+                    hasDigit = true;
+                    break;
+                }
+            }
+
+            return hasDigit && (lower.find("day") != std::string::npos ||
+                               lower.find("week") != std::string::npos ||
+                               lower.find("month") != std::string::npos ||
+                               lower.find("year") != std::string::npos);
+        }
+
+        bool InputValidator::validateInstructions(const std::string &instructions)
+        {
+            return validateNonEmptyString(instructions, 500);
+        }
+
+        int InputValidator::parseQuantity(const std::string &quantity)
+        {
+            if (!validateQuantity(quantity))
+                return -1;
+            try
+            {
+                int value = std::stoi(quantity);
+                return value >= 0 ? value : -1;
+            }
+            catch (...)
+            {
+                return -1;
+            }
+        }
+
+        double InputValidator::parsePrice(const std::string &price)
+        {
+            if (!validatePrice(price))
+                return -1.0;
+            try
+            {
+                double value = std::stod(price);
+                return value > 0.0 ? value : -1.0;
+            }
+            catch (...)
+            {
+                return -1.0;
+            }
+        }
+
+        bool InputValidator::validatePositiveInteger(const std::string &value)
+        {
+            if (!Utils::isNumeric(value))
+                return false;
+            try
+            {
+                int num = std::stoi(value);
+                return num > 0;
+            }
+            catch (...)
+            {
+                return false;
+            }
+        }
+
+        bool InputValidator::validateNonNegativeInteger(const std::string &value)
+        {
+            if (!Utils::isNumeric(value))
+                return false;
+            try
+            {
+                int num = std::stoi(value);
+                return num >= 0;
+            }
+            catch (...)
+            {
+                return false;
+            }
+        }
+
+        bool InputValidator::validatePositiveDouble(const std::string &value)
+        {
+            if (!Utils::isValidMoney(value))
+                return false;
+            try
+            {
+                double num = std::stod(value);
+                return num > 0.0;
+            }
+            catch (...)
+            {
+                return false;
+            }
+        }
+
+        bool InputValidator::validateNonEmptyString(const std::string &str, size_t maxLength)
+        {
+            std::string trimmed = Utils::trim(str);
+            return !trimmed.empty() && trimmed.length() <= maxLength;
         }
 
         // ==================== Menu Choice Validation ====================

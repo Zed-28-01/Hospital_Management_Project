@@ -31,7 +31,7 @@ namespace HMS
             m_facade = HMSFacade::getInstance();
             if (!m_facade)
             {
-                DisplayHelper::printError("Khong the khoi tao he thong. Vui long thu lai.");
+                DisplayHelper::printError("Không thể khởi tạo hệ thống. Vui lòng thử lại.");
                 return;
             }
 
@@ -52,12 +52,12 @@ namespace HMS
 
             do
             {
-                inputChoice = DisplayHelper::getInput("Nhap lua chon cua ban [0-2]");
+                inputChoice = DisplayHelper::getInput("Nhập lựa chọn của bạn [0-2]");
                 isValid = InputValidator::validateMenuChoice(inputChoice, 0, 2);
 
                 if (!isValid)
                 {
-                    DisplayHelper::printError("Lua chon khong hop le. Vui long nhap so tu 0 den 2.");
+                    DisplayHelper::printError("Lựa chọn không hợp lệ. Vui lòng nhập số từ 0 đến 2.");
                 }
             } while (!isValid);
 
@@ -69,20 +69,20 @@ namespace HMS
         {
             DisplayHelper::clearScreen();
             DisplayHelper::printHeader("DANG NHAP HE THONG");
-            std::cout << "(De quay lai menu chinh, hay bo trong Username va nhan Enter)\n\n";
+            std::cout << "(Nhấn Enter để quay lại menu chính)\n\n";
 
             std::string username, password;
 
             while (true)
             {
-                username = DisplayHelper::getInput("Nhap ten nguoi dung");
+                username = DisplayHelper::getInput("Nhập tên người dùng");
 
                 if (username.empty())
                 {
                     return; // Return to main menu naturally via the while loop
                 }
 
-                password = DisplayHelper::getInput("Nhap mat khau");
+                password = DisplayHelper::getInput("Nhập mật khẩu");
 
                 bool isUserValid = InputValidator::validateUsername(username);
                 bool isPassValid = InputValidator::validatePassword(password);
@@ -100,18 +100,18 @@ namespace HMS
                 {
                     std::cout << InputValidator::getPasswordError(password) << "\n";
                 }
-                std::cout << "Vui long thu lai.\n";
+                std::cout << "Vui lòng thử lại.\n";
             }
 
             if (m_facade->login(username, password))
             {
-                DisplayHelper::printSuccess("Dang nhap thanh cong");
+                DisplayHelper::printSuccess("Đăng nhập thành công");
                 DisplayHelper::pause();
                 routeToRoleMenu();
             }
             else
             {
-                DisplayHelper::printError("Dang nhap khong thanh cong. Ten nguoi dung/mat khau khong ton tai\n");
+                DisplayHelper::printError("Đăng nhập không thành công. Tên người dùng/mật khẩu không tồn tại\n");
                 DisplayHelper::pause();
                 // Return naturally - main loop will call showMainMenu() again
             }
@@ -121,13 +121,13 @@ namespace HMS
         {
             DisplayHelper::clearScreen();
             DisplayHelper::printHeader("DANG KY TAI KHOAN BENH NHAN");
-            std::cout << "(De quay lai menu chinh, hay bo trong bat ky truong nao va nhan Enter)\n\n";
+            std::cout << "(Nhấn Enter để quay lại menu chính)\n\n";
 
             // Get username
             std::string username;
             while (true)
             {
-                username = DisplayHelper::getInput("Nhap ten nguoi dung");
+                username = DisplayHelper::getInput("Nhập tên người dùng");
                 if (username.empty())
                     return;
 
@@ -138,7 +138,7 @@ namespace HMS
                 }
                 if (!m_facade->isUsernameAvailable(username))
                 {
-                    DisplayHelper::printError("Ten nguoi dung da ton tai. Vui long chon ten khac.");
+                    DisplayHelper::printError("Tên người dùng đã tồn tại. Vui lòng chọn tên khác.");
                     continue;
                 }
                 break;
@@ -148,7 +148,7 @@ namespace HMS
             std::string password;
             while (true)
             {
-                password = DisplayHelper::getInput("Nhap mat khau");
+                password = DisplayHelper::getInput("Nhập mật khẩu");
                 if (password.empty())
                     return;
 
@@ -164,7 +164,7 @@ namespace HMS
             std::string name;
             while (true)
             {
-                name = DisplayHelper::getInput("Nhap ho va ten");
+                name = DisplayHelper::getInput("Nhập họ và tên");
                 if (name.empty())
                     return;
 
@@ -180,7 +180,7 @@ namespace HMS
             std::string phone;
             while (true)
             {
-                phone = DisplayHelper::getInput("Nhap so dien thoai");
+                phone = DisplayHelper::getInput("Nhập số điện thoại");
                 if (phone.empty())
                     return;
 
@@ -196,13 +196,13 @@ namespace HMS
             std::string gender;
             while (true)
             {
-                gender = DisplayHelper::getInput("Nhap gioi tinh (Nam/Nu/Khac)");
+                gender = DisplayHelper::getInput("Nhập giới tính (Nam/Nu/Khac)");
                 if (gender.empty())
                     return;
 
                 if (!InputValidator::validateGender(gender))
                 {
-                    DisplayHelper::printError("Gioi tinh khong hop le. Vui long nhap: Nam, Nu, hoac Khac.");
+                    DisplayHelper::printError("Giới tính không hợp lệ. Vui lòng nhập: Nam, Nữ, hoặc Khác.");
                     continue;
                 }
                 gender = InputValidator::normalizeGender(gender);
@@ -213,7 +213,7 @@ namespace HMS
             std::string dateOfBirth;
             while (true)
             {
-                dateOfBirth = DisplayHelper::getInput("Nhap ngay sinh (YYYY-MM-DD)");
+                dateOfBirth = DisplayHelper::getInput("Nhập ngày sinh (YYYY-MM-DD)");
                 if (dateOfBirth.empty())
                     return;
 
@@ -224,19 +224,19 @@ namespace HMS
                 }
                 if (!InputValidator::validatePastDate(dateOfBirth))
                 {
-                    DisplayHelper::printError("Ngay sinh phai la ngay trong qua khu.");
+                    DisplayHelper::printError("Ngày sinh phải là ngày trong quá khứ.");
                     continue;
                 }
                 break;
             }
 
             // Get address
-            std::string address = DisplayHelper::getInput("Nhap dia chi");
+            std::string address = DisplayHelper::getInput("Nhập địa chỉ");
             if (address.empty())
                 return;
 
             // Confirm registration
-            DisplayHelper::printSubHeader("Xac nhan thong tin");
+            DisplayHelper::printSubHeader("Xác nhận thông tin");
             std::cout << "Ten nguoi dung: " << username << "\n";
             std::cout << "Ho ten: " << name << "\n";
             std::cout << "So dien thoai: " << phone << "\n";
@@ -244,20 +244,20 @@ namespace HMS
             std::cout << "Ngay sinh: " << dateOfBirth << "\n";
             std::cout << "Dia chi: " << address << "\n\n";
 
-            if (!DisplayHelper::confirm("Xac nhan dang ky tai khoan?"))
+            if (!DisplayHelper::confirm("Xác nhận đăng ký tài khoản?"))
             {
-                DisplayHelper::printInfo("Da huy dang ky.");
+                DisplayHelper::printInfo("Đã hủy đăng ký.");
                 DisplayHelper::pause();
                 return;
             }
 
             if (m_facade->registerPatient(username, password, name, phone, gender, dateOfBirth, address))
             {
-                DisplayHelper::printSuccess("Dang ky thanh cong! Ban co the dang nhap ngay bay gio.");
+                DisplayHelper::printSuccess("Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.");
             }
             else
             {
-                DisplayHelper::printError("Dang ky that bai. Vui long thu lai.");
+                DisplayHelper::printError("Đăng ký thất bại. Vui lòng thử lại.");
             }
             DisplayHelper::pause();
         }
@@ -391,11 +391,11 @@ namespace HMS
 
                 do
                 {
-                    inputChoice = DisplayHelper::getInput("Nhap lua chon cua ban [0-6]");
+                    inputChoice = DisplayHelper::getInput("Nhập lựa chọn của bạn [0-6]");
                     isValid = InputValidator::validateMenuChoice(inputChoice, 0, 6);
                     if (!isValid)
                     {
-                        DisplayHelper::printError("Lua chon khong hop le. Vui long nhap so tu 0 den 6.");
+                        DisplayHelper::printError("Lựa chọn không hợp lệ. Vui lòng nhập số từ 0 đến 6.");
                     }
                 } while (!isValid);
 
@@ -416,11 +416,11 @@ namespace HMS
 
                 do
                 {
-                    inputChoice = DisplayHelper::getInput("Nhap lua chon cua ban [0-7]");
+                    inputChoice = DisplayHelper::getInput("Nhập lựa chọn của bạn [0-7]");
                     isValid = InputValidator::validateMenuChoice(inputChoice, 0, 7);
                     if (!isValid)
                     {
-                        DisplayHelper::printError("Lua chon khong hop le. Vui long nhap so tu 0 den 7.");
+                        DisplayHelper::printError("Lựa chọn không hợp lệ. Vui lòng nhập số từ 0 đến 7.");
                     }
                 } while (!isValid);
 
@@ -441,11 +441,11 @@ namespace HMS
 
                 do
                 {
-                    inputChoice = DisplayHelper::getInput("Nhap lua chon cua ban [0-7]");
+                    inputChoice = DisplayHelper::getInput("Nhập lựa chọn của bạn [0-7]");
                     isValid = InputValidator::validateMenuChoice(inputChoice, 0, 7);
                     if (!isValid)
                     {
-                        DisplayHelper::printError("Lua chon khong hop le. Vui long nhap so tu 0 den 7.");
+                        DisplayHelper::printError("Lựa chọn không hợp lệ. Vui lòng nhập số từ 0 đến 7.");
                     }
                 } while (!isValid);
 
@@ -471,7 +471,7 @@ namespace HMS
                 showPatientMenu();
                 break;
             default:
-                DisplayHelper::printError("Tai khoan khong xac dinh");
+                DisplayHelper::printError("Tài khoản không xác định");
                 m_facade->logout();
                 break;
             }
@@ -480,7 +480,7 @@ namespace HMS
         void ConsoleUI::performLogout()
         {
             m_facade->logout();
-            DisplayHelper::printSuccess("Dang xuat thanh cong.");
+            DisplayHelper::printSuccess("Đăng xuất thành công.");
             DisplayHelper::pause();
         }
 
@@ -497,7 +497,7 @@ namespace HMS
             }
             else
             {
-                DisplayHelper::printError("Khong the tai thong tin ca nhan.");
+                DisplayHelper::printError("Không thể tải thông tin cá nhân.");
             }
             DisplayHelper::pause();
         }
@@ -521,7 +521,7 @@ namespace HMS
             auto slots = m_facade->getAvailableSlots(doctorId, date);
             if (slots.empty())
             {
-                DisplayHelper::printError("Khong co lich trong vao ngay nay.");
+                DisplayHelper::printError("Không có lịch trống vào ngày này.");
                 DisplayHelper::pause();
                 return;
             }
@@ -532,29 +532,29 @@ namespace HMS
                 return;
 
             // Get disease description
-            std::string disease = DisplayHelper::getInput("Nhap trieu chung/ly do kham");
+            std::string disease = DisplayHelper::getInput("Nhập triệu chứng/lý do khám");
             if (disease.empty())
             {
-                DisplayHelper::printInfo("Da huy dat lich.");
+                DisplayHelper::printInfo("Đã hủy đặt lịch.");
                 DisplayHelper::pause();
                 return;
             }
 
             // Confirm booking
-            if (!DisplayHelper::confirm("Xac nhan dat lich kham?"))
+            if (!DisplayHelper::confirm("Xác nhận đặt lịch khám?"))
             {
-                DisplayHelper::printInfo("Da huy dat lich.");
+                DisplayHelper::printInfo("Đã hủy đặt lịch.");
                 DisplayHelper::pause();
                 return;
             }
 
             if (m_facade->bookAppointment(doctorId, date, time, disease))
             {
-                DisplayHelper::printSuccess("Dat lich kham thanh cong!");
+                DisplayHelper::printSuccess("Đặt lịch khám thành công!");
             }
             else
             {
-                DisplayHelper::printError("Dat lich that bai. Vui long thu lai.");
+                DisplayHelper::printError("Đặt lịch thất bại. Vui lòng thử lại.");
             }
             DisplayHelper::pause();
         }
@@ -610,20 +610,20 @@ namespace HMS
             if (appointmentId.empty())
                 return;
 
-            if (!DisplayHelper::confirm("Ban co chac chan muon huy lich hen nay?"))
+            if (!DisplayHelper::confirm("Bạn có chắc chắn muốn hủy lịch hẹn này?"))
             {
-                DisplayHelper::printInfo("Da huy thao tac.");
+                DisplayHelper::printInfo("Đã hủy thao tác.");
                 DisplayHelper::pause();
                 return;
             }
 
             if (m_facade->cancelAppointment(appointmentId))
             {
-                DisplayHelper::printSuccess("Huy lich hen thanh cong.");
+                DisplayHelper::printSuccess("Hủy lịch hẹn thành công.");
             }
             else
             {
-                DisplayHelper::printError("Khong the huy lich hen.");
+                DisplayHelper::printError("Không thể hủy lịch hẹn.");
             }
             DisplayHelper::pause();
         }
@@ -634,7 +634,7 @@ namespace HMS
             DisplayHelper::printHeader("TONG HOA DON");
 
             double total = m_facade->getMyTotalBill();
-            std::cout << "Tong so tien can thanh toan: " << DisplayHelper::formatMoney(total) << "\n";
+            std::cout << "Tổng số tiền cần thanh toán: " << DisplayHelper::formatMoney(total) << "\n";
             DisplayHelper::pause();
         }
 
@@ -643,13 +643,13 @@ namespace HMS
         {
             DisplayHelper::clearScreen();
             DisplayHelper::printHeader("THEM BENH NHAN MOI");
-            std::cout << "(De quay lai, hay bo trong bat ky truong nao va nhan Enter)\n\n";
+            std::cout << "(Nhấn Enter để quay lại)\n\n";
 
             // Get patient info with validation
             std::string name;
             while (true)
             {
-                name = DisplayHelper::getInput("Nhap ho va ten");
+                name = DisplayHelper::getInput("Nhập họ và tên");
                 if (name.empty())
                     return;
                 if (!InputValidator::validateName(name))
@@ -663,7 +663,7 @@ namespace HMS
             std::string phone;
             while (true)
             {
-                phone = DisplayHelper::getInput("Nhap so dien thoai");
+                phone = DisplayHelper::getInput("Nhập số điện thoại");
                 if (phone.empty())
                     return;
                 if (!InputValidator::validatePhone(phone))
@@ -677,12 +677,12 @@ namespace HMS
             std::string gender;
             while (true)
             {
-                gender = DisplayHelper::getInput("Nhap gioi tinh (Nam/Nu/Khac)");
+                gender = DisplayHelper::getInput("Nhập giới tính (Nam/Nu/Khac)");
                 if (gender.empty())
                     return;
                 if (!InputValidator::validateGender(gender))
                 {
-                    DisplayHelper::printError("Gioi tinh khong hop le.");
+                    DisplayHelper::printError("Giới tính không hợp lệ.");
                     continue;
                 }
                 gender = InputValidator::normalizeGender(gender);
@@ -692,37 +692,37 @@ namespace HMS
             std::string dateOfBirth;
             while (true)
             {
-                dateOfBirth = DisplayHelper::getInput("Nhap ngay sinh (YYYY-MM-DD)");
+                dateOfBirth = DisplayHelper::getInput("Nhập ngày sinh (YYYY-MM-DD)");
                 if (dateOfBirth.empty())
                     return;
                 if (!InputValidator::validateDate(dateOfBirth) || !InputValidator::validatePastDate(dateOfBirth))
                 {
-                    DisplayHelper::printError("Ngay sinh khong hop le.");
+                    DisplayHelper::printError("Ngày sinh không hợp lệ.");
                     continue;
                 }
                 break;
             }
 
-            std::string address = DisplayHelper::getInput("Nhap dia chi");
+            std::string address = DisplayHelper::getInput("Nhập địa chỉ");
             if (address.empty())
                 return;
 
-            std::string medicalHistory = DisplayHelper::getInput("Nhap tien su benh (neu co)");
+            std::string medicalHistory = DisplayHelper::getInput("Nhập tiền sử bệnh (neu co)");
 
-            if (!DisplayHelper::confirm("Xac nhan them benh nhan?"))
+            if (!DisplayHelper::confirm("Xác nhận thêm bệnh nhân?"))
             {
-                DisplayHelper::printInfo("Da huy.");
+                DisplayHelper::printInfo("Đã hủy.");
                 DisplayHelper::pause();
                 return;
             }
 
             if (m_facade->addPatient(name, phone, gender, dateOfBirth, address, medicalHistory))
             {
-                DisplayHelper::printSuccess("Them benh nhan thanh cong.");
+                DisplayHelper::printSuccess("Thêm bệnh nhân thành công.");
             }
             else
             {
-                DisplayHelper::printError("Them benh nhan that bai.");
+                DisplayHelper::printError("Thêm bệnh nhân thất bại.");
             }
             DisplayHelper::pause();
         }
@@ -730,9 +730,9 @@ namespace HMS
         void ConsoleUI::searchPatient()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("TIM KIEM BENH NHAN");
+            DisplayHelper::printHeader("TÌM KIẾM BỆNH NHÂN");
 
-            std::string keyword = DisplayHelper::getInput("Nhap tu khoa tim kiem (ten, ID, SDT)");
+            std::string keyword = DisplayHelper::getInput("Nhập từ khóa tìm kiếm (tên, ID, SĐT)");
             if (keyword.empty())
                 return;
 
@@ -760,32 +760,32 @@ namespace HMS
             auto patient = m_facade->getPatientByID(patientId);
             if (!patient.has_value())
             {
-                DisplayHelper::printError("Khong tim thay benh nhan.");
+                DisplayHelper::printError("Không tìm thấy bệnh nhân.");
                 DisplayHelper::pause();
                 return;
             }
 
             DisplayHelper::printPatientInfo(patient.value());
-            std::cout << "\n(De trong truong khong muon thay doi)\n\n";
+            std::cout << "\n(Để trống trường không muốn thay đổi)\n\n";
 
             std::string phone = DisplayHelper::getInput("So dien thoai moi");
             std::string address = DisplayHelper::getInput("Dia chi moi");
             std::string medicalHistory = DisplayHelper::getInput("Tien su benh moi");
 
-            if (!DisplayHelper::confirm("Xac nhan cap nhat?"))
+            if (!DisplayHelper::confirm("Xác nhận cập nhật?"))
             {
-                DisplayHelper::printInfo("Da huy.");
+                DisplayHelper::printInfo("Đã hủy.");
                 DisplayHelper::pause();
                 return;
             }
 
             if (m_facade->updatePatient(patientId, phone, address, medicalHistory))
             {
-                DisplayHelper::printSuccess("Cap nhat thanh cong.");
+                DisplayHelper::printSuccess("Cập nhật thành công.");
             }
             else
             {
-                DisplayHelper::printError("Cap nhat that bai.");
+                DisplayHelper::printError("Cập nhật thất bại.");
             }
             DisplayHelper::pause();
         }
@@ -802,27 +802,27 @@ namespace HMS
             auto patient = m_facade->getPatientByID(patientId);
             if (!patient.has_value())
             {
-                DisplayHelper::printError("Khong tim thay benh nhan.");
+                DisplayHelper::printError("Không tìm thấy bệnh nhân.");
                 DisplayHelper::pause();
                 return;
             }
 
             DisplayHelper::printPatientInfo(patient.value());
 
-            if (!DisplayHelper::confirm("Ban co chac chan muon xoa benh nhan nay?"))
+            if (!DisplayHelper::confirm("Bạn có chắc chắn muốn xóa bệnh nhân này?"))
             {
-                DisplayHelper::printInfo("Da huy.");
+                DisplayHelper::printInfo("Đã hủy.");
                 DisplayHelper::pause();
                 return;
             }
 
             if (m_facade->deletePatient(patientId))
             {
-                DisplayHelper::printSuccess("Xoa benh nhan thanh cong.");
+                DisplayHelper::printSuccess("Xóa bệnh nhân thành công.");
             }
             else
             {
-                DisplayHelper::printError("Khong the xoa benh nhan.");
+                DisplayHelper::printError("Không thể xóa bệnh nhân.");
             }
             DisplayHelper::pause();
         }
@@ -893,20 +893,20 @@ namespace HMS
             if (appointmentId.empty())
                 return;
 
-            if (!DisplayHelper::confirm("Xac nhan hoan thanh lich hen nay?"))
+            if (!DisplayHelper::confirm("Xác nhận hoàn thành lịch hẹn này?"))
             {
-                DisplayHelper::printInfo("Da huy.");
+                DisplayHelper::printInfo("Đã hủy.");
                 DisplayHelper::pause();
                 return;
             }
 
             if (m_facade->markAppointmentCompleted(appointmentId))
             {
-                DisplayHelper::printSuccess("Da danh dau hoan thanh.");
+                DisplayHelper::printSuccess("Đã đánh dấu hoàn thành.");
             }
             else
             {
-                DisplayHelper::printError("Khong the cap nhat trang thai.");
+                DisplayHelper::printError("Không thể cập nhật trạng thái.");
             }
             DisplayHelper::pause();
         }
@@ -916,13 +916,13 @@ namespace HMS
         {
             DisplayHelper::clearScreen();
             DisplayHelper::printHeader("THEM BAC SI MOI");
-            std::cout << "(De quay lai, hay bo trong bat ky truong nao va nhan Enter)\n\n";
+            std::cout << "(Nhấn Enter để quay lại)\n\n";
 
             // Get username
             std::string username;
             while (true)
             {
-                username = DisplayHelper::getInput("Nhap ten nguoi dung");
+                username = DisplayHelper::getInput("Nhập tên người dùng");
                 if (username.empty())
                     return;
                 if (!InputValidator::validateUsername(username))
@@ -932,7 +932,7 @@ namespace HMS
                 }
                 if (!m_facade->isUsernameAvailable(username))
                 {
-                    DisplayHelper::printError("Ten nguoi dung da ton tai.");
+                    DisplayHelper::printError("Tên người dùng đã tồn tại.");
                     continue;
                 }
                 break;
@@ -941,7 +941,7 @@ namespace HMS
             std::string password;
             while (true)
             {
-                password = DisplayHelper::getInput("Nhap mat khau");
+                password = DisplayHelper::getInput("Nhập mật khẩu");
                 if (password.empty())
                     return;
                 if (!InputValidator::validatePassword(password))
@@ -955,7 +955,7 @@ namespace HMS
             std::string name;
             while (true)
             {
-                name = DisplayHelper::getInput("Nhap ho va ten");
+                name = DisplayHelper::getInput("Nhập họ và tên");
                 if (name.empty())
                     return;
                 if (!InputValidator::validateName(name))
@@ -969,7 +969,7 @@ namespace HMS
             std::string phone;
             while (true)
             {
-                phone = DisplayHelper::getInput("Nhap so dien thoai");
+                phone = DisplayHelper::getInput("Nhập số điện thoại");
                 if (phone.empty())
                     return;
                 if (!InputValidator::validatePhone(phone))
@@ -983,12 +983,12 @@ namespace HMS
             std::string gender;
             while (true)
             {
-                gender = DisplayHelper::getInput("Nhap gioi tinh (Nam/Nu/Khac)");
+                gender = DisplayHelper::getInput("Nhập giới tính (Nam/Nu/Khac)");
                 if (gender.empty())
                     return;
                 if (!InputValidator::validateGender(gender))
                 {
-                    DisplayHelper::printError("Gioi tinh khong hop le.");
+                    DisplayHelper::printError("Giới tính không hợp lệ.");
                     continue;
                 }
                 gender = InputValidator::normalizeGender(gender);
@@ -998,36 +998,36 @@ namespace HMS
             std::string dateOfBirth;
             while (true)
             {
-                dateOfBirth = DisplayHelper::getInput("Nhap ngay sinh (YYYY-MM-DD)");
+                dateOfBirth = DisplayHelper::getInput("Nhập ngày sinh (YYYY-MM-DD)");
                 if (dateOfBirth.empty())
                     return;
                 if (!InputValidator::validateDate(dateOfBirth) || !InputValidator::validatePastDate(dateOfBirth))
                 {
-                    DisplayHelper::printError("Ngay sinh khong hop le.");
+                    DisplayHelper::printError("Ngày sinh không hợp lệ.");
                     continue;
                 }
                 break;
             }
 
-            std::string specialization = DisplayHelper::getInput("Nhap chuyen khoa");
+            std::string specialization = DisplayHelper::getInput("Nhập chuyên khoa");
             if (specialization.empty())
                 return;
 
-            std::string schedule = DisplayHelper::getInput("Nhap lich lam viec (vd: Mon-Fri 8:00-17:00)");
+            std::string schedule = DisplayHelper::getInput("Nhập lịch làm việc (vd: Mon-Fri 8:00-17:00)");
             if (schedule.empty())
                 return;
 
-            double consultationFee = DisplayHelper::getDoubleInput("Nhap phi kham (VND)");
+            double consultationFee = DisplayHelper::getDoubleInput("Nhập phí khám (VND)");
             if (consultationFee < 0)
             {
-                DisplayHelper::printError("Phi kham khong hop le.");
+                DisplayHelper::printError("Phí khám không hợp lệ.");
                 DisplayHelper::pause();
                 return;
             }
 
-            if (!DisplayHelper::confirm("Xac nhan them bac si?"))
+            if (!DisplayHelper::confirm("Xác nhận thêm bác sĩ?"))
             {
-                DisplayHelper::printInfo("Da huy.");
+                DisplayHelper::printInfo("Đã hủy.");
                 DisplayHelper::pause();
                 return;
             }
@@ -1035,11 +1035,11 @@ namespace HMS
             if (m_facade->addDoctor(username, password, name, phone, gender, dateOfBirth,
                                     specialization, schedule, consultationFee))
             {
-                DisplayHelper::printSuccess("Them bac si thanh cong.");
+                DisplayHelper::printSuccess("Thêm bác sĩ thành công.");
             }
             else
             {
-                DisplayHelper::printError("Them bac si that bai.");
+                DisplayHelper::printError("Thêm bác sĩ thất bại.");
             }
             DisplayHelper::pause();
         }
@@ -1047,20 +1047,20 @@ namespace HMS
         void ConsoleUI::searchDoctor()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("TIM KIEM BAC SI");
+            DisplayHelper::printHeader("TÌM KIẾM BÁC SĨ");
 
-            std::cout << "1. Tim theo chuyen khoa\n";
-            std::cout << "2. Xem tat ca bac si\n";
+            std::cout << "1. Tìm theo chuyên khoa\n";
+            std::cout << "2. Xem tất cả bác sĩ\n";
 
             std::string inputChoice;
             bool isValid = false;
             do
             {
-                inputChoice = DisplayHelper::getInput("Nhap lua chon [1-2]");
+                inputChoice = DisplayHelper::getInput("Nhập lựa chọn [1-2]");
                 isValid = InputValidator::validateMenuChoice(inputChoice, 1, 2);
                 if (!isValid)
                 {
-                    DisplayHelper::printError("Lua chon khong hop le.");
+                    DisplayHelper::printError("Lựa chọn không hợp lệ.");
                 }
             } while (!isValid);
 
@@ -1077,7 +1077,7 @@ namespace HMS
                     return;
                 }
 
-                DisplayHelper::printSubHeader("Danh sach chuyen khoa");
+                DisplayHelper::printSubHeader("Danh sách chuyên khoa");
                 for (size_t i = 0; i < specs.size(); ++i)
                 {
                     std::cout << (i + 1) << ". " << specs[i] << "\n";
@@ -1086,11 +1086,11 @@ namespace HMS
                 std::string specChoice;
                 do
                 {
-                    specChoice = DisplayHelper::getInput("Chon chuyen khoa");
+                    specChoice = DisplayHelper::getInput("Chọn chuyên khoa");
                     isValid = InputValidator::validateMenuChoice(specChoice, 1, static_cast<int>(specs.size()));
                     if (!isValid)
                     {
-                        DisplayHelper::printError("Lua chon khong hop le.");
+                        DisplayHelper::printError("Lựa chọn không hợp lệ.");
                     }
                 } while (!isValid);
 
@@ -1125,32 +1125,32 @@ namespace HMS
             auto doctor = m_facade->getDoctorByID(doctorId);
             if (!doctor.has_value())
             {
-                DisplayHelper::printError("Khong tim thay bac si.");
+                DisplayHelper::printError("Không tìm thấy bác sĩ.");
                 DisplayHelper::pause();
                 return;
             }
 
             DisplayHelper::printDoctorInfo(doctor.value());
-            std::cout << "\n(De trong truong khong muon thay doi)\n\n";
+            std::cout << "\n(Để trống trường không muốn thay đổi)\n\n";
 
             std::string specialization = DisplayHelper::getInput("Chuyen khoa moi");
             std::string schedule = DisplayHelper::getInput("Lich lam viec moi");
-            double consultationFee = DisplayHelper::getDoubleInput("Phi kham moi (nhap 0 de giu nguyen)");
+            double consultationFee = DisplayHelper::getDoubleInput("Phí khám mới (nhap 0 de giu nguyen)");
 
-            if (!DisplayHelper::confirm("Xac nhan cap nhat?"))
+            if (!DisplayHelper::confirm("Xác nhận cập nhật?"))
             {
-                DisplayHelper::printInfo("Da huy.");
+                DisplayHelper::printInfo("Đã hủy.");
                 DisplayHelper::pause();
                 return;
             }
 
             if (m_facade->updateDoctor(doctorId, specialization, schedule, consultationFee))
             {
-                DisplayHelper::printSuccess("Cap nhat thanh cong.");
+                DisplayHelper::printSuccess("Cập nhật thành công.");
             }
             else
             {
-                DisplayHelper::printError("Cap nhat that bai.");
+                DisplayHelper::printError("Cập nhật thất bại.");
             }
             DisplayHelper::pause();
         }
@@ -1167,27 +1167,27 @@ namespace HMS
             auto doctor = m_facade->getDoctorByID(doctorId);
             if (!doctor.has_value())
             {
-                DisplayHelper::printError("Khong tim thay bac si.");
+                DisplayHelper::printError("Không tìm thấy bác sĩ.");
                 DisplayHelper::pause();
                 return;
             }
 
             DisplayHelper::printDoctorInfo(doctor.value());
 
-            if (!DisplayHelper::confirm("Ban co chac chan muon xoa bac si nay?"))
+            if (!DisplayHelper::confirm("Bạn có chắc chắn muốn xóa bác sĩ này?"))
             {
-                DisplayHelper::printInfo("Da huy.");
+                DisplayHelper::printInfo("Đã hủy.");
                 DisplayHelper::pause();
                 return;
             }
 
             if (m_facade->deleteDoctor(doctorId))
             {
-                DisplayHelper::printSuccess("Xoa bac si thanh cong.");
+                DisplayHelper::printSuccess("Xóa bác sĩ thành công.");
             }
             else
             {
-                DisplayHelper::printError("Khong the xoa bac si.");
+                DisplayHelper::printError("Không thể xóa bác sĩ.");
             }
             DisplayHelper::pause();
         }
@@ -1212,7 +1212,7 @@ namespace HMS
         void ConsoleUI::viewStatistics()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("THONG KE HE THONG");
+            DisplayHelper::printHeader("THỐNG KÊ HỆ THỐNG");
 
             auto stats = m_facade->getStatistics();
             DisplayHelper::printStatistics(stats);
@@ -1247,11 +1247,11 @@ namespace HMS
             bool isValid = false;
             do
             {
-                inputChoice = DisplayHelper::getInput("Chon bac si");
+                inputChoice = DisplayHelper::getInput("Chọn bác sĩ");
                 isValid = InputValidator::validateMenuChoice(inputChoice, 0, static_cast<int>(doctors.size()));
                 if (!isValid)
                 {
-                    DisplayHelper::printError("Lua chon khong hop le.");
+                    DisplayHelper::printError("Lựa chọn không hợp lệ.");
                 }
             } while (!isValid);
 
@@ -1279,11 +1279,11 @@ namespace HMS
             bool isValid = false;
             do
             {
-                inputChoice = DisplayHelper::getInput("Chon benh nhan");
+                inputChoice = DisplayHelper::getInput("Chọn bệnh nhân");
                 isValid = InputValidator::validateMenuChoice(inputChoice, 0, static_cast<int>(patients.size()));
                 if (!isValid)
                 {
-                    DisplayHelper::printError("Lua chon khong hop le.");
+                    DisplayHelper::printError("Lựa chọn không hợp lệ.");
                 }
             } while (!isValid);
 
@@ -1310,11 +1310,11 @@ namespace HMS
             bool isValid = false;
             do
             {
-                inputChoice = DisplayHelper::getInput("Chon lich hen");
+                inputChoice = DisplayHelper::getInput("Chọn lịch hẹn");
                 isValid = InputValidator::validateMenuChoice(inputChoice, 0, static_cast<int>(appointments.size()));
                 if (!isValid)
                 {
-                    DisplayHelper::printError("Lua chon khong hop le.");
+                    DisplayHelper::printError("Lựa chọn không hợp lệ.");
                 }
             } while (!isValid);
 
@@ -1330,7 +1330,7 @@ namespace HMS
             std::string date;
             while (true)
             {
-                date = DisplayHelper::getInput("Nhap ngay (YYYY-MM-DD, bo trong de quay lai)");
+                date = DisplayHelper::getInput("Nhập ngày (YYYY-MM-DD, bo trong de quay lai)");
                 if (date.empty())
                     return "";
 
@@ -1341,7 +1341,7 @@ namespace HMS
                 }
                 if (!InputValidator::validateFutureDate(date))
                 {
-                    DisplayHelper::printError("Ngay phai la hom nay hoac trong tuong lai.");
+                    DisplayHelper::printError("Ngày phải là hôm nay hoặc trong tương lai.");
                     continue;
                 }
                 break;
@@ -1364,11 +1364,11 @@ namespace HMS
             bool isValid = false;
             do
             {
-                inputChoice = DisplayHelper::getInput("Chon khung gio");
+                inputChoice = DisplayHelper::getInput("Chọn khung giờ");
                 isValid = InputValidator::validateMenuChoice(inputChoice, 0, static_cast<int>(slots.size()));
                 if (!isValid)
                 {
-                    DisplayHelper::printError("Lua chon khong hop le.");
+                    DisplayHelper::printError("Lựa chọn không hợp lệ.");
                 }
             } while (!isValid);
 

@@ -1,4 +1,13 @@
-# Hospital Management System - Department Data
+# Hospital Management System - Sample Department Data
 # Format: departmentID|name|description|headDoctorID|doctorIDs|location|phone
-# doctorIDs is comma-separated list (e.g., D001,D002,D003)
-# Example: DEP001|Cardiology|Heart and cardiovascular care|D001|D001,D005,D012|Building A, Floor 2|0281234567
+
+DEP001|Khoa Tim mạch|Chăm sóc tim mạch bao gồm phẫu thuật tim, can thiệp mạch vành và quản lý suy tim|D001|D001|Tòa nhà A, Tầng 2|0281234567
+DEP002|Khoa Nhi|Chăm sóc sức khỏe trẻ em từ sơ sinh đến thanh thiếu niên, tiêm chủng và đánh giá phát triển|D002|D002|Tòa nhà B, Tầng 1|0281234568
+DEP003|Khoa Thần kinh|Điều trị rối loạn não và hệ thần kinh bao gồm đột quỵ, động kinh và Parkinson|D003|D003|Tòa nhà A, Tầng 3|0281234569
+DEP004|Khoa Chỉnh hình|Điều trị rối loạn xương, khớp và cơ bao gồm gãy xương, viêm khớp và chấn thương thể thao|D004|D004|Tòa nhà C, Tầng 1|0281234570
+DEP005|Khoa Da liễu|Điều trị các bệnh về da, tóc và móng bao gồm mụn trứng cá, chàm và tầm soát ung thư da|D005|D005|Tòa nhà B, Tầng 2|0281234571
+DEP006|Khoa Nội tiết|Điều trị rối loạn nội tiết bao gồm tiểu đường, bệnh tuyến giáp và rối loạn hormone|D006|D006|Tòa nhà A, Tầng 4|0281234572
+DEP007|Khoa Tiêu hóa|Điều trị bệnh đường tiêu hóa bao gồm loét dạ dày, viêm gan và hội chứng ruột kích thích|D007|D007|Tòa nhà C, Tầng 2|0281234573
+DEP008|Khoa Ung bướu|Chăm sóc ung thư toàn diện bao gồm hóa trị, xạ trị và chăm sóc giảm nhẹ|D008|D008|Tòa nhà D, Tầng 1|0281234574
+DEP009|Khoa Mắt|Điều trị các bệnh về mắt bao gồm đục thủy tinh thể, glaucoma và bệnh võng mạc|D009|D009|Tòa nhà B, Tầng 3|0281234575
+DEP010|Khoa Hô hấp|Điều trị bệnh phổi và đường hô hấp bao gồm hen suyễn, COPD và viêm phổi|D010|D010|Tòa nhà A, Tầng 5|0281234576

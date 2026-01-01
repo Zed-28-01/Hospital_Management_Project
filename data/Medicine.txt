@@ -1,3 +1,28 @@
-# Hospital Management System - Medicine Data
+# Hospital Management System - Sample Medicine Data
 # Format: medicineID|name|genericName|category|manufacturer|description|unitPrice|quantity|reorderLevel|expiryDate|dosageForm|strength
-# Example: MED001|Paracetamol 500mg|Acetaminophen|Pain Relief|PharmaCorp|For pain and fever|5000|500|100|2025-12-31|Tablet|500mg
+
+MED001|Paracetamol 500mg|Acetaminophen|Giảm đau hạ sốt|Pharma Việt Nam|Giảm đau nhẹ đến trung bình, hạ sốt|5000|500|100|2026-12-31|Viên nén|500mg
+MED002|Amoxicillin 250mg|Amoxicillin|Kháng sinh|MedPharm|Kháng sinh phổ rộng điều trị nhiễm khuẩn|15000|200|50|2025-08-15|Viên nang|250mg
+MED003|Omeprazole 20mg|Omeprazole|Tiêu hóa|GastroCare|Thuốc ức chế bơm proton, trào ngược dạ dày|12000|300|75|2025-11-30|Viên nang|20mg
+MED004|Ibuprofen 400mg|Ibuprofen|Giảm đau hạ sốt|Pharma Việt Nam|Thuốc chống viêm, giảm đau, hạ sốt|8000|400|80|2026-06-30|Viên nén|400mg
+MED005|Metformin 500mg|Metformin Hydrochloride|Tiểu đường|DiabeCare|Thuốc điều trị đái tháo đường type 2|10000|250|60|2026-03-15|Viên nén|500mg
+MED006|Amlodipine 5mg|Amlodipine Besylate|Tim mạch|HeartMed|Thuốc chẹn kênh canxi, điều trị tăng huyết áp|18000|150|40|2025-09-20|Viên nén|5mg
+MED007|Cetirizine 10mg|Cetirizine Hydrochloride|Chống dị ứng|AllergyFree|Điều trị viêm mũi dị ứng và mày đay|7000|350|70|2026-01-10|Viên nén|10mg
+MED008|Azithromycin 500mg|Azithromycin|Kháng sinh|MedPharm|Kháng sinh nhóm macrolide, nhiễm khuẩn hô hấp|25000|100|30|2025-07-25|Viên nén|500mg
+MED009|Salbutamol Inhaler|Salbutamol Sulfate|Hô hấp|BreathEasy|Thuốc giãn phế quản cho hen suyễn và COPD|45000|80|20|2025-10-05|Bình xịt|100mcg/nhát
+MED010|Diclofenac Gel 1%|Diclofenac Sodium|Giảm đau|TopicalMed|Thuốc bôi giảm đau khớp và cơ|22000|120|25|2026-02-28|Gel bôi|1%
+MED011|Losartan 50mg|Losartan Potassium|Tim mạch|HeartMed|Thuốc chẹn thụ thể angiotensin, hạ huyết áp|20000|180|45|2025-12-15|Viên nén|50mg
+MED012|Pantoprazole 40mg|Pantoprazole Sodium|Tiêu hóa|GastroCare|Thuốc ức chế bơm proton cho GERD và loét dạ dày|14000|220|55|2026-04-20|Viên nén|40mg
+MED013|Simvastatin 20mg|Simvastatin|Tim mạch|HeartMed|Thuốc hạ mỡ máu, phòng ngừa bệnh tim mạch|16000|200|50|2026-01-25|Viên nén|20mg
+MED014|Clopidogrel 75mg|Clopidogrel Bisulfate|Tim mạch|HeartMed|Thuốc chống kết tập tiểu cầu, phòng đột quỵ|28000|150|40|2025-10-30|Viên nén|75mg
+MED015|Atorvastatin 10mg|Atorvastatin Calcium|Tim mạch|CardioPharm|Thuốc hạ cholesterol, điều trị rối loạn lipid máu|24000|180|45|2026-02-15|Viên nén|10mg
+MED016|Prednisolone 5mg|Prednisolone|Chống viêm|SteroCare|Corticosteroid điều trị viêm và dị ứng|9000|250|60|2025-12-10|Viên nén|5mg
+MED017|Vitamin B Complex|Multivitamin B|Vitamin và khoáng chất|VitaHealth|Bổ sung vitamin B1, B6, B12 cho thần kinh|12000|400|80|2026-08-20|Viên nang|Phối hợp
+MED018|Calcium + Vitamin D3|Calcium Carbonate + Cholecalciferol|Vitamin và khoáng chất|BoneStrong|Bổ sung canxi và vitamin D cho xương|15000|300|70|2026-05-15|Viên sủi|500mg + 400IU
+MED019|Levothyroxine 50mcg|Levothyroxine Sodium|Nội tiết|ThyroMed|Thuốc điều trị suy giáp|18000|100|25|2025-11-05|Viên nén|50mcg
+MED020|Ferrous Sulfate 325mg|Ferrous Sulfate|Vitamin và khoáng chất|IronSupp|Bổ sung sắt điều trị thiếu máu|8000|350|75|2026-07-10|Viên nén|325mg
+MED021|Ranitidine 150mg|Ranitidine Hydrochloride|Tiêu hóa|GastroCare|Thuốc giảm tiết acid dạ dày|10000|200|50|2025-09-15|Viên nén|150mg
+MED022|Loperamide 2mg|Loperamide Hydrochloride|Tiêu hóa|DigestEase|Thuốc điều trị tiêu chảy cấp|6000|180|40|2026-03-25|Viên nang|2mg
+MED023|Dexamethasone 0.5mg|Dexamethasone|Chống viêm|SteroCare|Corticosteroid mạnh điều trị viêm và dị ứng nặng|12000|120|30|2025-10-20|Viên nén|0.5mg
+MED024|Chlorpheniramine 4mg|Chlorpheniramine Maleate|Chống dị ứng|AllergyFree|Thuốc chống histamin thế hệ 1|5000|300|60|2026-06-05|Viên nén|4mg
+MED025|Ciprofloxacin 500mg|Ciprofloxacin Hydrochloride|Kháng sinh|MedPharm|Kháng sinh fluoroquinolone điều trị nhiễm khuẩn|20000|150|35|2025-08-30|Viên nén|500mg

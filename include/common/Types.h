@@ -71,14 +71,19 @@ enum class Gender {
 
 inline std::string genderToString(Gender gender) {
     switch (gender) {
-        case Gender::MALE:   return "Male";
-        case Gender::FEMALE: return "Female";
-        case Gender::OTHER:  return "Other";
-        default:             return "Unknown";
+        case Gender::MALE:   return "Nam";
+        case Gender::FEMALE: return "Nữ";
+        case Gender::OTHER:  return "Khác";
+        default:             return "Không xác định";
     }
 }
 
 inline Gender stringToGender(const std::string& str) {
+    // Vietnamese (primary)
+    if (str == "Nam" || str == "nam")       return Gender::MALE;
+    if (str == "Nữ" || str == "Nu" || str == "nữ" || str == "nu") return Gender::FEMALE;
+    if (str == "Khác" || str == "Khac" || str == "khác" || str == "khac") return Gender::OTHER;
+    // English (backward compatibility for existing data)
     if (str == "Male" || str == "male")     return Gender::MALE;
     if (str == "Female" || str == "female") return Gender::FEMALE;
     if (str == "Other" || str == "other")   return Gender::OTHER;
