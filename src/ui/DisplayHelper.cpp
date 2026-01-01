@@ -96,7 +96,7 @@ namespace HMS
                         std::cout << "[N] Trang sau  ";
                     if (totalPages > 1)
                         std::cout << "[G] Den trang  ";
-                    std::cout << "[Q] Quay lai\n";
+                    std::cout << "[Q] Quay lại menu\n";
                     std::cout << "\nNhap lua chon: ";
 
                     std::string choice;
@@ -268,7 +268,7 @@ namespace HMS
             std::cout << "  4. Xem lich hen sap toi\n";
             std::cout << "  5. Huy lich hen\n";
             std::cout << "  6. Xem tong hoa don\n";
-            std::cout << "  0. Dang xuat\n";
+            std::cout << "  0. Đăng xuất\n";
             printThinSeparator(60);
             std::cout << "\n";
         }
@@ -280,12 +280,12 @@ namespace HMS
             printThinSeparator(60);
             std::cout << "  1. Xem lich lam viec\n";
             std::cout << "  2. Danh dau lich hen hoan thanh\n";
-            std::cout << "  3. Danh sach benh nhan\n";
-            std::cout << "  4. Tim kiem benh nhan\n";
+            std::cout << "  3. Danh sách bệnh nhân\n";
+            std::cout << "  4. Tìm kiếm bệnh nhân\n";
             std::cout << "  5. Them benh nhan moi\n";
             std::cout << "  6. Cap nhat thong tin benh nhan\n";
             std::cout << "  7. Xoa benh nhan\n";
-            std::cout << "  0. Dang xuat\n";
+            std::cout << "  0. Đăng xuất\n";
             printThinSeparator(60);
             std::cout << "\n";
         }
@@ -295,14 +295,14 @@ namespace HMS
             printAppHeader();
             std::cout << BOLD << YELLOW << "MENU QUAN TRI" << RESET << " - Xin chao, Admin " << BOLD << username << RESET << "\n";
             printThinSeparator(60);
-            std::cout << "  1. Danh sach bac si\n";
-            std::cout << "  2. Tim kiem bac si\n";
+            std::cout << "  1. Danh sách bác sĩ\n";
+            std::cout << "  2. Tìm kiếm bác sĩ\n";
             std::cout << "  3. Them bac si moi\n";
             std::cout << "  4. Cap nhat thong tin bac si\n";
             std::cout << "  5. Xoa bac si\n";
             std::cout << "  6. Xem thong ke he thong\n";
-            std::cout << "  7. Xem bao cao\n";
-            std::cout << "  0. Dang xuat\n";
+            std::cout << "  7. Xem báo cáo\n";
+            std::cout << "  0. Đăng xuất\n";
             printThinSeparator(60);
             std::cout << "\n";
         }
@@ -999,7 +999,7 @@ namespace HMS
         {
             printHeader("QUAN LY THUOC");
             std::cout << "  1. Xem danh sach thuoc\n";
-            std::cout << "  2. Tim kiem thuoc\n";
+            std::cout << "  2. Tìm kiếm thuốc\n";
             std::cout << "  3. Them thuoc moi\n";
             std::cout << "  4. Cap nhat thong tin thuoc\n";
             std::cout << "  5. Xoa thuoc\n";

@@ -69,7 +69,7 @@ namespace HMS
         {
             DisplayHelper::clearScreen();
             DisplayHelper::printHeader("DANG NHAP HE THONG");
-            std::cout << "(De quay lai menu chinh, hay bo trong Username va nhan Enter)\n\n";
+            std::cout << "(Nhấn Enter để quay lại menu chính)\n\n";
 
             std::string username, password;
 
@@ -105,13 +105,13 @@ namespace HMS
 
             if (m_facade->login(username, password))
             {
-                DisplayHelper::printSuccess("Dang nhap thanh cong");
+                DisplayHelper::printSuccess("Đăng nhập thành công");
                 DisplayHelper::pause();
                 routeToRoleMenu();
             }
             else
             {
-                DisplayHelper::printError("Dang nhap khong thanh cong. Ten nguoi dung/mat khau khong ton tai\n");
+                DisplayHelper::printError("Đăng nhập không thành công. Tên người dùng/mật khẩu không tồn tại\n");
                 DisplayHelper::pause();
                 // Return naturally - main loop will call showMainMenu() again
             }
@@ -121,7 +121,7 @@ namespace HMS
         {
             DisplayHelper::clearScreen();
             DisplayHelper::printHeader("DANG KY TAI KHOAN BENH NHAN");
-            std::cout << "(De quay lai menu chinh, hay bo trong bat ky truong nao va nhan Enter)\n\n";
+            std::cout << "(Nhấn Enter để quay lại menu chính)\n\n";
 
             // Get username
             std::string username;
@@ -253,11 +253,11 @@ namespace HMS
 
             if (m_facade->registerPatient(username, password, name, phone, gender, dateOfBirth, address))
             {
-                DisplayHelper::printSuccess("Dang ky thanh cong! Ban co the dang nhap ngay bay gio.");
+                DisplayHelper::printSuccess("Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.");
             }
             else
             {
-                DisplayHelper::printError("Dang ky that bai. Vui long thu lai.");
+                DisplayHelper::printError("Đăng ký thất bại. Vui lòng thử lại.");
             }
             DisplayHelper::pause();
         }
@@ -480,7 +480,7 @@ namespace HMS
         void ConsoleUI::performLogout()
         {
             m_facade->logout();
-            DisplayHelper::printSuccess("Dang xuat thanh cong.");
+            DisplayHelper::printSuccess("Đăng xuất thành công.");
             DisplayHelper::pause();
         }
 
@@ -643,7 +643,7 @@ namespace HMS
         {
             DisplayHelper::clearScreen();
             DisplayHelper::printHeader("THEM BENH NHAN MOI");
-            std::cout << "(De quay lai, hay bo trong bat ky truong nao va nhan Enter)\n\n";
+            std::cout << "(Nhấn Enter để quay lại)\n\n";
 
             // Get patient info with validation
             std::string name;
@@ -718,11 +718,11 @@ namespace HMS
 
             if (m_facade->addPatient(name, phone, gender, dateOfBirth, address, medicalHistory))
             {
-                DisplayHelper::printSuccess("Them benh nhan thanh cong.");
+                DisplayHelper::printSuccess("Thêm bệnh nhân thành công.");
             }
             else
             {
-                DisplayHelper::printError("Them benh nhan that bai.");
+                DisplayHelper::printError("Thêm bệnh nhân thất bại.");
             }
             DisplayHelper::pause();
         }
@@ -781,11 +781,11 @@ namespace HMS
 
             if (m_facade->updatePatient(patientId, phone, address, medicalHistory))
             {
-                DisplayHelper::printSuccess("Cap nhat thanh cong.");
+                DisplayHelper::printSuccess("Cập nhật thành công.");
             }
             else
             {
-                DisplayHelper::printError("Cap nhat that bai.");
+                DisplayHelper::printError("Cập nhật thất bại.");
             }
             DisplayHelper::pause();
         }
@@ -818,7 +818,7 @@ namespace HMS
 
             if (m_facade->deletePatient(patientId))
             {
-                DisplayHelper::printSuccess("Xoa benh nhan thanh cong.");
+                DisplayHelper::printSuccess("Xóa bệnh nhân thành công.");
             }
             else
             {
@@ -916,7 +916,7 @@ namespace HMS
         {
             DisplayHelper::clearScreen();
             DisplayHelper::printHeader("THEM BAC SI MOI");
-            std::cout << "(De quay lai, hay bo trong bat ky truong nao va nhan Enter)\n\n";
+            std::cout << "(Nhấn Enter để quay lại)\n\n";
 
             // Get username
             std::string username;
@@ -1035,11 +1035,11 @@ namespace HMS
             if (m_facade->addDoctor(username, password, name, phone, gender, dateOfBirth,
                                     specialization, schedule, consultationFee))
             {
-                DisplayHelper::printSuccess("Them bac si thanh cong.");
+                DisplayHelper::printSuccess("Thêm bác sĩ thành công.");
             }
             else
             {
-                DisplayHelper::printError("Them bac si that bai.");
+                DisplayHelper::printError("Thêm bác sĩ thất bại.");
             }
             DisplayHelper::pause();
         }
@@ -1050,7 +1050,7 @@ namespace HMS
             DisplayHelper::printHeader("TIM KIEM BAC SI");
 
             std::cout << "1. Tim theo chuyen khoa\n";
-            std::cout << "2. Xem tat ca bac si\n";
+            std::cout << "2. Xem tất cả bác sĩ\n";
 
             std::string inputChoice;
             bool isValid = false;
@@ -1077,7 +1077,7 @@ namespace HMS
                     return;
                 }
 
-                DisplayHelper::printSubHeader("Danh sach chuyen khoa");
+                DisplayHelper::printSubHeader("Danh sách chuyên khoa");
                 for (size_t i = 0; i < specs.size(); ++i)
                 {
                     std::cout << (i + 1) << ". " << specs[i] << "\n";
@@ -1146,11 +1146,11 @@ namespace HMS
 
             if (m_facade->updateDoctor(doctorId, specialization, schedule, consultationFee))
             {
-                DisplayHelper::printSuccess("Cap nhat thanh cong.");
+                DisplayHelper::printSuccess("Cập nhật thành công.");
             }
             else
             {
-                DisplayHelper::printError("Cap nhat that bai.");
+                DisplayHelper::printError("Cập nhật thất bại.");
             }
             DisplayHelper::pause();
         }
@@ -1183,7 +1183,7 @@ namespace HMS
 
             if (m_facade->deleteDoctor(doctorId))
             {
-                DisplayHelper::printSuccess("Xoa bac si thanh cong.");
+                DisplayHelper::printSuccess("Xóa bác sĩ thành công.");
             }
             else
             {
