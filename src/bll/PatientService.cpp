@@ -1,6 +1,7 @@
 #include "bll/PatientService.h"
 #include "common/Utils.h"
 #include "common/Constants.h"
+#include "dal/AccountRepository.h"
 
 #include <algorithm>
 
@@ -136,6 +137,8 @@ namespace HMS
             {
                 return false;
             }
+
+            DAL::AccountRepository::getInstance()->remove(username);
 
             // Delete all associated appointments
             // Note: If appointment deletion fails, patient is already deleted
