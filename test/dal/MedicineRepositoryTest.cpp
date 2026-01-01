@@ -135,6 +135,8 @@ TEST_F(MedicineRepositoryTest, Singleton_ResetInstance_CreatesNewInstance)
     MedicineRepository::resetInstance();
 
     auto repo2 = MedicineRepository::getInstance();
+    repo2->setFilePath(testFilePath); // Phải set lại test file path sau reset
+    repo2->clear(); // Clear data từ file production
 
     EXPECT_EQ(repo2->count(), 0); // instance mới, không còn data
 }

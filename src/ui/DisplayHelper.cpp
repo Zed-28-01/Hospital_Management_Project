@@ -55,7 +55,7 @@ namespace HMS
             {
                 if (allRows.empty())
                 {
-                    std::cout << "Khong co du lieu de hien thi.\n";
+                    std::cout << "Không có dữ liệu để hiển thị.\n";
                     return;
                 }
 
@@ -84,20 +84,20 @@ namespace HMS
                     std::cout << "\n";
                     DisplayHelper::printSeparator(60, '-');
                     std::cout << CYAN_LOCAL << "Trang " << currentPage << "/" << totalPages
-                              << " (Hien thi " << startIdx + 1 << "-" << endIdx
+                              << " (Hiển thị " << startIdx + 1 << "-" << endIdx
                               << " / " << totalRows << " muc)" << RESET_LOCAL << "\n";
                     DisplayHelper::printSeparator(60, '-');
 
                     // Print navigation menu
                     std::cout << "\n";
                     if (currentPage > 1)
-                        std::cout << "[P] Trang truoc  ";
+                        std::cout << "[P] Trang trước  ";
                     if (currentPage < totalPages)
                         std::cout << "[N] Trang sau  ";
                     if (totalPages > 1)
-                        std::cout << "[G] Den trang  ";
+                        std::cout << "[G] Đến trang  ";
                     std::cout << "[Q] Quay lại menu\n";
-                    std::cout << "\nNhap lua chon: ";
+                    std::cout << "\nNhập lựa chọn: ";
 
                     std::string choice;
                     std::getline(std::cin, choice);
@@ -115,7 +115,7 @@ namespace HMS
                         }
                         else
                         {
-                            std::cout << YELLOW_LOCAL << "Day la trang cuoi cung!" << RESET_LOCAL << "\n";
+                            std::cout << YELLOW_LOCAL << "Đây là trang cuối cùng!" << RESET_LOCAL << "\n";
                             DisplayHelper::pause();
                         }
                     }
@@ -127,13 +127,13 @@ namespace HMS
                         }
                         else
                         {
-                            std::cout << YELLOW_LOCAL << "Day la trang dau tien!" << RESET_LOCAL << "\n";
+                            std::cout << YELLOW_LOCAL << "Đây là trang đầu tiên!" << RESET_LOCAL << "\n";
                             DisplayHelper::pause();
                         }
                     }
                     else if (choice == "g" || choice == "goto")
                     {
-                        std::cout << "Nhap so trang (1-" << totalPages << "): ";
+                        std::cout << "Nhập số trang (1-" << totalPages << "): ";
                         std::string pageStr;
                         std::getline(std::cin, pageStr);
                         try
@@ -145,19 +145,19 @@ namespace HMS
                             }
                             else
                             {
-                                std::cout << YELLOW_LOCAL << "So trang khong hop le!" << RESET_LOCAL << "\n";
+                                std::cout << YELLOW_LOCAL << "Số trang không hợp lệ!" << RESET_LOCAL << "\n";
                                 DisplayHelper::pause();
                             }
                         }
                         catch (...)
                         {
-                            std::cout << RED_LOCAL << "Vui long nhap so hop le!" << RESET_LOCAL << "\n";
+                            std::cout << RED_LOCAL << "Vui lòng nhập số hợp lệ!" << RESET_LOCAL << "\n";
                             DisplayHelper::pause();
                         }
                     }
                     else
                     {
-                        std::cout << YELLOW_LOCAL << "Lua chon khong hop le!" << RESET_LOCAL << "\n";
+                        std::cout << YELLOW_LOCAL << "Lựa chọn không hợp lệ!" << RESET_LOCAL << "\n";
                         DisplayHelper::pause();
                     }
                 }
@@ -177,7 +177,7 @@ namespace HMS
 
         void DisplayHelper::pause()
         {
-            std::cout << "\nNhan Enter de tiep tuc...";
+            std::cout << "\nNhấn Enter để tiếp tục...";
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
 
@@ -240,7 +240,7 @@ namespace HMS
             {
                 std::cout << "  " << (i + 1) << ". " << options[i] << "\n";
             }
-            std::cout << "  0. Quay lai\n";
+            std::cout << "  0. Quay lại\n";
             std::cout << "\n";
         }
 
@@ -250,9 +250,9 @@ namespace HMS
             std::cout << BOLD << "MENU CHINH\n"
                       << RESET;
             printThinSeparator(40);
-            std::cout << "  1. Dang nhap\n";
-            std::cout << "  2. Dang ky (Benh nhan)\n";
-            std::cout << "  0. Thoat\n";
+            std::cout << "  1. Đăng nhập\n";
+            std::cout << "  2. Đăng ký (Bệnh nhân)\n";
+            std::cout << "  0. Thoát\n";
             printThinSeparator(40);
             std::cout << "\n";
         }
@@ -262,12 +262,12 @@ namespace HMS
             printAppHeader();
             std::cout << BOLD << GREEN << "MENU BENH NHAN" << RESET << " - Xin chao, " << BOLD << username << RESET << "\n";
             printThinSeparator(60);
-            std::cout << "  1. Xem thong tin ca nhan\n";
-            std::cout << "  2. Dat lich kham\n";
-            std::cout << "  3. Xem lich su kham benh\n";
-            std::cout << "  4. Xem lich hen sap toi\n";
-            std::cout << "  5. Huy lich hen\n";
-            std::cout << "  6. Xem tong hoa don\n";
+            std::cout << "  1. Xem thông tin cá nhân\n";
+            std::cout << "  2. Đặt lịch khám\n";
+            std::cout << "  3. Xem lịch sử khám bệnh\n";
+            std::cout << "  4. Xem lịch hẹn sắp tới\n";
+            std::cout << "  5. Hủy lịch hẹn\n";
+            std::cout << "  6. Xem tổng hóa đơn\n";
             std::cout << "  0. Đăng xuất\n";
             printThinSeparator(60);
             std::cout << "\n";
@@ -278,13 +278,13 @@ namespace HMS
             printAppHeader();
             std::cout << BOLD << BLUE << "MENU BAC SI" << RESET << " - Xin chao, Dr. " << BOLD << username << RESET << "\n";
             printThinSeparator(60);
-            std::cout << "  1. Xem lich lam viec\n";
-            std::cout << "  2. Danh dau lich hen hoan thanh\n";
+            std::cout << "  1. Xem lịch làm việc\n";
+            std::cout << "  2. Đánh dấu lịch hẹn hoàn thành\n";
             std::cout << "  3. Danh sách bệnh nhân\n";
             std::cout << "  4. Tìm kiếm bệnh nhân\n";
-            std::cout << "  5. Them benh nhan moi\n";
-            std::cout << "  6. Cap nhat thong tin benh nhan\n";
-            std::cout << "  7. Xoa benh nhan\n";
+            std::cout << "  5. Thêm bệnh nhân mới\n";
+            std::cout << "  6. Cập nhật thông tin bệnh nhân\n";
+            std::cout << "  7. Xóa bệnh nhân\n";
             std::cout << "  0. Đăng xuất\n";
             printThinSeparator(60);
             std::cout << "\n";
@@ -297,10 +297,10 @@ namespace HMS
             printThinSeparator(60);
             std::cout << "  1. Danh sách bác sĩ\n";
             std::cout << "  2. Tìm kiếm bác sĩ\n";
-            std::cout << "  3. Them bac si moi\n";
-            std::cout << "  4. Cap nhat thong tin bac si\n";
-            std::cout << "  5. Xoa bac si\n";
-            std::cout << "  6. Xem thong ke he thong\n";
+            std::cout << "  3. Thêm bác sĩ mới\n";
+            std::cout << "  4. Cập nhật thông tin bác sĩ\n";
+            std::cout << "  5. Xóa bác sĩ\n";
+            std::cout << "  6. Xem thống kê hệ thống\n";
             std::cout << "  7. Xem báo cáo\n";
             std::cout << "  0. Đăng xuất\n";
             printThinSeparator(60);
@@ -334,11 +334,11 @@ namespace HMS
                     {
                         return value;
                     }
-                    printError("Gia tri phai trong khoang " + std::to_string(min) + " den " + std::to_string(max));
+                    printError("Giá trị phải trong khoảng " + std::to_string(min) + " đến " + std::to_string(max));
                 }
                 catch (...)
                 {
-                    printError("Vui long nhap so nguyen hop le!");
+                    printError("Vui lòng nhập số nguyên hợp lệ!");
                 }
             }
         }
@@ -360,11 +360,11 @@ namespace HMS
                     {
                         return value;
                     }
-                    printError("Gia tri phai lon hon hoac bang 0!");
+                    printError("Giá trị phải lớn hơn hoặc bằng 0!");
                 }
                 catch (...)
                 {
-                    printError("Vui long nhap so thuc hop le!");
+                    printError("Vui lòng nhập số thực hợp lệ!");
                 }
             }
         }
@@ -423,15 +423,15 @@ namespace HMS
         {
             printSubHeader("THONG TIN BENH NHAN");
             std::cout << std::left;
-            std::cout << std::setw(20) << "Ma benh nhan:" << patient.getPatientID() << "\n";
+            std::cout << std::setw(20) << "Mã bệnh nhân:" << patient.getPatientID() << "\n";
             std::cout << std::setw(20) << "Ten:" << patient.getName() << "\n";
-            std::cout << std::setw(20) << "So dien thoai:" << patient.getPhone() << "\n";
+            std::cout << std::setw(20) << "Số điện thoại:" << patient.getPhone() << "\n";
             std::cout << std::setw(20) << "Gioi tinh:" << genderToString(patient.getGender()) << "\n";
-            std::cout << std::setw(20) << "Ngay sinh:" << formatDate(patient.getDateOfBirth()) << "\n";
-            std::cout << std::setw(20) << "Dia chi:" << patient.getAddress() << "\n";
+            std::cout << std::setw(20) << "Ngày sinh:" << formatDate(patient.getDateOfBirth()) << "\n";
+            std::cout << std::setw(20) << "Địa chỉ:" << patient.getAddress() << "\n";
             if (!patient.getMedicalHistory().empty())
             {
-                std::cout << std::setw(20) << "Tien su benh:" << patient.getMedicalHistory() << "\n";
+                std::cout << std::setw(20) << "Tiền sử bệnh:" << patient.getMedicalHistory() << "\n";
             }
             printThinSeparator(60);
         }
@@ -440,14 +440,14 @@ namespace HMS
         {
             printSubHeader("THONG TIN BAC SI");
             std::cout << std::left;
-            std::cout << std::setw(20) << "Ma bac si:" << doctor.getDoctorID() << "\n";
+            std::cout << std::setw(20) << "Mã bác sĩ:" << doctor.getDoctorID() << "\n";
             std::cout << std::setw(20) << "Ten:" << doctor.getName() << "\n";
-            std::cout << std::setw(20) << "So dien thoai:" << doctor.getPhone() << "\n";
+            std::cout << std::setw(20) << "Số điện thoại:" << doctor.getPhone() << "\n";
             std::cout << std::setw(20) << "Gioi tinh:" << genderToString(doctor.getGender()) << "\n";
-            std::cout << std::setw(20) << "Ngay sinh:" << formatDate(doctor.getDateOfBirth()) << "\n";
-            std::cout << std::setw(20) << "Chuyen khoa:" << doctor.getSpecialization() << "\n";
-            std::cout << std::setw(20) << "Lich lam viec:" << doctor.getSchedule() << "\n";
-            std::cout << std::setw(20) << "Phi kham:" << formatMoney(doctor.getConsultationFee()) << "\n";
+            std::cout << std::setw(20) << "Ngày sinh:" << formatDate(doctor.getDateOfBirth()) << "\n";
+            std::cout << std::setw(20) << "Chuyên khoa:" << doctor.getSpecialization() << "\n";
+            std::cout << std::setw(20) << "Lịch làm việc:" << doctor.getSchedule() << "\n";
+            std::cout << std::setw(20) << "Phí khám:" << formatMoney(doctor.getConsultationFee()) << "\n";
             printThinSeparator(60);
         }
 
@@ -455,26 +455,26 @@ namespace HMS
         {
             printSubHeader("THONG TIN LICH HEN");
             std::cout << std::left;
-            std::cout << std::setw(20) << "Ma lich hen:" << appointment.getAppointmentID() << "\n";
-            std::cout << std::setw(20) << "Ma benh nhan:" << appointment.getPatientUsername() << "\n";
-            std::cout << std::setw(20) << "Ma bac si:" << appointment.getDoctorID() << "\n";
-            std::cout << std::setw(20) << "Ngay kham:" << formatDate(appointment.getDate()) << "\n";
-            std::cout << std::setw(20) << "Gio kham:" << appointment.getTime() << "\n";
-            std::cout << std::setw(20) << "Trieu chung:" << appointment.getDisease() << "\n";
-            std::cout << std::setw(20) << "Trang thai:" << formatStatus(appointment.getStatus()) << "\n";
+            std::cout << std::setw(20) << "Mã lịch hẹn:" << appointment.getAppointmentID() << "\n";
+            std::cout << std::setw(20) << "Mã bệnh nhân:" << appointment.getPatientUsername() << "\n";
+            std::cout << std::setw(20) << "Mã bác sĩ:" << appointment.getDoctorID() << "\n";
+            std::cout << std::setw(20) << "Ngày khám:" << formatDate(appointment.getDate()) << "\n";
+            std::cout << std::setw(20) << "Giờ khám:" << appointment.getTime() << "\n";
+            std::cout << std::setw(20) << "Triệu chứng:" << appointment.getDisease() << "\n";
+            std::cout << std::setw(20) << "Trạng thái:" << formatStatus(appointment.getStatus()) << "\n";
             printThinSeparator(60);
         }
 
         void DisplayHelper::printStatistics(const Model::Statistics &stats)
         {
-            printSubHeader("THONG KE HE THONG");
+            printSubHeader("THỐNG KÊ HỆ THỐNG");
             std::cout << std::left;
-            std::cout << std::setw(30) << "Tong so benh nhan:" << stats.totalPatients << "\n";
-            std::cout << std::setw(30) << "Tong so bac si:" << stats.totalDoctors << "\n";
-            std::cout << std::setw(30) << "Tong so lich hen:" << stats.totalAppointments << "\n";
-            std::cout << std::setw(30) << "Lich hen hoan thanh:" << stats.completedAppointments << "\n";
-            std::cout << std::setw(30) << "Lich hen bi huy:" << stats.cancelledAppointments << "\n";
-            std::cout << std::setw(30) << "Tong doanh thu:" << formatMoney(stats.totalRevenue) << "\n";
+            std::cout << std::setw(30) << "Tổng số bệnh nhân:" << stats.totalPatients << "\n";
+            std::cout << std::setw(30) << "Tổng số bác sĩ:" << stats.totalDoctors << "\n";
+            std::cout << std::setw(30) << "Tổng số lịch hẹn:" << stats.totalAppointments << "\n";
+            std::cout << std::setw(30) << "Lịch hẹn hoàn thành:" << stats.completedAppointments << "\n";
+            std::cout << std::setw(30) << "Lịch hẹn bị hủy:" << stats.cancelledAppointments << "\n";
+            std::cout << std::setw(30) << "Tổng doanh thu:" << formatMoney(stats.totalRevenue) << "\n";
             printThinSeparator(60);
         }
 
@@ -483,19 +483,19 @@ namespace HMS
             printSubHeader("THONG TIN THUOC");
             std::cout << std::left;
             std::cout << std::setw(25) << "Ma thuoc:" << medicine.getMedicineID() << "\n";
-            std::cout << std::setw(25) << "Ten thuoc:" << medicine.getName() << "\n";
-            std::cout << std::setw(25) << "Ten khoa hoc:" << medicine.getGenericName() << "\n";
+            std::cout << std::setw(25) << "Tên thuốc:" << medicine.getName() << "\n";
+            std::cout << std::setw(25) << "Tên khoa học:" << medicine.getGenericName() << "\n";
             std::cout << std::setw(25) << "Danh muc:" << medicine.getCategory() << "\n";
             std::cout << std::setw(25) << "Nha san xuat:" << medicine.getManufacturer() << "\n";
-            std::cout << std::setw(25) << "Don gia:" << formatMoney(medicine.getUnitPrice()) << "\n";
-            std::cout << std::setw(25) << "Ton kho:" << medicine.getQuantityInStock() << "\n";
-            std::cout << std::setw(25) << "Muc dat hang lai:" << medicine.getReorderLevel() << "\n";
-            std::cout << std::setw(25) << "Ngay het han:" << formatDate(medicine.getExpiryDate()) << "\n";
-            std::cout << std::setw(25) << "Dang bao che:" << medicine.getDosageForm() << "\n";
-            std::cout << std::setw(25) << "Lieu luong:" << medicine.getStrength() << "\n";
+            std::cout << std::setw(25) << "Đơn giá:" << formatMoney(medicine.getUnitPrice()) << "\n";
+            std::cout << std::setw(25) << "Tồn kho:" << medicine.getQuantityInStock() << "\n";
+            std::cout << std::setw(25) << "Mức đặt hàng lại:" << medicine.getReorderLevel() << "\n";
+            std::cout << std::setw(25) << "Ngày hết hạn:" << formatDate(medicine.getExpiryDate()) << "\n";
+            std::cout << std::setw(25) << "Dạng bào chế:" << medicine.getDosageForm() << "\n";
+            std::cout << std::setw(25) << "Liều lượng:" << medicine.getStrength() << "\n";
             if (!medicine.getDescription().empty())
             {
-                std::cout << std::setw(25) << "Mo ta:" << medicine.getDescription() << "\n";
+                std::cout << std::setw(25) << "Mô tả:" << medicine.getDescription() << "\n";
             }
             printThinSeparator(60);
         }
@@ -504,12 +504,12 @@ namespace HMS
         {
             printSubHeader("THONG TIN KHOA");
             std::cout << std::left;
-            std::cout << std::setw(25) << "Ma khoa:" << department.getDepartmentID() << "\n";
-            std::cout << std::setw(25) << "Ten khoa:" << department.getName() << "\n";
-            std::cout << std::setw(25) << "Mo ta:" << department.getDescription() << "\n";
+            std::cout << std::setw(25) << "Mã khoa:" << department.getDepartmentID() << "\n";
+            std::cout << std::setw(25) << "Tên khoa:" << department.getName() << "\n";
+            std::cout << std::setw(25) << "Mô tả:" << department.getDescription() << "\n";
             std::cout << std::setw(25) << "Truong khoa:" << department.getHeadDoctorID() << "\n";
             std::cout << std::setw(25) << "Vi tri:" << department.getLocation() << "\n";
-            std::cout << std::setw(25) << "So dien thoai:" << department.getPhone() << "\n";
+            std::cout << std::setw(25) << "Số điện thoại:" << department.getPhone() << "\n";
             printThinSeparator(60);
         }
 
@@ -517,14 +517,14 @@ namespace HMS
         {
             printSubHeader("THONG TIN DON THUOC");
             std::cout << std::left;
-            std::cout << std::setw(25) << "Ma don thuoc:" << prescription.getPrescriptionID() << "\n";
-            std::cout << std::setw(25) << "Ma benh nhan:" << prescription.getPatientUsername() << "\n";
-            std::cout << std::setw(25) << "Ma bac si:" << prescription.getDoctorID() << "\n";
-            std::cout << std::setw(25) << "Ngay ke don:" << formatDate(prescription.getPrescriptionDate()) << "\n";
+            std::cout << std::setw(25) << "Mã đơn thuốc:" << prescription.getPrescriptionID() << "\n";
+            std::cout << std::setw(25) << "Mã bệnh nhân:" << prescription.getPatientUsername() << "\n";
+            std::cout << std::setw(25) << "Mã bác sĩ:" << prescription.getDoctorID() << "\n";
+            std::cout << std::setw(25) << "Ngày kê đơn:" << formatDate(prescription.getPrescriptionDate()) << "\n";
             std::cout << std::setw(25) << "Chan doan:" << prescription.getDiagnosis() << "\n";
             if (!prescription.getNotes().empty())
             {
-                std::cout << std::setw(25) << "Ghi chu:" << prescription.getNotes() << "\n";
+                std::cout << std::setw(25) << "Ghi chú:" << prescription.getNotes() << "\n";
             }
 
             auto items = prescription.getItems();
@@ -549,20 +549,20 @@ namespace HMS
 
         void DisplayHelper::printStockAlert(const BLL::StockAlert &alert)
         {
-            std::cout << YELLOW << "[CANH BAO TON KHO] " << RESET;
-            std::cout << "Thuoc: " << alert.medicineName
+            std::cout << YELLOW << "[CẢNH BÁO TỒN KHO] " << RESET;
+            std::cout << "Thuốc: " << alert.medicineName
                       << " (ID: " << alert.medicineID << ")"
-                      << " - Ton kho: " << alert.currentStock
-                      << " / Muc toi thieu: " << alert.reorderLevel << "\n";
+                      << " - Tồn kho: " << alert.currentStock
+                      << " / Mức tối thiểu: " << alert.reorderLevel << "\n";
         }
 
         void DisplayHelper::printExpiryAlert(const BLL::ExpiryAlert &alert)
         {
-            std::cout << RED << "[CANH BAO HET HAN] " << RESET;
-            std::cout << "Thuoc: " << alert.medicineName
+            std::cout << RED << "[CẢNH BÁO HẾT HẠN] " << RESET;
+            std::cout << "Thuốc: " << alert.medicineName
                       << " (ID: " << alert.medicineID << ")"
-                      << " - Het han: " << formatDate(alert.expiryDate)
-                      << " - Con: " << alert.daysUntilExpiry << " ngay\n";
+                      << " - Hết hạn: " << formatDate(alert.expiryDate)
+                      << " - Còn: " << alert.daysUntilExpiry << " ngày\n";
         }
 
         // ==================== Table Display ====================
@@ -639,7 +639,7 @@ namespace HMS
                 return;
             }
 
-            std::vector<std::string> headers = {"STT", "Ma BN", "Ho ten", "SDT", "Gioi tinh", "Ngay sinh"};
+            std::vector<std::string> headers = {"STT", "Mã BN", "Họ tên", "SĐT", "Giới tính", "Ngày sinh"};
             std::vector<std::vector<std::string>> rows;
 
             for (size_t i = 0; i < patients.size(); ++i)
@@ -666,7 +666,7 @@ namespace HMS
                 return;
             }
 
-            std::vector<std::string> headers = {"STT", "Ma BS", "Ho ten", "Chuyen khoa", "SDT", "Phi kham"};
+            std::vector<std::string> headers = {"STT", "Mã BS", "Họ tên", "Chuyên khoa", "SĐT", "Phí khám"};
             std::vector<std::vector<std::string>> rows;
 
             for (size_t i = 0; i < doctors.size(); ++i)
@@ -693,7 +693,7 @@ namespace HMS
                 return;
             }
 
-            std::vector<std::string> headers = {"STT", "Ma LH", "Benh nhan", "Bac si", "Ngay", "Gio", "Trang thai"};
+            std::vector<std::string> headers = {"STT", "Mã LH", "Bệnh nhân", "Bác sĩ", "Ngày", "Giờ", "Trạng thái"};
             std::vector<std::vector<std::string>> rows;
 
             for (size_t i = 0; i < appointments.size(); ++i)
@@ -721,7 +721,7 @@ namespace HMS
                 return;
             }
 
-            std::vector<std::string> headers = {"STT", "Ma thuoc", "Ten thuoc", "Danh muc", "Gia", "Ton kho", "Het han"};
+            std::vector<std::string> headers = {"STT", "Mã thuốc", "Tên thuốc", "Danh mục", "Giá", "Tồn kho", "Hết hạn"};
             std::vector<std::vector<std::string>> rows;
 
             for (size_t i = 0; i < medicines.size(); ++i)
@@ -749,7 +749,7 @@ namespace HMS
                 return;
             }
 
-            std::vector<std::string> headers = {"STT", "Ma khoa", "Ten khoa", "Truong khoa", "Vi tri", "SDT"};
+            std::vector<std::string> headers = {"STT", "Mã khoa", "Tên khoa", "Trưởng khoa", "Vị trí", "SĐT"};
             std::vector<std::vector<std::string>> rows;
 
             for (size_t i = 0; i < departments.size(); ++i)
@@ -776,7 +776,7 @@ namespace HMS
                 return;
             }
 
-            std::vector<std::string> headers = {"STT", "Ma DT", "Benh nhan", "Bac si", "Ngay ke", "Chan doan"};
+            std::vector<std::string> headers = {"STT", "Mã ĐT", "Bệnh nhân", "Bác sĩ", "Ngày kê", "Chẩn đoán"};
             std::vector<std::vector<std::string>> rows;
 
             for (size_t i = 0; i < prescriptions.size(); ++i)
@@ -799,11 +799,11 @@ namespace HMS
         {
             if (alerts.empty())
             {
-                printInfo("Khong co canh bao ton kho.");
+                printInfo("Không có cảnh báo tồn kho.");
                 return;
             }
 
-            std::vector<std::string> headers = {"STT", "Ma thuoc", "Ten thuoc", "Ton kho", "Muc toi thieu"};
+            std::vector<std::string> headers = {"STT", "Mã thuốc", "Tên thuốc", "Tồn kho", "Mức tối thiểu"};
             std::vector<std::vector<std::string>> rows;
 
             for (size_t i = 0; i < alerts.size(); ++i)
@@ -825,11 +825,11 @@ namespace HMS
         {
             if (alerts.empty())
             {
-                printInfo("Khong co canh bao het han.");
+                printInfo("Không có cảnh báo hết hạn.");
                 return;
             }
 
-            std::vector<std::string> headers = {"STT", "Ma thuoc", "Ten thuoc", "Ngay het han", "Con (ngay)"};
+            std::vector<std::string> headers = {"STT", "Mã thuốc", "Tên thuốc", "Ngày hết hạn", "Còn (ngày)"};
             std::vector<std::vector<std::string>> rows;
 
             for (size_t i = 0; i < alerts.size(); ++i)
@@ -998,51 +998,51 @@ namespace HMS
         void DisplayHelper::printMedicineMenu()
         {
             printHeader("QUAN LY THUOC");
-            std::cout << "  1. Xem danh sach thuoc\n";
+            std::cout << "  1. Xem danh sách thuốc\n";
             std::cout << "  2. Tìm kiếm thuốc\n";
-            std::cout << "  3. Them thuoc moi\n";
-            std::cout << "  4. Cap nhat thong tin thuoc\n";
-            std::cout << "  5. Xoa thuoc\n";
-            std::cout << "  6. Nhap/Xuat ton kho\n";
-            std::cout << "  7. Canh bao ton kho thap\n";
-            std::cout << "  8. Canh bao het han\n";
-            std::cout << "  0. Quay lai\n";
+            std::cout << "  3. Thêm thuốc mới\n";
+            std::cout << "  4. Cập nhật thông tin thuốc\n";
+            std::cout << "  5. Xóa thuốc\n";
+            std::cout << "  6. Nhập/Xuất tồn kho\n";
+            std::cout << "  7. Cảnh báo tồn kho thấp\n";
+            std::cout << "  8. Cảnh báo hết hạn\n";
+            std::cout << "  0. Quay lại\n";
             std::cout << "\n";
         }
 
         void DisplayHelper::printDepartmentMenu()
         {
             printHeader("QUAN LY KHOA");
-            std::cout << "  1. Xem danh sach khoa\n";
-            std::cout << "  2. Them khoa moi\n";
-            std::cout << "  3. Cap nhat thong tin khoa\n";
-            std::cout << "  4. Xoa khoa\n";
-            std::cout << "  5. Phan cong bac si vao khoa\n";
-            std::cout << "  6. Xem thong ke khoa\n";
-            std::cout << "  0. Quay lai\n";
+            std::cout << "  1. Xem danh sách khoa\n";
+            std::cout << "  2. Thêm khoa mới\n";
+            std::cout << "  3. Cập nhật thông tin khoa\n";
+            std::cout << "  4. Xóa khoa\n";
+            std::cout << "  5. Phân công bác sĩ vào khoa\n";
+            std::cout << "  6. Xem thống kê khoa\n";
+            std::cout << "  0. Quay lại\n";
             std::cout << "\n";
         }
 
         void DisplayHelper::printPrescriptionMenu()
         {
             printHeader("QUAN LY DON THUOC");
-            std::cout << "  1. Ke don thuoc moi\n";
-            std::cout << "  2. Xem don thuoc\n";
-            std::cout << "  3. Cap phat thuoc theo don\n";
-            std::cout << "  4. In don thuoc\n";
-            std::cout << "  0. Quay lai\n";
+            std::cout << "  1. Kê đơn thuốc mới\n";
+            std::cout << "  2. Xem đơn thuốc\n";
+            std::cout << "  3. Cấp phát thuốc theo đơn\n";
+            std::cout << "  4. In đơn thuốc\n";
+            std::cout << "  0. Quay lại\n";
             std::cout << "\n";
         }
 
         void DisplayHelper::printReportMenu()
         {
             printHeader("TAO BAO CAO");
-            std::cout << "  1. Bao cao ngay\n";
-            std::cout << "  2. Bao cao tuan\n";
-            std::cout << "  3. Bao cao thang\n";
-            std::cout << "  4. Bao cao doanh thu\n";
-            std::cout << "  5. Xuat bao cao ra file\n";
-            std::cout << "  0. Quay lai\n";
+            std::cout << "  1. Báo cáo ngày\n";
+            std::cout << "  2. Báo cáo tuần\n";
+            std::cout << "  3. Báo cáo tháng\n";
+            std::cout << "  4. Báo cáo doanh thu\n";
+            std::cout << "  5. Xuất báo cáo ra file\n";
+            std::cout << "  0. Quay lại\n";
             std::cout << "\n";
         }
 
@@ -1060,7 +1060,7 @@ namespace HMS
 
         void DisplayHelper::printWarning(const std::string &message)
         {
-            std::cout << YELLOW << "[CANH BAO] " << message << RESET << "\n";
+            std::cout << YELLOW << "[CẢNH BÁO] " << message << RESET << "\n";
         }
 
         void DisplayHelper::printInfo(const std::string &message)
@@ -1070,7 +1070,7 @@ namespace HMS
 
         void DisplayHelper::printNoData(const std::string &entityType)
         {
-            std::cout << YELLOW << "Khong tim thay " << entityType << " nao." << RESET << "\n";
+            std::cout << YELLOW << "Không tìm thấy " << entityType << " nao." << RESET << "\n";
         }
 
         // ==================== Formatting Utilities ====================
@@ -1130,15 +1130,15 @@ namespace HMS
             switch (status)
             {
             case AppointmentStatus::SCHEDULED:
-                return std::string(CYAN) + "Da dat lich" + RESET;
+                return std::string(CYAN) + "Đã đặt lịch" + RESET;
             case AppointmentStatus::COMPLETED:
-                return std::string(GREEN) + "Hoan thanh" + RESET;
+                return std::string(GREEN) + "Hoàn thành" + RESET;
             case AppointmentStatus::CANCELLED:
-                return std::string(RED) + "Da huy" + RESET;
+                return std::string(RED) + "Đã hủy" + RESET;
             case AppointmentStatus::NO_SHOW:
-                return std::string(YELLOW) + "Vang mat" + RESET;
+                return std::string(YELLOW) + "Vắng mặt" + RESET;
             default:
-                return "Khong xac dinh";
+                return "Không xác định";
             }
         }
 

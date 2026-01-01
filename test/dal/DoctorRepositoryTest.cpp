@@ -75,6 +75,8 @@ TEST_F(DoctorRepositoryTest, ResetInstance_ClearsInstance)
 
     DoctorRepository::resetInstance();
     DoctorRepository *newInstance = DoctorRepository::getInstance();
+    newInstance->setFilePath(testFilePath); // Phải set lại test file path sau reset
+    newInstance->clear(); // Clear data từ file production nếu có
 
     EXPECT_EQ(newInstance->count(), 0u);
 }
