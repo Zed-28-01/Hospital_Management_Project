@@ -1,7 +1,19 @@
-# ============================================================
-# Hospital Management System - Patient Data
-# ============================================================
+# Hospital Management System - Sample Patient Data
 # Format: patientID|username|name|phone|gender|dateOfBirth|address|medicalHistory
-# Gender: Male, Female, Other, Unknown
-# ============================================================
+# Gender: Nam, Nữ, Khác
 
+P001|anhnguyen|Nguyễn Văn Anh|0902221001|Nam|1990-05-15|123 Lê Lợi, Q.1, TP.HCM|Cao huyết áp từ 2022, đang dùng thuốc hạ huyết áp
+P002|binhtran|Trần Thị Bình|0902221002|Nữ|1985-08-20|456 Nguyễn Huệ, Q.1, TP.HCM|Tiểu đường type 2 từ 2019, kiểm soát bằng Metformin
+P003|cuongle|Lê Văn Cường|0902221003|Nam|1978-12-03|789 Hai Bà Trưng, Q.3, TP.HCM|Không có tiền sử bệnh đáng kể
+P004|dungpham|Phạm Thị Dung|0902221004|Nữ|1992-03-25|12 Trần Hưng Đạo, Q.5, TP.HCM|Hen suyễn từ nhỏ, sử dụng bình xịt định kỳ
+P005|emvo|Võ Văn Em|0902221005|Nam|1995-11-08|34 Lý Thường Kiệt, Q.10, TP.HCM|Dị ứng thức ăn (hải sản), viêm mũi dị ứng
+P006|phuonghoang|Hoàng Thị Phương|0902221006|Nữ|1988-07-14|56 Phan Đình Phùng, Q.Phú Nhuận, TP.HCM|Thai kỳ lần 2, tuần 20, khám thai định kỳ
+P007|giangdo|Đỗ Văn Giang|0902221007|Nam|1975-09-30|78 Võ Văn Tần, Q.3, TP.HCM|Bệnh tim mạch vành từ 2020, đã đặt stent
+P008|hienmai|Mai Thị Hiền|0902221008|Nữ|1998-01-22|90 Điện Biên Phủ, Q.Bình Thạnh, TP.HCM|Viêm dạ dày HP dương tính, điều trị xong năm 2023
+P009|khanhluong|Lương Văn Khánh|0902221009|Nam|1983-06-17|12 Nguyễn Thị Minh Khai, Q.1, TP.HCM|Gout từ 2021, cần kiêng ăn purin
+P010|lamngo|Ngô Thị Lam|0902221010|Nữ|1991-10-05|34 Cách Mạng Tháng 8, Q.10, TP.HCM|Rối loạn lipid máu, cholesterol cao
+P011|myduong|Dương Thị My|0902221011|Nữ|1987-12-28|56 Hoàng Văn Thụ, Q.Tân Bình, TP.HCM|Thiếu máu nhẹ, bổ sung sắt định kỳ
+P012|namtruong|Trương Văn Nam|0902221012|Nam|1994-04-11|78 Pasteur, Q.1, TP.HCM|Suy giáp từ 2022, dùng Levothyroxine
+P013|oanhdang|Đặng Thị Oanh|0902221013|Nữ|1989-02-19|90 Đinh Tiên Hoàng, Q.1, TP.HCM|Loãng xương nhẹ, bổ sung Canxi và Vitamin D
+P014|phatbui|Bùi Văn Phát|0902221014|Nam|1996-08-07|12 Lê Duẩn, Q.1, TP.HCM|Viêm gan B mạn tính, theo dõi định kỳ
+P015|quynhly|Lý Thị Quỳnh|0902221015|Nữ|1993-05-26|34 Nguyễn Đình Chiểu, Q.3, TP.HCM|Đau nửa đầu Migraine, phát tác định kỳ
