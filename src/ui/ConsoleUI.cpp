@@ -68,7 +68,7 @@ namespace HMS
         void ConsoleUI::showLoginScreen()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("DANG NHAP HE THONG");
+            DisplayHelper::printHeader("ĐĂNG NHẬP HỆ THỐNG");
             std::cout << "(Nhấn Enter để quay lại menu chính)\n\n";
 
             std::string username, password;
@@ -120,7 +120,7 @@ namespace HMS
         void ConsoleUI::showRegisterScreen()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("DANG KY TAI KHOAN BENH NHAN");
+            DisplayHelper::printHeader("ĐĂNG KÝ TÀI KHOẢN BỆNH NHÂN");
             std::cout << "(Nhấn Enter để quay lại menu chính)\n\n";
 
             // Get username
@@ -237,12 +237,12 @@ namespace HMS
 
             // Confirm registration
             DisplayHelper::printSubHeader("Xác nhận thông tin");
-            std::cout << "Ten nguoi dung: " << username << "\n";
-            std::cout << "Ho ten: " << name << "\n";
-            std::cout << "So dien thoai: " << phone << "\n";
-            std::cout << "Gioi tinh: " << gender << "\n";
-            std::cout << "Ngay sinh: " << dateOfBirth << "\n";
-            std::cout << "Dia chi: " << address << "\n\n";
+            std::cout << "Tên người dùng: " << username << "\n";
+            std::cout << "Họ tên: " << name << "\n";
+            std::cout << "Số điện thoại: " << phone << "\n";
+            std::cout << "Giới tính: " << gender << "\n";
+            std::cout << "Ngày sinh: " << dateOfBirth << "\n";
+            std::cout << "Địa chỉ: " << address << "\n\n";
 
             if (!DisplayHelper::confirm("Xác nhận đăng ký tài khoản?"))
             {
@@ -488,7 +488,7 @@ namespace HMS
         void ConsoleUI::viewMyProfile()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("THONG TIN CA NHAN");
+            DisplayHelper::printHeader("THÔNG TIN CÁ NHÂN");
 
             auto profile = m_facade->getMyProfile();
             if (profile.has_value())
@@ -505,7 +505,7 @@ namespace HMS
         void ConsoleUI::bookAppointment()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("DAT LICH KHAM");
+            DisplayHelper::printHeader("ĐẶT LỊCH KHÁM");
 
             // Select doctor
             std::string doctorId = selectDoctor();
@@ -562,12 +562,12 @@ namespace HMS
         void ConsoleUI::viewAppointments()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("LICH SU KHAM BENH");
+            DisplayHelper::printHeader("LỊCH SỬ KHÁM BỆNH");
 
             auto appointments = m_facade->getMyAppointments();
             if (appointments.empty())
             {
-                DisplayHelper::printNoData("lich hen");
+                DisplayHelper::printNoData("lịch hẹn");
             }
             else
             {
@@ -579,12 +579,12 @@ namespace HMS
         void ConsoleUI::viewUpcomingAppointments()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("LICH HEN SAP TOI");
+            DisplayHelper::printHeader("LỊCH HẸN SẮP TỚI");
 
             auto appointments = m_facade->getMyUpcomingAppointments();
             if (appointments.empty())
             {
-                DisplayHelper::printNoData("lich hen sap toi");
+                DisplayHelper::printNoData("lịch hẹn sắp tới");
             }
             else
             {
@@ -596,12 +596,12 @@ namespace HMS
         void ConsoleUI::cancelAppointment()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("HUY LICH HEN");
+            DisplayHelper::printHeader("HỦY LỊCH HẸN");
 
             auto appointments = m_facade->getMyUpcomingAppointments();
             if (appointments.empty())
             {
-                DisplayHelper::printNoData("lich hen co the huy");
+                DisplayHelper::printNoData("lịch hẹn có thể hủy");
                 DisplayHelper::pause();
                 return;
             }
@@ -631,7 +631,7 @@ namespace HMS
         void ConsoleUI::viewTotalBill()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("TONG HOA DON");
+            DisplayHelper::printHeader("TỔNG HÓA ĐƠN");
 
             double total = m_facade->getMyTotalBill();
             std::cout << "Tổng số tiền cần thanh toán: " << DisplayHelper::formatMoney(total) << "\n";
@@ -642,7 +642,7 @@ namespace HMS
         void ConsoleUI::addPatient()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("THEM BENH NHAN MOI");
+            DisplayHelper::printHeader("THÊM BỆNH NHÂN MỚI");
             std::cout << "(Nhấn Enter để quay lại)\n\n";
 
             // Get patient info with validation
@@ -751,7 +751,7 @@ namespace HMS
         void ConsoleUI::editPatient()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("CAP NHAT THONG TIN BENH NHAN");
+            DisplayHelper::printHeader("CẬP NHẬT THÔNG TIN BỆNH NHÂN");
 
             std::string patientId = selectPatient();
             if (patientId.empty())
@@ -768,9 +768,9 @@ namespace HMS
             DisplayHelper::printPatientInfo(patient.value());
             std::cout << "\n(Để trống trường không muốn thay đổi)\n\n";
 
-            std::string phone = DisplayHelper::getInput("So dien thoai moi");
-            std::string address = DisplayHelper::getInput("Dia chi moi");
-            std::string medicalHistory = DisplayHelper::getInput("Tien su benh moi");
+            std::string phone = DisplayHelper::getInput("Số điện thoại mới");
+            std::string address = DisplayHelper::getInput("Địa chỉ mới");
+            std::string medicalHistory = DisplayHelper::getInput("Tiền sử bệnh mới");
 
             if (!DisplayHelper::confirm("Xác nhận cập nhật?"))
             {
@@ -793,7 +793,7 @@ namespace HMS
         void ConsoleUI::deletePatient()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("XOA BENH NHAN");
+            DisplayHelper::printHeader("XÓA BỆNH NHÂN");
 
             std::string patientId = selectPatient();
             if (patientId.empty())
@@ -830,12 +830,12 @@ namespace HMS
         void ConsoleUI::listAllPatients()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("DANH SACH BENH NHAN");
+            DisplayHelper::printHeader("DANH SÁCH BỆNH NHÂN");
 
             auto patients = m_facade->getAllPatients();
             if (patients.empty())
             {
-                DisplayHelper::printNoData("benh nhan");
+                DisplayHelper::printNoData("bệnh nhân");
             }
             else
             {
@@ -847,7 +847,7 @@ namespace HMS
         void ConsoleUI::viewDoctorSchedule()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("LICH LAM VIEC");
+            DisplayHelper::printHeader("LỊCH LÀM VIỆC");
 
             std::string date = selectDate();
             if (date.empty())
@@ -856,7 +856,7 @@ namespace HMS
             auto appointments = m_facade->getMySchedule(date);
             if (appointments.empty())
             {
-                DisplayHelper::printNoData("lich hen cho ngay nay");
+                DisplayHelper::printNoData("lịch hẹn cho ngày hôm nay");
             }
             else
             {
@@ -868,7 +868,7 @@ namespace HMS
         void ConsoleUI::markAppointmentComplete()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("HOAN THANH LICH HEN");
+            DisplayHelper::printHeader("HOÀN THÀNH LỊCH HẸN");
 
             // Get today's date for schedule
             std::string today;
@@ -884,7 +884,7 @@ namespace HMS
             auto appointments = m_facade->getMySchedule(today);
             if (appointments.empty())
             {
-                DisplayHelper::printNoData("lich hen hom nay");
+                DisplayHelper::printNoData("lịch hẹn cho ngày hôm nay");
                 DisplayHelper::pause();
                 return;
             }
@@ -915,7 +915,7 @@ namespace HMS
         void ConsoleUI::addDoctor()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("THEM BAC SI MOI");
+            DisplayHelper::printHeader("THÊM BÁC SĨ MỚI");
             std::cout << "(Nhấn Enter để quay lại)\n\n";
 
             // Get username
@@ -1072,7 +1072,7 @@ namespace HMS
                 auto specs = m_facade->getAllSpecializations();
                 if (specs.empty())
                 {
-                    DisplayHelper::printNoData("chuyen khoa");
+                    DisplayHelper::printNoData("chuyên khoa");
                     DisplayHelper::pause();
                     return;
                 }
@@ -1116,7 +1116,7 @@ namespace HMS
         void ConsoleUI::editDoctor()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("CAP NHAT THONG TIN BAC SI");
+            DisplayHelper::printHeader("CẬP NHẬT THÔNG TIN BÁC SĨ");
 
             std::string doctorId = selectDoctor();
             if (doctorId.empty())
@@ -1133,9 +1133,9 @@ namespace HMS
             DisplayHelper::printDoctorInfo(doctor.value());
             std::cout << "\n(Để trống trường không muốn thay đổi)\n\n";
 
-            std::string specialization = DisplayHelper::getInput("Chuyen khoa moi");
-            std::string schedule = DisplayHelper::getInput("Lich lam viec moi");
-            double consultationFee = DisplayHelper::getDoubleInput("Phí khám mới (nhap 0 de giu nguyen)");
+            std::string specialization = DisplayHelper::getInput("Chuyên khoa mới");
+            std::string schedule = DisplayHelper::getInput("ịch làm việc mới");
+            double consultationFee = DisplayHelper::getDoubleInput("Phí khám mới (nhập 0 để giữ nguyên)");
 
             if (!DisplayHelper::confirm("Xác nhận cập nhật?"))
             {
@@ -1158,7 +1158,7 @@ namespace HMS
         void ConsoleUI::deleteDoctor()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("XOA BAC SI");
+            DisplayHelper::printHeader("XÓA BÁC SĨ");
 
             std::string doctorId = selectDoctor();
             if (doctorId.empty())
@@ -1195,12 +1195,12 @@ namespace HMS
         void ConsoleUI::listAllDoctors()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("DANH SACH BAC SI");
+            DisplayHelper::printHeader("DANH SÁCH BÁC SĨ");
 
             auto doctors = m_facade->getAllDoctors();
             if (doctors.empty())
             {
-                DisplayHelper::printNoData("bac si");
+                DisplayHelper::printNoData("bác sĩ");
             }
             else
             {
@@ -1222,7 +1222,7 @@ namespace HMS
         void ConsoleUI::viewReports()
         {
             DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("BAO CAO");
+            DisplayHelper::printHeader("BÁO CÁO");
 
             std::string report = m_facade->generateReport();
             std::cout << report << "\n";
@@ -1235,7 +1235,7 @@ namespace HMS
             auto doctors = m_facade->getAllDoctors();
             if (doctors.empty())
             {
-                DisplayHelper::printNoData("bac si");
+                DisplayHelper::printNoData("bác sĩ");
                 DisplayHelper::pause();
                 return "";
             }
@@ -1304,7 +1304,7 @@ namespace HMS
             }
 
             DisplayHelper::printAppointmentList(appointments);
-            std::cout << "0. Quay lai\n\n";
+            std::cout << "0. Quay lại\n\n";
 
             std::string inputChoice;
             bool isValid = false;
@@ -1330,7 +1330,7 @@ namespace HMS
             std::string date;
             while (true)
             {
-                date = DisplayHelper::getInput("Nhập ngày (YYYY-MM-DD, bo trong de quay lai)");
+                date = DisplayHelper::getInput("Nhập ngày (YYYY-MM-DD, bỏ trống để quay lại)");
                 if (date.empty())
                     return "";
 
@@ -1353,12 +1353,12 @@ namespace HMS
         {
             if (slots.empty())
             {
-                DisplayHelper::printNoData("khung gio trong");
+                DisplayHelper::printNoData("khung giờ trống");
                 return "";
             }
 
             DisplayHelper::printTimeSlotList(slots);
-            std::cout << "0. Quay lai\n\n";
+            std::cout << "0. Quay lại\n\n";
 
             std::string inputChoice;
             bool isValid = false;
