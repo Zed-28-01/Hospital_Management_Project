@@ -1,3 +1,10 @@
+# ============================================================
 # Hospital Management System - Medicine Data
+# ============================================================
 # Format: medicineID|name|genericName|category|manufacturer|description|unitPrice|quantity|reorderLevel|expiryDate|dosageForm|strength
-# Example: MED001|Paracetamol 500mg|Acetaminophen|Pain Relief|PharmaCorp|For pain and fever|5000|500|100|2025-12-31|Tablet|500mg
+# Category: e.g., Pain Relief, Antibiotics, Vitamins
+# Dosage Form: e.g., Tablet, Capsule, Syrup, Injection
+# Strength: e.g., 500mg, 10ml, 250mg/5ml
+# Expiry Date format: YYYY-MM-DD
+# ============================================================
+

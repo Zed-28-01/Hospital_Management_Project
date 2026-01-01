@@ -1,2 +1,7 @@
+# ============================================================
 # Hospital Management System - Patient Data
+# ============================================================
 # Format: patientID|username|name|phone|gender|dateOfBirth|address|medicalHistory
+# Gender: Male, Female, Other, Unknown
+# ============================================================
+

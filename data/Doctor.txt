@@ -1,2 +1,8 @@
+# ============================================================
 # Hospital Management System - Doctor Data
+# ============================================================
 # Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee
+# Gender: Male, Female, Other, Unknown
+# Schedule: e.g., "Mon-Fri 9AM-5PM"
+# ============================================================
+

@@ -1,3 +1,9 @@
+# ============================================================
 # Hospital Management System - Account Data
+# ============================================================
 # Format: username|passwordHash|role|isActive|createdDate
 # Roles: patient, doctor, admin
+# Note: Default admin password is "admin123"
+# ============================================================
+
+admin|HASH_admin123|admin|1|2024-01-01

@@ -69,7 +69,7 @@ protected:
         med.setGenericName("Generic " + name);
         med.setManufacturer(manufacturer);
         med.setReorderLevel(reorderLevel);
-        med.setExpiryDate("2025-12-31");
+        med.setExpiryDate("2027-12-31");
         med.setDosageForm("Tablet");
         med.setStrength("500mg");
         med.setDescription("Store in cool place");

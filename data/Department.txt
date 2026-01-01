@@ -1,4 +1,7 @@
+# ============================================================
 # Hospital Management System - Department Data
+# ============================================================
 # Format: departmentID|name|description|headDoctorID|doctorIDs|location|phone
-# doctorIDs is comma-separated list (e.g., D001,D002,D003)
-# Example: DEP001|Cardiology|Heart and cardiovascular care|D001|D001,D005,D012|Building A, Floor 2|0281234567
+# doctorIDs: Comma-separated list (e.g., D001,D002,D003)
+# ============================================================
+

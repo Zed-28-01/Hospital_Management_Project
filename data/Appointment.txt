@@ -1,3 +1,9 @@
+# ============================================================
 # Hospital Management System - Appointment Data
+# ============================================================
 # Format: appointmentID|patientUsername|doctorID|date|time|disease|price|isPaid|status|notes
 # Status: scheduled, completed, cancelled, no_show
+# Date format: YYYY-MM-DD
+# Time format: HH:MM
+# ============================================================
+
