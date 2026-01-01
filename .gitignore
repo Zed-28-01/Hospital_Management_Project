@@ -40,4 +40,8 @@
 # debug information files
 *.dwo
 
+# Build directory
+build/
+
+# Data backup directory
 data/backup/
