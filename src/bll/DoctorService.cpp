@@ -2,6 +2,7 @@
 #include "common/Utils.h"
 #include "common/Types.h"
 #include "common/Constants.h"
+#include "dal/AccountRepository.h"
 
 #include <set>
 #include <algorithm>
@@ -145,8 +146,33 @@ namespace HMS
             {
                 return false;
             }
+            auto doctorOpt = m_doctorRepo->getById(doctorID);
+            std::string username = doctorOpt->getUsername();
+            std::string today = Utils::getCurrentDate();
+            std::string nowTime = Utils::getCurrentTime();
 
-            return m_doctorRepo->remove(doctorID);
+            auto allApp = m_appointmentRepo->getAll();
+            for (auto &app : allApp)
+            {
+                if (app.getDoctorID() == doctorID && app.getStatus() == AppointmentStatus::SCHEDULED)
+                {
+
+                    if (app.getDate() > today || (app.getDate() == today && app.getTime() > nowTime))
+                    {
+                        app.setStatus(AppointmentStatus::CANCELLED);
+                        m_appointmentRepo->update(app);
+                    }
+                }
+            }
+
+            bool doctorDeleted = m_doctorRepo->remove(doctorID);
+
+            if (doctorDeleted)
+            {
+                return DAL::AccountRepository::getInstance()->remove(username);
+            }
+
+            return false;
         }
 
         // ============================== QUERY OPERATIONS ===========================
