@@ -160,10 +160,7 @@ namespace HMS
             {
                 if (!fileExists(sourcePath))
                     return false;
-                fs::copy_file(
-                    sourcePath,
-                    destPath,
-                    fs::copy_options::overwrite_existing);
+                fs::copy_file(sourcePath, destPath, fs::copy_options::overwrite_existing);
                 return true;
             }
             catch (const fs::filesystem_error &)
@@ -187,8 +184,7 @@ namespace HMS
 #endif
 
             std::ostringstream ss;
-            ss << fs::path(filePath).stem().string()
-               << "_backup_"
+            ss << fs::path(filePath).stem().string() << "_backup_"
                << std::put_time(&tm, "%Y%m%d_%H%M%S")
                << fs::path(filePath).extension().string();
 
@@ -236,7 +232,8 @@ namespace HMS
 
                 auto sctp =
                     std::chrono::time_point_cast<std::chrono::system_clock::duration>(
-                        ftime - fs::file_time_type::clock::now() + std::chrono::system_clock::now());
+                        ftime - fs::file_time_type::clock::now() +
+                        std::chrono::system_clock::now());
 
                 std::time_t tt = std::chrono::system_clock::to_time_t(sctp);
 
@@ -278,15 +275,39 @@ namespace HMS
             }
             if (fileType == "Patient")
             {
-                return "# patientID|username|name|phone|gender|dateOfBirth|address|medicalHistory";
+                return "# "
+                       "patientID|username|name|phone|gender|dateOfBirth|address|"
+                       "medicalHistory";
             }
             if (fileType == "Doctor")
             {
-                return "# doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|fee";
+                return "# "
+                       "doctorID|username|name|phone|gender|dateOfBirth|specialization|"
+                       "schedule|fee";
             }
             if (fileType == "Appointment")
             {
-                return "# appointmentID|patientUsername|doctorID|date|time|disease|price|isPaid|status|notes";
+                return "# "
+                       "appointmentID|patientUsername|doctorID|date|time|disease|price|"
+                       "isPaid|status|notes";
+            }
+            if (fileType == "Department")
+            {
+                return "# "
+                       "departmentID|name|description|headDoctorID|location|phone|"
+                       "doctorIDs";
+            }
+            if (fileType == "Medicine")
+            {
+                return "# "
+                       "medicineID|name|genericName|category|manufacturer|unitPrice|"
+                       "quantity|reorderLevel|expiryDate";
+            }
+            if (fileType == "Prescription")
+            {
+                return "# "
+                       "prescriptionID|appointmentID|patientUsername|doctorID|date|"
+                       "diagnosis|notes|items|isDispensed";
             }
 
             return "# Data file";
