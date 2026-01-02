@@ -41,6 +41,124 @@ namespace HMS
             constexpr const char *CYAN_LOCAL = "\033[36m";
             constexpr const char *BOLD_LOCAL = "\033[1m";
 
+            int getVisibleLength(const std::string &str) {
+                int length = 0;
+                bool inAnsi = false;
+                for (size_t i = 0; i < str.length(); ++i)
+                {
+                    unsigned char c = static_cast<unsigned char>(str[i]);
+                    if (c == 0x1B) {
+                        inAnsi = true;
+                        continue;
+                    }
+                    if (inAnsi) {
+                        if (isalpha(c)) inAnsi = false;
+                        continue;
+                    }
+                    if ((c & 0xC0) != 0x80) {
+                        length++;
+                    }
+                }
+                return length;
+            }
+
+            std::vector<std::string> wrapText(const std::string &text, int width)
+            {
+                std::vector<std::string> lines;
+                if (text.empty()) { lines.push_back(""); return lines; }
+
+                std::istringstream words(text);
+                std::string word;
+                std::string currentLine;
+
+                while (words >> word)
+                {
+                    int wordLen = getVisibleLength(word);
+                    int currentLen = getVisibleLength(currentLine);
+
+                    if (wordLen > width) {
+                        if (!currentLine.empty()) {
+                            lines.push_back(currentLine);
+                            currentLine = "";
+                        }
+                        lines.push_back(word);
+                    }
+                    else if (currentLen + (currentLen > 0 ? 1 : 0) + wordLen > width) {
+                        lines.push_back(currentLine);
+                        currentLine = word;
+                    }
+                    else {
+                        currentLine += (currentLine.empty() ? "" : " ") + word;
+                    }
+                }
+                if (!currentLine.empty()) lines.push_back(currentLine);
+                return lines;
+            }
+
+            void printTableInternal(const std::vector<std::string> &headers,
+                                    const std::vector<std::vector<std::string>> &rows,
+                                    const std::vector<int> &colWidths) {
+
+                if (headers.empty()) return;
+                std::vector<int> widths = colWidths;
+                if (widths.empty()) widths.resize(headers.size(), 15);
+
+                for (size_t i = 0; i < headers.size(); ++i) {
+                    widths[i] = std::max(widths[i], getVisibleLength(headers[i]));
+                    for (const auto &row : rows) {
+                        if (i < row.size()) {
+                            int contentLen = getVisibleLength(row[i]);
+                            widths[i] = std::max(widths[i], std::min(contentLen, 40));
+                        }
+                    }
+                }
+
+                int totalWidth = 1;
+                for (int w : widths) totalWidth += w + 3;
+
+                std::cout << BOLD_LOCAL;
+                DisplayHelper::printSeparator(totalWidth, '=');
+                std::cout << CYAN_LOCAL << "|";
+                for (size_t i = 0; i < headers.size(); ++i) {
+                    int visibleLen = getVisibleLength(headers[i]);
+                    int padding = widths[i] - visibleLen;
+                    if (padding < 0) padding = 0;
+                    std::cout << " " << headers[i] << std::string(padding, ' ') << " |";
+                }
+                std::cout << RESET_LOCAL << "\n";
+                DisplayHelper::printSeparator(totalWidth, '=');
+
+                for (const auto &row : rows) {
+                    std::vector<std::vector<std::string>> rowBlocks;
+                    size_t maxHeight = 1;
+
+                    for (size_t i = 0; i < headers.size(); ++i) {
+                        std::string cellText = (i < row.size()) ? row[i] : "";
+                        std::vector<std::string> lines = wrapText(cellText, widths[i]);
+                        rowBlocks.push_back(lines);
+                        maxHeight = std::max(maxHeight, lines.size());
+                    }
+
+                    for (size_t h = 0; h < maxHeight; ++h) {
+                        std::cout << "|";
+                        for (size_t col = 0; col < headers.size(); ++col) {
+                            std::string textToPrint = "";
+                            if (h < rowBlocks[col].size()) textToPrint = rowBlocks[col][h];
+
+                            int visibleLen = getVisibleLength(textToPrint);
+                            int padding = widths[col] - visibleLen;
+                            if (padding < 0) padding = 0;
+
+                            std::cout << " " << textToPrint << std::string(padding, ' ') << " |";
+                        }
+                        std::cout << "\n";
+                    }
+                    DisplayHelper::printSeparator(totalWidth, '-');
+                }
+                std::cout << "\r";
+                DisplayHelper::printSeparator(totalWidth, '=');
+            }
+
             /**
              * @brief Interactive pagination handler for table display
              * @param headers Column headers
@@ -78,15 +196,15 @@ namespace HMS
                         allRows.begin() + endIdx);
 
                     // Print table for current page
-                    DisplayHelper::printTable(headers, pageRows, colWidths);
+                    printTableInternal(headers, pageRows, colWidths);
 
                     // Print pagination info
                     std::cout << "\n";
-                    DisplayHelper::printSeparator(60, '-');
+                    DisplayHelper::printSeparator(80, '-');
                     std::cout << CYAN_LOCAL << "Trang " << currentPage << "/" << totalPages
                               << " (Hiển thị " << startIdx + 1 << "-" << endIdx
                               << " / " << totalRows << " mục)" << RESET_LOCAL << "\n";
-                    DisplayHelper::printSeparator(60, '-');
+                    DisplayHelper::printSeparator(80, '-');
 
                     // Print navigation menu
                     std::cout << "\n";
@@ -189,7 +307,7 @@ namespace HMS
         }
 
         // ==================== Headers & Titles ====================
-
+        
         void DisplayHelper::printAppHeader()
         {
             clearScreen();
@@ -571,64 +689,7 @@ namespace HMS
                                        const std::vector<std::vector<std::string>> &rows,
                                        const std::vector<int> &colWidths)
         {
-            if (headers.empty())
-            {
-                return;
-            }
-
-            // Calculate column widths if not provided
-            std::vector<int> widths = colWidths;
-            if (widths.empty())
-            {
-                widths.resize(headers.size(), 15);
-                for (size_t i = 0; i < headers.size(); ++i)
-                {
-                    widths[i] = std::max(static_cast<int>(headers[i].length()), 10);
-                    for (const auto &row : rows)
-                    {
-                        if (i < row.size())
-                        {
-                            widths[i] = std::max(widths[i], static_cast<int>(row[i].length()));
-                        }
-                    }
-                    widths[i] = std::min(widths[i], 40); // Max width
-                }
-            }
-
-            // Calculate total width
-            int totalWidth = 1;
-            for (int w : widths)
-            {
-                totalWidth += w + 3;
-            }
-
-            // Print top border
-            std::cout << BOLD;
-            printSeparator(totalWidth, '=');
-
-            // Print headers
-            std::cout << BOLD << CYAN << "|";
-            for (size_t i = 0; i < headers.size(); ++i)
-            {
-                std::cout << " " << std::left << std::setw(widths[i]) << truncate(headers[i], widths[i]) << " |";
-            }
-            std::cout << RESET << "\n";
-            printSeparator(totalWidth, '=');
-
-            // Print rows
-            for (const auto &row : rows)
-            {
-                std::cout << "|";
-                for (size_t i = 0; i < headers.size(); ++i)
-                {
-                    std::string cell = (i < row.size()) ? row[i] : "";
-                    std::cout << " " << std::left << std::setw(widths[i]) << truncate(cell, widths[i]) << " |";
-                }
-                std::cout << "\n";
-            }
-
-            // Print bottom border
-            printSeparator(totalWidth, '=');
+           printTableInternal(headers, rows, colWidths);
         }
 
         void DisplayHelper::printPatientTable(const std::vector<Model::Patient> &patients)
