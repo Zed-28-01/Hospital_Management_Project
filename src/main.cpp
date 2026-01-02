@@ -22,7 +22,7 @@ int main()
         // Initialize the system (loads all data)
         if (!facade->initialize())
         {
-            std::cerr << "Error: Failed to initialize the system." << std::endl;
+            std::cerr << "Lỗi: Thất bại trong việc khởi tạo hệ thống." << std::endl;
             return 1;
         }
 
@@ -33,17 +33,17 @@ int main()
         // Shutdown the system (saves all data)
         facade->shutdown();
 
-        std::cout << "\nThank you for using Hospital Management System!" << std::endl;
+        std::cout << "\nCảm ơn bạn đã sử dụng Hệ thống Quản lý Bệnh viện!" << std::endl;
         return 0;
     }
     catch (const std::exception &e)
     {
-        std::cerr << "Fatal error: " << e.what() << std::endl;
+        std::cerr << "Lỗi nghiêm trọng: " << e.what() << std::endl;
         return 1;
     }
     catch (...)
     {
-        std::cerr << "Unknown fatal error occurred." << std::endl;
+        std::cerr << "Lỗi nghiêm trọng không xác định xảy ra." << std::endl;
         return 1;
     }
 }
