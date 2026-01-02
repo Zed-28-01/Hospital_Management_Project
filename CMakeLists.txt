@@ -83,6 +83,11 @@ target_include_directories(HospitalLib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 add_executable(HospitalApp ${MAIN_SOURCE})
 target_link_libraries(HospitalApp PRIVATE HospitalLib)
 
+# Define the project source directory for data file paths
+target_compile_definitions(HospitalLib PUBLIC
+    PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
+)
+
 # Set working directory for data files
 set_target_properties(HospitalApp PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -148,14 +153,11 @@ if(ALL_TEST_SOURCES)
 endif()
 
 # ============================================================================
-# Copy Data Files to Build Directory
+# Data Files - No longer copied to build directory
 # ============================================================================
-add_custom_command(TARGET HospitalApp POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${PROJECT_SOURCE_DIR}/data
-    ${CMAKE_BINARY_DIR}/data
-    COMMENT "Copying data files to build directory..."
-)
+# Data files are now accessed directly from the source directory using
+# PROJECT_SOURCE_DIR which is injected at compile time via Constants.h
+# This ensures changes are persisted to the actual data files.
 
 # ============================================================================
 # Installation (Optional)
