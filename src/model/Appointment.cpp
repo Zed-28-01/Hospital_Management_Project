@@ -225,7 +225,7 @@ namespace HMS
 
         std::string Appointment::serialize() const
         {
-            return std::format("{}|{}|{}|{}|{}|{}|{:.2f}|{}|{}|{}",
+            return std::format("{}|{}|{}|{}|{}|{}|{:.0f}|{}|{}|{}",
                                m_appointmentID,
                                m_patientUsername,
                                m_doctorID,

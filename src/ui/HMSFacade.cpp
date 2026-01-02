@@ -317,9 +317,17 @@ bool HMSFacade::updateDoctor(const std::string& doctorID,
         return false;
     }
 
-    doctor->setSpecialization(specialization);
-    doctor->setSchedule(schedule);
-    doctor->setConsultationFee(consultationFee);
+    // Only update fields that have new values (non-empty for strings, >= 0 for fee)
+    if (!specialization.empty()) {
+        doctor->setSpecialization(specialization);
+    }
+    if (!schedule.empty()) {
+        doctor->setSchedule(schedule);
+    }
+    // consultationFee < 0 means "keep original value" (getDoubleInput returns -1 for empty input)
+    if (consultationFee >= 0) {
+        doctor->setConsultationFee(consultationFee);
+    }
 
     return m_doctorService->updateDoctor(*doctor);
 }

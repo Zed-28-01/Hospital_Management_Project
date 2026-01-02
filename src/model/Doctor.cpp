@@ -94,7 +94,7 @@ namespace HMS
 
         std::string Doctor::serialize() const
         {
-            return std::format("{}|{}|{}|{}|{}|{}|{}|{}|{:.2f}",
+            return std::format("{}|{}|{}|{}|{}|{}|{}|{}|{:.0f}",
                                m_doctorID,
                                m_username,
                                m_name,
