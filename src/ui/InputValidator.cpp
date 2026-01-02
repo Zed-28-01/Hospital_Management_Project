@@ -21,19 +21,19 @@ namespace HMS
         {
             if (username.empty())
             {
-                return "Username cannot be empty.";
+                return "Tên người dùng không được để trống.";
             }
             if (username.length() < Constants::MIN_USERNAME_LENGTH)
             {
-                return "Username must be at least " +
-                       std::to_string(Constants::MIN_USERNAME_LENGTH) + " characters.";
+                return "Tên người dùng phải có ít nhất " +
+                       std::to_string(Constants::MIN_USERNAME_LENGTH) + " ký tự.";
             }
             if (username.length() > Constants::MAX_USERNAME_LENGTH)
             {
-                return "Username must be at most " +
-                       std::to_string(Constants::MAX_USERNAME_LENGTH) + " characters.";
+                return "Tên người dùng không được quá " +
+                       std::to_string(Constants::MAX_USERNAME_LENGTH) + " ký tự.";
             }
-            return "Username can only contain letters, numbers, underscores, and dots.";
+            return "Tên người dùng chỉ có thể chứa chữ cái, số, dấu gạch dưới và dấu chấm.";
         }
 
         // ==================== Password Validation ====================
@@ -47,19 +47,19 @@ namespace HMS
         {
             if (password.empty())
             {
-                return "Password cannot be empty.";
+                return "Mật khẩu không được để trống.";
             }
             if (password.length() < Constants::MIN_PASSWORD_LENGTH)
             {
-                return "Password must be at least " +
-                       std::to_string(Constants::MIN_PASSWORD_LENGTH) + " characters.";
+                return "Mật khẩu phải có ít nhất " +
+                       std::to_string(Constants::MIN_PASSWORD_LENGTH) + " ký tự.";
             }
             if (password.length() > Constants::MAX_PASSWORD_LENGTH)
             {
-                return "Password must be at most " +
-                       std::to_string(Constants::MAX_PASSWORD_LENGTH) + " characters.";
+                return "Mật khẩu không được quá " +
+                       std::to_string(Constants::MAX_PASSWORD_LENGTH) + " ký tự.";
             }
-            return "Invalid password format.";
+            return "Định dạng mật khẩu không hợp lệ.";
         }
 
         int InputValidator::getPasswordStrength(const std::string &password)
@@ -104,18 +104,18 @@ namespace HMS
         {
             if (phone.empty())
             {
-                return "Phone number cannot be empty.";
+                return "Số điện thoại không được để trống.";
             }
             if (phone.length() != Constants::PHONE_LENGTH)
             {
-                return "Phone number must be exactly " +
-                       std::to_string(Constants::PHONE_LENGTH) + " digits.";
+                return "Số điện thoại phải có đúng " +
+                       std::to_string(Constants::PHONE_LENGTH) + " chữ số.";
             }
             if (phone[0] != '0')
             {
-                return "Phone number must start with 0.";
+                return "Số điện thoại phải bắt đầu bằng 0.";
             }
-            return "Phone number can only contain digits.";
+            return "Số điện thoại chỉ có thể chứa các chữ số.";
         }
 
         // ==================== Date Validation ====================
@@ -139,13 +139,13 @@ namespace HMS
         {
             if (date.empty())
             {
-                return "Date cannot be empty.";
+                return "Ngày không được để trống.";
             }
             if (date.length() != 10)
             {
-                return "Date must be in YYYY-MM-DD format.";
+                return "Ngày phải có định dạng YYYY-MM-DD.";
             }
-            return "Invalid date. Please use YYYY-MM-DD format with valid values.";
+            return "Ngày không hợp lệ. Vui lòng sử dụng định dạng YYYY-MM-DD với giá trị hợp lệ.";
         }
 
         // ==================== Time Validation ====================
@@ -168,13 +168,13 @@ namespace HMS
         {
             if (time.empty())
             {
-                return "Time cannot be empty.";
+                return "Thời gian không được để trống.";
             }
             if (time.length() != 5)
             {
-                return "Time must be in HH:MM format.";
+                return "Thời gian phải có định dạng HH:MM.";
             }
-            return "Invalid time. Please use HH:MM format (24-hour).";
+            return "Thời gian không hợp lệ. Vui lòng sử dụng định dạng HH:MM (24 giờ).";
         }
 
         // ==================== Name Validation ====================
@@ -202,17 +202,17 @@ namespace HMS
         {
             if (name.empty())
             {
-                return "Name cannot be empty.";
+                return "Tên không được để trống.";
             }
             if (name.length() < 2)
             {
-                return "Name must be at least 2 characters.";
+                return "Tên phải có ít nhất 2 ký tự.";
             }
             if (name.length() > 100)
             {
-                return "Name must be at most 100 characters.";
+                return "Tên không được quá 100 ký tự.";
             }
-            return "Name can only contain letters, spaces, hyphens, and apostrophes.";
+            return "Tên chỉ có thể chứa chữ cái, khoảng trắng, dấu gạch ngang và dấu nháy đơn.";
         }
 
         // ==================== Gender Validation ====================
@@ -319,51 +319,51 @@ namespace HMS
         {
             if (id.empty())
             {
-                return "Medicine ID cannot be empty.";
+                return "Mã thuốc không được để trống.";
             }
             if (id.length() < 4)
             {
-                return "Medicine ID must be at least 4 characters (e.g., MED001).";
+                return "Mã thuốc phải có ít nhất 4 ký tự (ví dụ: MED001).";
             }
             if (id.substr(0, 3) != "MED")
             {
-                return "Medicine ID must start with 'MED'.";
+                return "Mã thuốc phải bắt đầu bằng 'MED'.";
             }
-            return "Medicine ID must be in format: MED followed by digits (e.g., MED001).";
+            return "Mã thuốc phải có định dạng: MED theo sau bằng các chữ số (ví dụ: MED001).";
         }
 
         std::string InputValidator::getDepartmentIDError(const std::string &id)
         {
             if (id.empty())
             {
-                return "Department ID cannot be empty.";
+                return "Mã khoa không được để trống.";
             }
             if (id.length() < 4)
             {
-                return "Department ID must be at least 4 characters (e.g., DEP001).";
+                return "Mã khoa phải có ít nhất 4 ký tự (ví dụ: DEP001).";
             }
             if (id.substr(0, 3) != "DEP")
             {
-                return "Department ID must start with 'DEP'.";
+                return "Mã khoa phải bắt đầu bằng 'DEP'.";
             }
-            return "Department ID must be in format: DEP followed by digits (e.g., DEP001).";
+            return "Mã khoa phải có định dạng: DEP theo sau bằng các chữ số (ví dụ: DEP001).";
         }
 
         std::string InputValidator::getPrescriptionIDError(const std::string &id)
         {
             if (id.empty())
             {
-                return "Prescription ID cannot be empty.";
+                return "Mã đơn thuốc không được để trống.";
             }
             if (id.length() < 4)
             {
-                return "Prescription ID must be at least 4 characters (e.g., PRE001).";
+                return "Mã đơn thuốc phải có ít nhất 4 ký tự (ví dụ: PRE001).";
             }
             if (id.substr(0, 3) != "PRE")
             {
-                return "Prescription ID must start with 'PRE'.";
+                return "Mã đơn thuốc phải bắt đầu bằng 'PRE'.";
             }
-            return "Prescription ID must be in format: PRE followed by digits (e.g., PRE001).";
+            return "Mã đơn thuốc phải có định dạng: PRE theo sau bằng các chữ số (ví dụ: PRE001).";
         }
 
         // ==================== Advanced Data Validation ====================
@@ -413,9 +413,9 @@ namespace HMS
             }
 
             return hasDigit && (lower.find("day") != std::string::npos ||
-                               lower.find("week") != std::string::npos ||
-                               lower.find("month") != std::string::npos ||
-                               lower.find("year") != std::string::npos);
+                                lower.find("week") != std::string::npos ||
+                                lower.find("month") != std::string::npos ||
+                                lower.find("year") != std::string::npos);
         }
 
         bool InputValidator::validateInstructions(const std::string &instructions)
