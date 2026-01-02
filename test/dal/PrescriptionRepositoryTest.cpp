@@ -966,9 +966,16 @@ TEST_F(PrescriptionRepositoryTest, SetFilePathChangesStorage)
 TEST_F(PrescriptionRepositoryTest, GetFilePathDefault)
 {
     HMS::DAL::PrescriptionRepository::resetInstance();
-    repo = HMS::DAL::PrescriptionRepository::getInstance();
+    auto tempRepo = HMS::DAL::PrescriptionRepository::getInstance();
 
-    EXPECT_EQ(repo->getFilePath(), HMS::Constants::PRESCRIPTION_FILE);
+    // Verify default path without modifying data
+    EXPECT_EQ(tempRepo->getFilePath(), HMS::Constants::PRESCRIPTION_FILE);
+
+    // IMPORTANT: Redirect back to test file before TearDown runs
+    // Otherwise TearDown would clear the real data file!
+    HMS::DAL::PrescriptionRepository::resetInstance();
+    repo = HMS::DAL::PrescriptionRepository::getInstance();
+    repo->setFilePath(testFilePath);
 }
 
 TEST_F(PrescriptionRepositoryTest, GetFilePathDoesNotLoad)

@@ -121,30 +121,17 @@ namespace HMS
 
             std::string username = patientOpt->getUsername();
 
-            // Get all appointments for this patient
-            auto appointments = m_appointmentRepo->getByPatient(username);
-
-            // Store appointment IDs to delete
-            std::vector<std::string> appointmentIDs;
-            appointmentIDs.reserve(appointments.size());
-            for (const auto &apt : appointments)
-            {
-                appointmentIDs.push_back(apt.getAppointmentID());
-            }
-
-            // Try to delete patient first
+            // Delete patient profile
             if (!m_patientRepo->remove(patientID))
             {
                 return false;
             }
 
-            // Delete all associated appointments
-            // Note: If appointment deletion fails, patient is already deleted
-            // This is acceptable as orphaned appointments are less problematic
-            for (const auto &aptID : appointmentIDs)
-            {
-                m_appointmentRepo->remove(aptID);
-            }
+            // NOTE: Appointments are intentionally NOT deleted to preserve:
+            // - Historical medical records and audit trail
+            // - Revenue/financial reporting accuracy
+            // - Referential integrity for Prescriptions
+            // Orphaned appointments (with deleted patient) remain as historical data
 
             // Cascading delete: Remove associated account to prevent orphaned logins
             // This is a security requirement - deleted patients should not be able to log in
