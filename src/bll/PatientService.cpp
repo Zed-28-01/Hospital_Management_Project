@@ -76,7 +76,7 @@ namespace HMS
         {
 
             // Generate unique patient ID
-            std::string patientID = Utils::generatePatientID();
+            std::string patientID = m_patientRepo->getNextId();
 
             // Create patient object
             Model::Patient patient(patientID, username, name, phone, gender,

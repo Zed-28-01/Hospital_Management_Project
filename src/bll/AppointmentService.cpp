@@ -456,7 +456,7 @@ namespace HMS
 
         std::string AppointmentService::generateAppointmentID()
         {
-            return Utils::generateAppointmentID();
+            return m_appointmentRepo->getNextId();
         }
 
         double AppointmentService::getDoctorFee(const std::string &doctorID)
