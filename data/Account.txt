@@ -6,7 +6,7 @@
 
 # ===== ADMIN ACCOUNTS (Team Members) =====
 vannhat|HASH_password123|admin|1|2024-01-01
-minhthư|HASH_password123|admin|1|2024-01-02
+minhthu|HASH_password123|admin|1|2024-01-02
 nghia|HASH_password123|admin|1|2024-01-03
 chauly|HASH_password123|admin|1|2024-01-04
 tuankiet|HASH_password123|admin|1|2024-01-05
