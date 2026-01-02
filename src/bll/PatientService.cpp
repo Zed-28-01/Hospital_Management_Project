@@ -16,7 +16,8 @@ namespace HMS
         // ==================== Private Constructor ====================
         PatientService::PatientService()
             : m_patientRepo(DAL::PatientRepository::getInstance()),
-              m_appointmentRepo(DAL::AppointmentRepository::getInstance())
+              m_appointmentRepo(DAL::AppointmentRepository::getInstance()),
+              m_accountRepo(DAL::AccountRepository::getInstance())
         {
         }
 
@@ -143,6 +144,13 @@ namespace HMS
             for (const auto &aptID : appointmentIDs)
             {
                 m_appointmentRepo->remove(aptID);
+            }
+
+            // Cascading delete: Remove associated account to prevent orphaned logins
+            // This is a security requirement - deleted patients should not be able to log in
+            if (!username.empty())
+            {
+                m_accountRepo->remove(username);
             }
 
             return true;

@@ -47,6 +47,7 @@ namespace HMS
         {
             m_doctorRepo = DAL::DoctorRepository::getInstance();
             m_appointmentRepo = DAL::AppointmentRepository::getInstance();
+            m_accountRepo = DAL::AccountRepository::getInstance();
         }
         DoctorService::~DoctorService() = default;
 
@@ -133,12 +134,29 @@ namespace HMS
 
         bool DoctorService::deleteDoctor(const std::string &doctorID)
         {
-            if (!doctorExists(doctorID))
+            // Get doctor to find username (also validates existence)
+            auto doctorOpt = m_doctorRepo->getById(doctorID);
+            if (!doctorOpt.has_value())
             {
                 return false;
             }
 
-            return m_doctorRepo->remove(doctorID);
+            std::string username = doctorOpt->getUsername();
+
+            // Delete doctor profile first
+            if (!m_doctorRepo->remove(doctorID))
+            {
+                return false;
+            }
+
+            // Cascading delete: Remove associated account to prevent orphaned logins
+            // This is a security requirement - deleted doctors should not be able to log in
+            if (!username.empty())
+            {
+                m_accountRepo->remove(username);
+            }
+
+            return true;
         }
 
         // ============================== QUERY OPERATIONS ===========================
