@@ -196,7 +196,7 @@ namespace HMS
             std::string gender;
             while (true)
             {
-                gender = DisplayHelper::getInput("Nhập giới tính (Nam/Nu/Khac)");
+                gender = DisplayHelper::getInput("Nhập giới tính (Nam/Nữ/Khác)");
                 if (gender.empty())
                     return;
 
@@ -567,7 +567,7 @@ namespace HMS
             auto appointments = m_facade->getMyAppointments();
             if (appointments.empty())
             {
-                DisplayHelper::printNoData("lich hen");
+                DisplayHelper::printNoData("lịch hẹn");
             }
             else
             {
@@ -584,7 +584,7 @@ namespace HMS
             auto appointments = m_facade->getMyUpcomingAppointments();
             if (appointments.empty())
             {
-                DisplayHelper::printNoData("lich hen sap toi");
+                DisplayHelper::printNoData("lịch hẹn sắp tới");
             }
             else
             {
@@ -677,7 +677,7 @@ namespace HMS
             std::string gender;
             while (true)
             {
-                gender = DisplayHelper::getInput("Nhập giới tính (Nam/Nu/Khac)");
+                gender = DisplayHelper::getInput("Nhập giới tính (Nam/Nữ/Khác)");
                 if (gender.empty())
                     return;
                 if (!InputValidator::validateGender(gender))
@@ -739,7 +739,7 @@ namespace HMS
             auto patients = m_facade->searchPatients(keyword);
             if (patients.empty())
             {
-                DisplayHelper::printNoData("benh nhan phu hop");
+                DisplayHelper::printNoData("bệnh nhân phù hợp");
             }
             else
             {
@@ -835,7 +835,7 @@ namespace HMS
             auto patients = m_facade->getAllPatients();
             if (patients.empty())
             {
-                DisplayHelper::printNoData("benh nhan");
+                DisplayHelper::printNoData("bệnh nhân");
             }
             else
             {
@@ -983,7 +983,7 @@ namespace HMS
             std::string gender;
             while (true)
             {
-                gender = DisplayHelper::getInput("Nhập giới tính (Nam/Nu/Khac)");
+                gender = DisplayHelper::getInput("Nhập giới tính (Nam/Nữ/Khác)");
                 if (gender.empty())
                     return;
                 if (!InputValidator::validateGender(gender))
@@ -1072,7 +1072,7 @@ namespace HMS
                 auto specs = m_facade->getAllSpecializations();
                 if (specs.empty())
                 {
-                    DisplayHelper::printNoData("chuyen khoa");
+                    DisplayHelper::printNoData("chuyên khoa");
                     DisplayHelper::pause();
                     return;
                 }
@@ -1104,7 +1104,7 @@ namespace HMS
 
             if (doctors.empty())
             {
-                DisplayHelper::printNoData("bac si");
+                DisplayHelper::printNoData("bác sĩ");
             }
             else
             {
@@ -1200,7 +1200,7 @@ namespace HMS
             auto doctors = m_facade->getAllDoctors();
             if (doctors.empty())
             {
-                DisplayHelper::printNoData("bac si");
+                DisplayHelper::printNoData("bác sĩ");
             }
             else
             {
@@ -1235,7 +1235,7 @@ namespace HMS
             auto doctors = m_facade->getAllDoctors();
             if (doctors.empty())
             {
-                DisplayHelper::printNoData("bac si");
+                DisplayHelper::printNoData("bác sĩ");
                 DisplayHelper::pause();
                 return "";
             }
@@ -1267,7 +1267,7 @@ namespace HMS
             auto patients = m_facade->getAllPatients();
             if (patients.empty())
             {
-                DisplayHelper::printNoData("benh nhan");
+                DisplayHelper::printNoData("bệnh nhân");
                 DisplayHelper::pause();
                 return "";
             }
@@ -1298,7 +1298,7 @@ namespace HMS
         {
             if (appointments.empty())
             {
-                DisplayHelper::printNoData("lich hen");
+                DisplayHelper::printNoData("lịch hẹn");
                 DisplayHelper::pause();
                 return "";
             }
@@ -1353,7 +1353,7 @@ namespace HMS
         {
             if (slots.empty())
             {
-                DisplayHelper::printNoData("khung gio trong");
+                DisplayHelper::printNoData("khung giờ trống");
                 return "";
             }
 

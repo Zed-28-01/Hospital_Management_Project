@@ -85,7 +85,7 @@ namespace HMS
                     DisplayHelper::printSeparator(60, '-');
                     std::cout << CYAN_LOCAL << "Trang " << currentPage << "/" << totalPages
                               << " (Hiển thị " << startIdx + 1 << "-" << endIdx
-                              << " / " << totalRows << " muc)" << RESET_LOCAL << "\n";
+                              << " / " << totalRows << " mục)" << RESET_LOCAL << "\n";
                     DisplayHelper::printSeparator(60, '-');
 
                     // Print navigation menu
@@ -1050,7 +1050,7 @@ namespace HMS
 
         void DisplayHelper::printSuccess(const std::string &message)
         {
-            std::cout << GREEN << "[THANH CONG] " << message << RESET << "\n";
+            std::cout << GREEN << "[THÀNH CÔNG] " << message << RESET << "\n";
         }
 
         void DisplayHelper::printError(const std::string &message)
@@ -1065,12 +1065,12 @@ namespace HMS
 
         void DisplayHelper::printInfo(const std::string &message)
         {
-            std::cout << CYAN << "[THONG TIN] " << message << RESET << "\n";
+            std::cout << CYAN << "[THÔNG TIN] " << message << RESET << "\n";
         }
 
         void DisplayHelper::printNoData(const std::string &entityType)
         {
-            std::cout << YELLOW << "Không tìm thấy " << entityType << " nao." << RESET << "\n";
+            std::cout << YELLOW << "Không tìm thấy " << entityType << " nào." << RESET << "\n";
         }
 
         // ==================== Formatting Utilities ====================
