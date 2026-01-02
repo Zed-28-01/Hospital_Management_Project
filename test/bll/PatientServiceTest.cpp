@@ -174,14 +174,18 @@ TEST_F(PatientServiceTest, UpdatePatient_InvalidData)
 }
 
 // ==================== DELETE ====================
-TEST_F(PatientServiceTest, DeletePatient_CascadeAppointments)
+TEST_F(PatientServiceTest, DeletePatient_PreservesAppointments)
 {
+    // Appointments should NOT be deleted when patient is deleted
+    // This preserves historical records, audit trail, and referential integrity
     service->createPatient(createTestPatient("P001", "pat"));
     auto repo = DAL::AppointmentRepository::getInstance();
     repo->add(createTestAppointment("A1", "pat"));
     repo->add(createTestAppointment("A2", "pat"));
     EXPECT_TRUE(service->deletePatient("P001"));
-    EXPECT_TRUE(repo->getByPatient("pat").empty());
+    // Appointments remain as historical data
+    EXPECT_FALSE(repo->getByPatient("pat").empty());
+    EXPECT_EQ(repo->getByPatient("pat").size(), 2);
 }
 
 TEST_F(PatientServiceTest, DeletePatient_NotExists)

@@ -2,6 +2,7 @@
 
 #include "../dal/PatientRepository.h"
 #include "../dal/AppointmentRepository.h"
+#include "../dal/AccountRepository.h"
 #include "../model/Patient.h"
 #include "../model/Appointment.h"
 #include "../common/Types.h"
@@ -29,6 +30,7 @@ private:
     // ==================== Dependencies ====================
     DAL::PatientRepository* m_patientRepo;
     DAL::AppointmentRepository* m_appointmentRepo;
+    DAL::AccountRepository* m_accountRepo;
 
     // ==================== Private Constructor ====================
     PatientService();
