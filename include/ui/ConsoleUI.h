@@ -346,6 +346,40 @@ private:
      */
     void exportReport();
 
+    // ==================== Sub-menus ====================
+
+    /**
+     * @brief Show medicine management sub-menu (Admin)
+     */
+    void showMedicineMenu();
+
+    /**
+     * @brief Show department management sub-menu (Admin)
+     */
+    void showDepartmentMenu();
+
+    /**
+     * @brief Show report generation sub-menu (Admin)
+     */
+    void showReportMenu();
+
+    /**
+     * @brief Show prescription management sub-menu (Doctor)
+     */
+    void showPrescriptionMenu();
+
+    // ==================== Patient View-Only Features ====================
+
+    /**
+     * @brief View patient's prescriptions (Patient)
+     */
+    void viewMyPrescriptions();
+
+    /**
+     * @brief Search medicines by patient (view-only)
+     */
+    void searchMedicinePatient();
+
     // ==================== Helper Methods ====================
 
     /**
