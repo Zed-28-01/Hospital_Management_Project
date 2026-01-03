@@ -5,6 +5,7 @@
 #include <filesystem>
 
 #include "bll/DoctorService.h"
+#include "bll/AppointmentService.h"
 #include "dal/DoctorRepository.h"
 #include "dal/AppointmentRepository.h"
 #include "model/Doctor.h"
@@ -29,6 +30,7 @@ protected:
         std::filesystem::create_directories("test_data");
 
         BLL::DoctorService::resetInstance();
+        BLL::AppointmentService::resetInstance();
         DAL::DoctorRepository::resetInstance();
         DAL::AppointmentRepository::resetInstance();
 
@@ -49,6 +51,7 @@ protected:
         appRepo->clear();
 
         BLL::DoctorService::resetInstance();
+        BLL::AppointmentService::resetInstance();
         DAL::DoctorRepository::resetInstance();
         DAL::AppointmentRepository::resetInstance();
     }
