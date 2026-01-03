@@ -172,11 +172,25 @@ namespace HMS
             std::vector<Model::Patient> searchByName(const std::string &name);
 
             /**
-             * @brief Search patients by phone number
+             * @brief Search patients by phone number (partial match)
              * @param phone Phone number to search for
              * @return Vector of matching patients
              */
             std::vector<Model::Patient> searchByPhone(const std::string &phone);
+
+            /**
+             * @brief Find existing patient without account by matching identity fields
+             * @param phone Phone number
+             * @param name Patient name
+             * @param dateOfBirth Date of birth
+             * @param gender Gender
+             * @return Patient if found (with empty username), nullopt otherwise
+             */
+            std::optional<Model::Patient> findUnlinkedPatient(
+                const std::string &phone,
+                const std::string &name,
+                const std::string &dateOfBirth,
+                Gender gender);
 
             /**
              * @brief Search patients by any keyword

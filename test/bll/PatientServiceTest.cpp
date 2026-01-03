@@ -107,9 +107,10 @@ TEST_F(PatientServiceTest, Validation_EmptyID)
     EXPECT_FALSE(service->createPatient(createTestPatient("", "u1")));
 }
 
-TEST_F(PatientServiceTest, Validation_EmptyUsername)
+TEST_F(PatientServiceTest, Validation_EmptyUsername_AllowedForDoctorCreatedPatients)
 {
-    EXPECT_FALSE(service->createPatient(createTestPatient("P001", "")));
+    // Empty username is allowed for doctor-created patients (they don't have accounts yet)
+    EXPECT_TRUE(service->createPatient(createTestPatient("P001", "")));
 }
 
 TEST_F(PatientServiceTest, Validation_ShortName)

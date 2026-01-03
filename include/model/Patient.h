@@ -89,6 +89,12 @@ public:
     // ==================== Setters ====================
 
     /**
+     * @brief Set patient's account username (for linking to account)
+     * @param username Account username
+     */
+    void setUsername(const std::string& username);
+
+    /**
      * @brief Set patient's address
      * @param address New address
      */
