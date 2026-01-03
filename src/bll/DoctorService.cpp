@@ -97,9 +97,16 @@ namespace HMS
             const std::string &specialization, const std::string &schedule,
             double consultationFee)
         {
-            std::string id = Utils::generateDoctorID();
-            Model::Doctor newDoc(id, username, name, phone, gender, dateOfBirth,
-                                 specialization, schedule, consultationFee);
+            std::string id = m_doctorRepo->getNextId(); 
+            Model::Doctor newDoc(id,
+                                 username,
+                                 name,
+                                 phone,
+                                 gender,
+                                 dateOfBirth,
+                                 specialization,
+                                 schedule,
+                                 consultationFee);
 
             if (createDoctor(newDoc))
             {
