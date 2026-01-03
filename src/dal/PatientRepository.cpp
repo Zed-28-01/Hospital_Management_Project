@@ -325,6 +325,32 @@ namespace HMS
             return results;
         }
 
+        std::optional<Model::Patient> PatientRepository::findUnlinkedPatient(
+            const std::string &phone,
+            const std::string &name,
+            const std::string &dateOfBirth,
+            Gender gender)
+        {
+            std::lock_guard<std::mutex> lock(m_dataMutex);
+            ensureLoaded();
+
+            // Find patient without account (empty username) matching all identity fields
+            for (const auto &p : m_patients)
+            {
+                if (p.getUsername().empty() &&
+                    p.getPhone() == phone &&
+                    Utils::containsIgnoreCase(p.getName(), name) &&
+                    Utils::containsIgnoreCase(name, p.getName()) &&
+                    p.getDateOfBirth() == dateOfBirth &&
+                    p.getGender() == gender)
+                {
+                    return p;
+                }
+            }
+
+            return std::nullopt;
+        }
+
         std::string PatientRepository::getNextId()
         {
             std::lock_guard<std::mutex> lock(m_dataMutex);

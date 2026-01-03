@@ -363,6 +363,37 @@ namespace HMS
             return m_patientRepo->exists(patientID);
         }
 
+        Result<Model::Patient> PatientService::findUnlinkedPatient(
+            const std::string &phone,
+            const std::string &name,
+            const std::string &dateOfBirth,
+            Gender gender)
+        {
+            return m_patientRepo->findUnlinkedPatient(phone, name, dateOfBirth, gender);
+        }
+
+        bool PatientService::linkPatientToAccount(const std::string &patientID,
+                                                   const std::string &username)
+        {
+            auto patientOpt = m_patientRepo->getById(patientID);
+            if (!patientOpt.has_value())
+            {
+                return false;
+            }
+
+            // Verify patient doesn't already have an account
+            if (!patientOpt->getUsername().empty())
+            {
+                return false;
+            }
+
+            // Update patient with new username
+            Model::Patient patient = patientOpt.value();
+            patient.setUsername(username);
+
+            return m_patientRepo->update(patient);
+        }
+
         // ==================== Data Persistence ====================
 
         bool PatientService::saveData()

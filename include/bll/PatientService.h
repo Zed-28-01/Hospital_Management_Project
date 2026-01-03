@@ -224,6 +224,29 @@ public:
      */
     bool patientExists(const std::string& patientID);
 
+    /**
+     * @brief Find existing patient without account by identity fields
+     * @param phone Phone number
+     * @param name Patient name
+     * @param dateOfBirth Date of birth
+     * @param gender Gender
+     * @return Patient if found, nullopt otherwise
+     */
+    Result<Model::Patient> findUnlinkedPatient(
+        const std::string& phone,
+        const std::string& name,
+        const std::string& dateOfBirth,
+        Gender gender);
+
+    /**
+     * @brief Link existing patient record to new account
+     * @param patientID The patient ID to link
+     * @param username The new username to assign
+     * @return True if successful
+     */
+    bool linkPatientToAccount(const std::string& patientID,
+                              const std::string& username);
+
     // ==================== Data Persistence ====================
 
     /**

@@ -48,6 +48,11 @@ std::string HMS::Model::Patient::getMedicalHistory() const
 
 // ==================== Setters ====================
 
+void HMS::Model::Patient::setUsername(const std::string &username)
+{
+    m_username = username;
+}
+
 void HMS::Model::Patient::setAddress(const std::string &address)
 {
     m_address = address;
@@ -130,15 +135,15 @@ HMS::Result<HMS::Model::Patient> HMS::Model::Patient::deserialize(const std::str
     std::string address = Utils::trim(fields[6]);
     std::string medicalHistory = Utils::trim(fields[7]);
 
-    // Validate required fields are not empty
-    if (patientID.empty() || username.empty() || name.empty())
+    // Validate required fields are not empty (username can be empty for doctor-created patients)
+    if (patientID.empty() || name.empty())
     {
         std::cerr << "Error: Patient record has empty required fields\n";
         return std::nullopt;
     }
 
-    // Validate username format
-    if (!Utils::isValidUsername(username))
+    // Validate username format only if provided (empty is valid for doctor-created patients)
+    if (!username.empty() && !Utils::isValidUsername(username))
     {
         std::cerr << std::format("Error: Invalid username '{}' for patient {}\n",
                                  username, patientID);

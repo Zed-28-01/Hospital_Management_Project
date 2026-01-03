@@ -118,7 +118,17 @@ bool HMSFacade::registerPatient(const std::string& username,
         return false;
     }
 
-    // Then create patient record
+    // Check if a doctor-created patient record already exists with matching identity
+    auto existingPatient = m_patientService->findUnlinkedPatient(
+        phone, name, dateOfBirth, stringToGender(gender));
+
+    if (existingPatient.has_value()) {
+        // Link existing patient record to the new account
+        return m_patientService->linkPatientToAccount(
+            existingPatient->getPatientID(), username);
+    }
+
+    // No existing record - create new patient record
     auto result = m_patientService->createPatient(username, name, phone, stringToGender(gender),
                                                    dateOfBirth, address, "");
     return result.has_value();
