@@ -1135,7 +1135,7 @@ namespace HMS
 
             std::string specialization = DisplayHelper::getInput("Chuyên khoa mới");
             std::string schedule = DisplayHelper::getInput("Lịch làm việc mới");
-            double consultationFee = DisplayHelper::getDoubleInput("Phí khám mới (nhập 0 để giữ nguyên)");
+            double consultationFee = DisplayHelper::getDoubleInput("Phí khám mới");
 
             if (!DisplayHelper::confirm("Xác nhận cập nhật?"))
             {

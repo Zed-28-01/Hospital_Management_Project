@@ -6,19 +6,29 @@ namespace HMS {
 namespace Constants {
 
 // ==================== File Paths ====================
-constexpr const char* DATA_DIR = "data/";
-constexpr const char* BACKUP_DIR = "data/backup/";
+// PROJECT_SOURCE_DIR is defined by CMake at compile time
+// This ensures data files are always found regardless of working directory
+#ifndef PROJECT_SOURCE_DIR
+#define PROJECT_SOURCE_DIR "."
+#endif
 
-constexpr const char* ACCOUNT_FILE = "data/Account.txt";
-constexpr const char* PATIENT_FILE = "data/Patient.txt";
-constexpr const char* DOCTOR_FILE = "data/Doctor.txt";
-constexpr const char* APPOINTMENT_FILE = "data/Appointment.txt";
+#define HMS_DATA_PATH(file) PROJECT_SOURCE_DIR "/data/" file
+#define HMS_BACKUP_PATH(file) PROJECT_SOURCE_DIR "/data/backup/" file
+#define HMS_REPORTS_PATH(file) PROJECT_SOURCE_DIR "/data/reports/" file
+
+constexpr const char* DATA_DIR = PROJECT_SOURCE_DIR "/data/";
+constexpr const char* BACKUP_DIR = PROJECT_SOURCE_DIR "/data/backup/";
+
+constexpr const char* ACCOUNT_FILE = PROJECT_SOURCE_DIR "/data/Account.txt";
+constexpr const char* PATIENT_FILE = PROJECT_SOURCE_DIR "/data/Patient.txt";
+constexpr const char* DOCTOR_FILE = PROJECT_SOURCE_DIR "/data/Doctor.txt";
+constexpr const char* APPOINTMENT_FILE = PROJECT_SOURCE_DIR "/data/Appointment.txt";
 
 // Advanced Feature File Paths
-constexpr const char* DEPARTMENT_FILE = "data/Department.txt";
-constexpr const char* MEDICINE_FILE = "data/Medicine.txt";
-constexpr const char* PRESCRIPTION_FILE = "data/Prescription.txt";
-constexpr const char* REPORTS_DIR = "data/reports/";
+constexpr const char* DEPARTMENT_FILE = PROJECT_SOURCE_DIR "/data/Department.txt";
+constexpr const char* MEDICINE_FILE = PROJECT_SOURCE_DIR "/data/Medicine.txt";
+constexpr const char* PRESCRIPTION_FILE = PROJECT_SOURCE_DIR "/data/Prescription.txt";
+constexpr const char* REPORTS_DIR = PROJECT_SOURCE_DIR "/data/reports/";
 
 // ==================== Field Delimiters ====================
 constexpr char FIELD_DELIMITER = '|';

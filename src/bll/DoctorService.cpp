@@ -1,12 +1,12 @@
 #include "bll/DoctorService.h"
-#include "common/Utils.h"
-#include "common/Types.h"
 #include "common/Constants.h"
+#include "common/Types.h"
+#include "common/Utils.h"
 
-#include <set>
 #include <algorithm>
-#include <sstream>
 #include <iomanip>
+#include <set>
+#include <sstream>
 
 namespace HMS
 {
@@ -20,7 +20,8 @@ namespace HMS
             static const List<std::string> slots = []()
             {
                 List<std::string> result;
-                for (int h = Constants::WORK_START_HOUR; h < Constants::WORK_END_HOUR; ++h)
+                for (int h = Constants::WORK_START_HOUR; h < Constants::WORK_END_HOUR;
+                     ++h)
                 {
                     std::stringstream ss1;
                     ss1 << std::setfill('0') << std::setw(2) << h << ":00";
@@ -35,7 +36,8 @@ namespace HMS
             return slots;
         }
 
-        // ========================== STATIC MEMBER DEFINITIONS ================================
+        // ========================== STATIC MEMBER DEFINITIONS
+        // ================================
         std::unique_ptr<DoctorService> DoctorService::s_instance = nullptr;
         std::mutex DoctorService::s_mutex;
 
@@ -45,6 +47,7 @@ namespace HMS
         {
             m_doctorRepo = DAL::DoctorRepository::getInstance();
             m_appointmentRepo = DAL::AppointmentRepository::getInstance();
+            m_accountRepo = DAL::AccountRepository::getInstance();
         }
         DoctorService::~DoctorService() = default;
 
@@ -88,14 +91,11 @@ namespace HMS
             return m_doctorRepo->add(doctor);
         }
 
-        Result<Model::Doctor> DoctorService::createDoctor(const std::string &username,
-                                                          const std::string &name,
-                                                          const std::string &phone,
-                                                          Gender gender,
-                                                          const std::string &dateOfBirth,
-                                                          const std::string &specialization,
-                                                          const std::string &schedule,
-                                                          double consultationFee)
+        Result<Model::Doctor> DoctorService::createDoctor(
+            const std::string &username, const std::string &name,
+            const std::string &phone, Gender gender, const std::string &dateOfBirth,
+            const std::string &specialization, const std::string &schedule,
+            double consultationFee)
         {
             std::string id = m_doctorRepo->getNextId(); 
             Model::Doctor newDoc(id,
@@ -141,22 +141,41 @@ namespace HMS
 
         bool DoctorService::deleteDoctor(const std::string &doctorID)
         {
-            if (!doctorExists(doctorID))
+            // Get doctor to find username (also validates existence)
+            auto doctorOpt = m_doctorRepo->getById(doctorID);
+            if (!doctorOpt.has_value())
             {
                 return false;
             }
 
-            return m_doctorRepo->remove(doctorID);
+            std::string username = doctorOpt->getUsername();
+
+            // Delete doctor profile first
+            if (!m_doctorRepo->remove(doctorID))
+            {
+                return false;
+            }
+
+            // Cascading delete: Remove associated account to prevent orphaned logins
+            // This is a security requirement - deleted doctors should not be able to log in
+            if (!username.empty())
+            {
+                m_accountRepo->remove(username);
+            }
+
+            return true;
         }
 
         // ============================== QUERY OPERATIONS ===========================
 
-        Result<Model::Doctor> DoctorService::getDoctorByID(const std::string &doctorID)
+        Result<Model::Doctor>
+        DoctorService::getDoctorByID(const std::string &doctorID)
         {
             return m_doctorRepo->getById(doctorID);
         }
 
-        Result<Model::Doctor> DoctorService::getDoctorByUsername(const std::string &username)
+        Result<Model::Doctor>
+        DoctorService::getDoctorByUsername(const std::string &username)
         {
             return m_doctorRepo->getByUsername(username);
         }
@@ -171,7 +190,8 @@ namespace HMS
             return m_doctorRepo->search(keyword);
         }
 
-        List<Model::Doctor> DoctorService::getDoctorsBySpecialization(const std::string &specialization)
+        List<Model::Doctor>
+        DoctorService::getDoctorsBySpecialization(const std::string &specialization)
         {
             return m_doctorRepo->getBySpecialization(specialization);
         }
@@ -181,14 +201,13 @@ namespace HMS
             return m_doctorRepo->getAllSpecializations();
         }
 
-        size_t DoctorService::getDoctorCount() const
-        {
-            return m_doctorRepo->count();
-        }
+        size_t DoctorService::getDoctorCount() const { return m_doctorRepo->count(); }
 
         // ========================== SCHEDULE MANAGEMENT =============================
 
-        List<Model::Appointment> DoctorService::getDoctorSchedule(const std::string &doctorID, const std::string &date)
+        List<Model::Appointment>
+        DoctorService::getDoctorSchedule(const std::string &doctorID,
+                                         const std::string &date)
         {
             // Use efficient repository query instead of filtering all appointments
             auto appointments = m_appointmentRepo->getByDoctorAndDate(doctorID, date);
@@ -204,43 +223,43 @@ namespace HMS
             }
 
             // getByDoctorAndDate already returns sorted by time, but ensure consistency
-            std::sort(result.begin(), result.end(), [](const Model::Appointment &a, const Model::Appointment &b)
-                      { return a.getTime() < b.getTime(); });
+            std::sort(result.begin(), result.end(),
+                      [](const Model::Appointment &a, const Model::Appointment &b)
+                      {
+                          return a.getTime() < b.getTime();
+                      });
 
             return result;
         }
 
-        List<Model::Appointment> DoctorService::getUpcomingAppointments(const std::string &doctorID)
+        List<Model::Appointment>
+        DoctorService::getUpcomingAppointments(const std::string &doctorID)
         {
-            auto allApp = m_appointmentRepo->getAll();
-            List<Model::Appointment> result;
+
+            auto upcomingAppts = m_appointmentRepo->getUpcomingByDoctor(doctorID);
+
             std::string today = Utils::getCurrentDate();
             std::string nowTime = Utils::getCurrentTime();
 
-            for (const auto &app : allApp)
+            List<Model::Appointment> result;
+            result.reserve(upcomingAppts.size());
+
+            for (const auto &app : upcomingAppts)
             {
-                if (app.getDoctorID() == doctorID &&
-                    app.getStatus() != AppointmentStatus::CANCELLED &&
-                    app.getStatus() != AppointmentStatus::COMPLETED &&
-                    (app.getDate() > today || (app.getDate() == today && app.getTime() > nowTime)))
+                // For future dates, include all; for today, check time
+                if (app.getDate() > today ||
+                    (app.getDate() == today && app.getTime() > nowTime))
                 {
                     result.push_back(app);
                 }
             }
 
-            // Sort by date first, then by time
-            std::sort(result.begin(), result.end(), [](const Model::Appointment &a, const Model::Appointment &b)
-                      {
-                          if (a.getDate() != b.getDate())
-                          {
-                              return a.getDate() < b.getDate();
-                          }
-                          return a.getTime() < b.getTime(); });
-
+            // Already sorted by repository, no need to re-sort
             return result;
         }
 
-        List<std::string> DoctorService::getAvailableSlots(const std::string &doctorID, const std::string &date)
+        List<std::string> DoctorService::getAvailableSlots(const std::string &doctorID,
+                                                           const std::string &date)
         {
             // Validate the date format
             if (!Utils::isValidDate(date))
@@ -278,7 +297,9 @@ namespace HMS
             return availableSlots;
         }
 
-        bool DoctorService::isSlotAvailable(const std::string &doctorID, const std::string &time, const std::string &date)
+        bool DoctorService::isSlotAvailable(const std::string &doctorID,
+                                            const std::string &time,
+                                            const std::string &date)
         {
             if (!Utils::isValidTime(time) || !Utils::isValidDate(date))
             {
@@ -289,9 +310,11 @@ namespace HMS
             return std::find(slots.begin(), slots.end(), time) != slots.end();
         }
 
-        // ============================= ACTIVITY TRACKING ===============================
+        // ============================= ACTIVITY TRACKING
+        // ===============================
 
-        List<Model::Appointment> DoctorService::getDoctorActivity(const std::string &doctorID)
+        List<Model::Appointment>
+        DoctorService::getDoctorActivity(const std::string &doctorID)
         {
             auto allAppointments = m_appointmentRepo->getAll();
             List<Model::Appointment> result;
@@ -307,14 +330,16 @@ namespace HMS
             return result;
         }
 
-        List<Model::Appointment> DoctorService::getCompletedAppointments(const std::string &doctorID)
+        List<Model::Appointment>
+        DoctorService::getCompletedAppointments(const std::string &doctorID)
         {
             auto allAppointments = m_appointmentRepo->getAll();
             List<Model::Appointment> result;
 
             for (const auto &app : allAppointments)
             {
-                if (app.getDoctorID() == doctorID && app.getStatus() == AppointmentStatus::COMPLETED)
+                if (app.getDoctorID() == doctorID &&
+                    app.getStatus() == AppointmentStatus::COMPLETED)
                 {
                     result.push_back(app);
                 }
@@ -322,9 +347,10 @@ namespace HMS
             return result;
         }
 
-        List<Model::Appointment> DoctorService::getAppointmentsInRange(const std::string &doctorID,
-                                                                       const std::string &startDate,
-                                                                       const std::string &endDate)
+        List<Model::Appointment>
+        DoctorService::getAppointmentsInRange(const std::string &doctorID,
+                                              const std::string &startDate,
+                                              const std::string &endDate)
         {
             if (!Utils::isValidDate(startDate) || !Utils::isValidDate(endDate))
             {
@@ -346,7 +372,8 @@ namespace HMS
             return result;
         }
 
-        List<Model::Appointment> DoctorService::getTodayAppointments(const std::string &doctorID)
+        List<Model::Appointment>
+        DoctorService::getTodayAppointments(const std::string &doctorID)
         {
             return getDoctorSchedule(doctorID, Utils::getCurrentDate());
         }
@@ -384,17 +411,15 @@ namespace HMS
             return uniquePatients.size();
         }
 
-        // ================================ VALIDATION & PERSISTENCE ==============================
+        // ================================ VALIDATION & PERSISTENCE
+        // ==============================
 
         bool DoctorService::validateDoctor(const Model::Doctor &doctor)
         {
             // Check required fields are not empty
-            if (doctor.getID().empty() ||
-                doctor.getName().empty() ||
-                doctor.getPhone().empty() ||
-                doctor.getSpecialization().empty() ||
-                doctor.getDateOfBirth().empty() ||
-                doctor.getUsername().empty())
+            if (doctor.getID().empty() || doctor.getName().empty() ||
+                doctor.getPhone().empty() || doctor.getSpecialization().empty() ||
+                doctor.getDateOfBirth().empty() || doctor.getUsername().empty())
             {
                 return false;
             }
@@ -431,15 +456,9 @@ namespace HMS
             return m_doctorRepo->exists(doctorID);
         }
 
-        bool DoctorService::saveData()
-        {
-            return m_doctorRepo->save();
-        }
+        bool DoctorService::saveData() { return m_doctorRepo->save(); }
 
-        bool DoctorService::loadData()
-        {
-            return m_doctorRepo->load();
-        }
+        bool DoctorService::loadData() { return m_doctorRepo->load(); }
 
-    }
-}
+    } // namespace BLL
+} // namespace HMS
