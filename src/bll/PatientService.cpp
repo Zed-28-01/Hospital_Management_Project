@@ -331,7 +331,7 @@ namespace HMS
 
             // Validate date of birth
             std::string dob = patient.getDateOfBirth();
-            if (!Utils::isValidDate(dob))
+            if (!Utils::isValidDateInternal(dob))
             {
                 return false;
             }

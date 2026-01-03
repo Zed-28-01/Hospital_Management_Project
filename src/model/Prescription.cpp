@@ -334,8 +334,8 @@ namespace HMS
                     return std::nullopt;
                 }
 
-                // Validate date format
-                if (!prescriptionDate.empty() && !Utils::isValidDate(prescriptionDate))
+                // Validate date format (internal format YYYY-MM-DD)
+                if (!prescriptionDate.empty() && !Utils::isValidDateInternal(prescriptionDate))
                 {
                     std::cerr << std::format(
                         "Error: Invalid date format '{}' for prescription {}\n",

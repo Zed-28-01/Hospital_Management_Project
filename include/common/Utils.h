@@ -79,11 +79,32 @@ std::string getCurrentTime();
 std::string getCurrentDateTime();
 
 /**
- * @brief Validate date format (YYYY-MM-DD)
+ * @brief Validate date format (DD-MM-YYYY for user input)
  * @param date The date string to validate
  * @return True if valid
  */
 bool isValidDate(const std::string& date);
+
+/**
+ * @brief Validate internal date format (YYYY-MM-DD for storage/comparison)
+ * @param date The date string to validate
+ * @return True if valid
+ */
+bool isValidDateInternal(const std::string& date);
+
+/**
+ * @brief Convert date from input format (DD-MM-YYYY) to internal format (YYYY-MM-DD)
+ * @param date Date in DD-MM-YYYY format
+ * @return Date in YYYY-MM-DD format, or empty string if invalid
+ */
+std::string dateFromInput(const std::string& date);
+
+/**
+ * @brief Convert date from internal format (YYYY-MM-DD) to display format (DD-MM-YYYY)
+ * @param date Date in YYYY-MM-DD format
+ * @return Date in DD-MM-YYYY format
+ */
+std::string dateToDisplay(const std::string& date);
 
 /**
  * @brief Validate time format (HH:MM)
@@ -106,6 +127,13 @@ int compareDates(const std::string& date1, const std::string& date2);
  * @return True if date is in the future
  */
 bool isFutureDate(const std::string& date);
+
+/**
+ * @brief Check if date is today or in the future
+ * @param date The date to check (internal format YYYY-MM-DD)
+ * @return True if date is today or in the future
+ */
+bool isTodayOrFuture(const std::string& date);
 
 /**
  * @brief Get number of days in a month

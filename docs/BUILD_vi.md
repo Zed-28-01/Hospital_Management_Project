@@ -64,6 +64,18 @@ make clean
 ./HospitalApp
 ```
 
+**Lưu ý về Múi Giờ:** Ứng dụng sử dụng thời gian hệ thống để kiểm tra các khung giờ đặt lịch. Nếu server chạy ở múi giờ UTC, bạn cần thiết lập múi giờ Việt Nam:
+
+```bash
+# Cách 1: Chạy với múi giờ Việt Nam (mỗi lần chạy)
+TZ='Asia/Ho_Chi_Minh' ./HospitalApp
+
+# Cách 2: Thiết lập vĩnh viễn trong shell (khuyến nghị)
+echo "export TZ='Asia/Ho_Chi_Minh'" >> ~/.bashrc
+source ~/.bashrc
+./HospitalApp
+```
+
 ### Chạy Tests
 
 ```bash

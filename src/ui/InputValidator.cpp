@@ -127,12 +127,20 @@ namespace HMS
 
         bool InputValidator::validateFutureDate(const std::string &date)
         {
-            return Utils::isValidDate(date) && Utils::isFutureDate(date);
+            if (!Utils::isValidDate(date))
+                return false;
+            // Convert DD-MM-YYYY to YYYY-MM-DD for comparison
+            std::string internalDate = Utils::dateFromInput(date);
+            return Utils::isTodayOrFuture(internalDate);
         }
 
         bool InputValidator::validatePastDate(const std::string &date)
         {
-            return Utils::isValidDate(date) && !Utils::isFutureDate(date);
+            if (!Utils::isValidDate(date))
+                return false;
+            // Convert DD-MM-YYYY to YYYY-MM-DD for comparison
+            std::string internalDate = Utils::dateFromInput(date);
+            return !Utils::isFutureDate(internalDate);
         }
 
         std::string InputValidator::getDateError(const std::string &date)
@@ -143,9 +151,9 @@ namespace HMS
             }
             if (date.length() != 10)
             {
-                return "Ngày phải có định dạng YYYY-MM-DD.";
+                return "Ngày phải có định dạng DD-MM-YYYY.";
             }
-            return "Ngày không hợp lệ. Vui lòng sử dụng định dạng YYYY-MM-DD với giá trị hợp lệ.";
+            return "Ngày không hợp lệ. Vui lòng sử dụng định dạng DD-MM-YYYY với giá trị hợp lệ.";
         }
 
         // ==================== Time Validation ====================

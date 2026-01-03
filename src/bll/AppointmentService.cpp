@@ -133,7 +133,7 @@ namespace HMS
             // Only check validity if something actually changed
             if (targetDate != appt.getDate() || targetTime != appt.getTime())
             {
-                if (!Utils::isValidDate(targetDate) || !Utils::isValidTime(targetTime))
+                if (!Utils::isValidDateInternal(targetDate) || !Utils::isValidTime(targetTime))
                 {
                     return false;
                 }
@@ -335,7 +335,7 @@ namespace HMS
                                                  const std::string &time)
         {
             // Date/Time syntax check
-            if (!Utils::isValidDate(date))
+            if (!Utils::isValidDateInternal(date))
                 return false;
             if (!Utils::isValidTime(time))
                 return false;

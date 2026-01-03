@@ -371,7 +371,7 @@ TEST_F(AdminServiceTest, GenerateSummaryReport_DoesNotCrash)
     std::string report = adminService->generateSummaryReport();
 
     EXPECT_FALSE(report.empty());
-    EXPECT_NE(report.find("THONG KE"), std::string::npos);
+    EXPECT_NE(report.find("THỐNG KÊ"), std::string::npos);
 }
 
 TEST_F(AdminServiceTest, GenerateDailyReport_DoesNotCrash)
