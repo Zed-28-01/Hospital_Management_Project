@@ -1060,11 +1060,14 @@ namespace HMS
             printSubHeader("DANH SÁCH THUỐC");
             for (size_t i = 0; i < medicines.size(); ++i)
             {
-                std::cout << "  " << (i + 1) << ". "
-                          << std::left << std::setw(35) << medicines[i].getName()
-                          << " - " << std::setw(15) << medicines[i].getCategory()
-                          << " (ID: " << medicines[i].getMedicineID()
-                          << ", Tồn: " << medicines[i].getQuantityInStock() << ")\n";
+                std::cout << std::format(
+                    "{:>2}. {:<25} - {:<25} (ID: {:<5}, Tồn: {})\n",
+                    i + 1,
+                    medicines[i].getName(),
+                    medicines[i].getCategory(),
+                    medicines[i].getMedicineID(),
+                    medicines[i].getQuantityInStock()
+                );
             }
             std::cout << "\n";
         }
@@ -1080,10 +1083,13 @@ namespace HMS
             printSubHeader("DANH SÁCH KHOA");
             for (size_t i = 0; i < departments.size(); ++i)
             {
-                std::cout << "  " << (i + 1) << ". "
-                          << std::left << std::setw(30) << departments[i].getName()
-                          << " (ID: " << departments[i].getDepartmentID()
-                          << ", Vị trí: " << departments[i].getLocation() << ")\n";
+                std::cout << std::format(
+                    "{:>2}. {:<20} (ID: {:<5}, Vị trí: {})\n",
+                    i + 1,
+                    departments[i].getName(),
+                    departments[i].getDepartmentID(),
+                    departments[i].getLocation()
+                );
             }
             std::cout << "\n";
         }

@@ -2,6 +2,7 @@
 #include "common/Utils.h"
 #include <ctime>
 #include <cstdio>
+#include <format>
 
 namespace HMS
 {
@@ -2557,7 +2558,7 @@ namespace HMS
             // Get current date
             time_t now = time(nullptr);
             tm *ltm = localtime(&now);
-            char dateBuffer[20];
+            char dateBuffer[64];
             snprintf(dateBuffer, sizeof(dateBuffer), "%04d-%02d-%02d",
                      1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday);
             std::string today = dateBuffer;
@@ -2805,15 +2806,15 @@ namespace HMS
                             DisplayHelper::clearScreen();
                             auto& med = medicines[choice - 1];
                             DisplayHelper::printSubHeader("THÔNG TIN THUỐC");
-                            std::cout << "Tên thuốc: " << med.getName() << "\n";
-                            std::cout << "Tên khoa học: " << med.getGenericName() << "\n";
-                            std::cout << "Danh mục: " << med.getCategory() << "\n";
-                            std::cout << "Nhà sản xuất: " << med.getManufacturer() << "\n";
-                            std::cout << "Dạng bào chế: " << med.getDosageForm() << "\n";
-                            std::cout << "Liều lượng: " << med.getStrength() << "\n";
+                            std::cout << std::format("{:<18}: {}\n", "Tên thuốc",        med.getName());
+                            std::cout << std::format("{:<18}: {}\n", "Tên khoa học",     med.getGenericName());
+                            std::cout << std::format("{:<18}: {}\n", "Danh mục",         med.getCategory());
+                            std::cout << std::format("{:<18}: {}\n", "Nhà sản xuất",     med.getManufacturer());
+                            std::cout << std::format("{:<18}: {}\n", "Dạng bào chế",     med.getDosageForm());
+                            std::cout << std::format("{:<18}: {}\n", "Liều lượng",       med.getStrength());
                             if (!med.getDescription().empty())
                             {
-                                std::cout << "Mô tả: " << med.getDescription() << "\n";
+                                std::cout << std::format("{:<18}: {}\n", "Mô tả", med.getDescription());
                             }
                         }
                     }
