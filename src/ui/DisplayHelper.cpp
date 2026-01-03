@@ -244,14 +244,14 @@ namespace HMS
                         std::cout << "[N] Trang sau  ";
                     if (totalPages > 1)
                         std::cout << "[G] Đến trang  ";
-                    std::cout << "[Q] Quay lại menu\n";
+                    std::cout << "0. Quay lại menu\n";
                     std::cout << "\nNhập lựa chọn: ";
 
                     std::string choice;
                     std::getline(std::cin, choice);
                     choice = Utils::toLower(Utils::trim(choice));
 
-                    if (choice == "q" || choice == "quit" || choice.empty())
+                    if (choice == "0" || choice.empty())
                     {
                         break;
                     }
