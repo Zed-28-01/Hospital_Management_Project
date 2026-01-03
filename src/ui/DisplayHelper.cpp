@@ -1011,12 +1011,11 @@ namespace HMS
 
             printSubHeader("KHUNG GIỜ TRỐNG");
             int indexWidth = std::to_string(slots.size()).length();
-            int slotWidth = 10;
+
             int count = 0;
             for (size_t i = 0; i < slots.size(); ++i)
             {
-                std::cout << "  " << std::setw(indexWidth) << (i + 1) << ". "
-                          << std::left << std::setw(slotWidth) << slots[i];
+                std::cout << "  " << std::setw(indexWidth) << (i + 1) << ". " << slots[i] << "    ";
                 count++;
                 if (count % 4 == 0)
                 {
