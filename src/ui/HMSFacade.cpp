@@ -258,9 +258,18 @@ bool HMSFacade::updatePatient(const std::string& patientID,
         return false;
     }
 
-    patient->setPhone(phone);
-    patient->setAddress(address);
-    patient->setMedicalHistory(medicalHistory);
+    if (!phone.empty()) {
+        patient->setPhone(phone);
+    }
+
+    if (!address.empty()) {
+        patient->setAddress(address);
+    }
+
+    if (!medicalHistory.empty()) {
+        patient->setMedicalHistory(medicalHistory);
+    }
+
 
     return m_patientService->updatePatient(*patient);
 }
