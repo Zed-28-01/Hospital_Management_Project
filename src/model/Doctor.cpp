@@ -162,8 +162,8 @@ namespace HMS
                     return std::nullopt;
                 }
 
-                // Validate date format
-                if (!Utils::isValidDate(dateOfBirth))
+                // Validate date format (internal format YYYY-MM-DD)
+                if (!Utils::isValidDateInternal(dateOfBirth))
                 {
                     std::cerr << std::format("Error: Invalid date format '{}' for doctor {}\n",
                                              dateOfBirth, doctorID);

@@ -79,11 +79,32 @@ std::string getCurrentTime();
 std::string getCurrentDateTime();
 
 /**
- * @brief Validate date format (YYYY-MM-DD)
+ * @brief Validate date format (DD-MM-YYYY for user input)
  * @param date The date string to validate
  * @return True if valid
  */
 bool isValidDate(const std::string& date);
+
+/**
+ * @brief Validate internal date format (YYYY-MM-DD for storage/comparison)
+ * @param date The date string to validate
+ * @return True if valid
+ */
+bool isValidDateInternal(const std::string& date);
+
+/**
+ * @brief Convert date from input format (DD-MM-YYYY) to internal format (YYYY-MM-DD)
+ * @param date Date in DD-MM-YYYY format
+ * @return Date in YYYY-MM-DD format, or empty string if invalid
+ */
+std::string dateFromInput(const std::string& date);
+
+/**
+ * @brief Convert date from internal format (YYYY-MM-DD) to display format (DD-MM-YYYY)
+ * @param date Date in YYYY-MM-DD format
+ * @return Date in DD-MM-YYYY format
+ */
+std::string dateToDisplay(const std::string& date);
 
 /**
  * @brief Validate time format (HH:MM)

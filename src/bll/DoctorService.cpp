@@ -262,7 +262,7 @@ namespace HMS
                                                            const std::string &date)
         {
             // Validate the date format
-            if (!Utils::isValidDate(date))
+            if (!Utils::isValidDateInternal(date))
             {
                 return {};
             }
@@ -301,7 +301,7 @@ namespace HMS
                                             const std::string &time,
                                             const std::string &date)
         {
-            if (!Utils::isValidTime(time) || !Utils::isValidDate(date))
+            if (!Utils::isValidTime(time) || !Utils::isValidDateInternal(date))
             {
                 return false;
             }
@@ -352,7 +352,7 @@ namespace HMS
                                               const std::string &startDate,
                                               const std::string &endDate)
         {
-            if (!Utils::isValidDate(startDate) || !Utils::isValidDate(endDate))
+            if (!Utils::isValidDateInternal(startDate) || !Utils::isValidDateInternal(endDate))
             {
                 return {};
             }
@@ -431,7 +431,7 @@ namespace HMS
             }
 
             // Validate date of birth format
-            if (!Utils::isValidDate(doctor.getDateOfBirth()))
+            if (!Utils::isValidDateInternal(doctor.getDateOfBirth()))
             {
                 return false;
             }

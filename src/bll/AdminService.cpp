@@ -315,7 +315,7 @@ namespace HMS
         std::string AdminService::generateDailyReport(const std::string &date)
         {
             // Validate date format
-            if (!Utils::isValidDate(date))
+            if (!Utils::isValidDateInternal(date))
             {
                 return "Error: Invalid date format. Expected YYYY-MM-DD.";
             }
@@ -366,7 +366,7 @@ namespace HMS
         std::string AdminService::generateWeeklyReport(const std::string &startDate)
         {
             // Validate date format
-            if (!Utils::isValidDate(startDate))
+            if (!Utils::isValidDateInternal(startDate))
             {
                 return "Error: Invalid date format. Expected YYYY-MM-DD.";
             }

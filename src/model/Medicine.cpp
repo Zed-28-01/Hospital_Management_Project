@@ -293,8 +293,8 @@ namespace HMS
                     return std::nullopt;
                 }
 
-                // Validate expiry date format if provided
-                if (!expiryDate.empty() && !Utils::isValidDate(expiryDate))
+                // Validate expiry date format if provided (internal format YYYY-MM-DD)
+                if (!expiryDate.empty() && !Utils::isValidDateInternal(expiryDate))
                 {
                     std::cerr << std::format(
                         "Error: Invalid expiry date format '{}' for medicine {}\n",

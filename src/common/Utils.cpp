@@ -105,7 +105,38 @@ namespace HMS
             return getCurrentDate() + " " + getCurrentTime();
         }
 
+        // Validates DD-MM-YYYY format (user input format)
         bool isValidDate(const std::string &date)
+        {
+            if (date.length() != 10)
+                return false; // DD-MM-YYYY
+            if (date[2] != '-' || date[5] != '-')
+                return false;
+
+            for (int i = 0; i < 10; ++i)
+            {
+                if (i == 2 || i == 5)
+                    continue;
+                if (!std::isdigit(date[i]))
+                    return false;
+            }
+
+            int day = std::stoi(date.substr(0, 2));
+            int month = std::stoi(date.substr(3, 2));
+            int year = std::stoi(date.substr(6, 4));
+
+            if (year < 1900 || year > 2100)
+                return false;
+            if (month < 1 || month > 12)
+                return false;
+            if (day < 1 || day > 31)
+                return false;
+
+            return true;
+        }
+
+        // Validates YYYY-MM-DD format (internal storage format)
+        bool isValidDateInternal(const std::string &date)
         {
             if (date.length() != 10)
                 return false; // YYYY-MM-DD
@@ -132,6 +163,32 @@ namespace HMS
                 return false;
 
             return true;
+        }
+
+        // Convert DD-MM-YYYY to YYYY-MM-DD
+        std::string dateFromInput(const std::string &date)
+        {
+            if (!isValidDate(date))
+                return "";
+
+            std::string day = date.substr(0, 2);
+            std::string month = date.substr(3, 2);
+            std::string year = date.substr(6, 4);
+
+            return year + "-" + month + "-" + day;
+        }
+
+        // Convert YYYY-MM-DD to DD-MM-YYYY
+        std::string dateToDisplay(const std::string &date)
+        {
+            if (date.length() != 10 || date[4] != '-' || date[7] != '-')
+                return date; // Return as-is if not internal format
+
+            std::string year = date.substr(0, 4);
+            std::string month = date.substr(5, 2);
+            std::string day = date.substr(8, 2);
+
+            return day + "-" + month + "-" + year;
         }
 
         bool isValidTime(const std::string &time)
@@ -197,7 +254,8 @@ namespace HMS
 
         bool getWeekRange(const std::string &date, std::string &startDate, std::string &endDate)
         {
-            if (!isValidDate(date))
+            // This function expects internal format (YYYY-MM-DD)
+            if (!isValidDateInternal(date))
             {
                 return false;
             }

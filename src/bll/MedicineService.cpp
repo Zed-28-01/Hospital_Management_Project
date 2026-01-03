@@ -389,7 +389,7 @@ namespace HMS
             }
 
             const auto &expiryDate = medicine.getExpiryDate();
-            if (!expiryDate.empty() && !Utils::isValidDate(expiryDate))
+            if (!expiryDate.empty() && !Utils::isValidDateInternal(expiryDate))
             {
                 return false;
             }
