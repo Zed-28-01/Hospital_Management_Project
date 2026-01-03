@@ -850,23 +850,53 @@ namespace HMS
 
         void ConsoleUI::viewDoctorSchedule()
         {
-            DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("LỊCH LÀM VIỆC");
-
-            std::string date = selectDate();
-            if (date.empty())
-                return;
-
-            auto appointments = m_facade->getMySchedule(date);
-            if (appointments.empty())
+            while (true)
             {
-                DisplayHelper::printNoData("lịch hẹn cho ngày này");
+                DisplayHelper::clearScreen();
+                DisplayHelper::printHeader("LỊCH LÀM VIỆC");
+
+                // Show all upcoming appointments by default
+                auto appointments = m_facade->getMyUpcomingAppointments();
+                if (appointments.empty())
+                {
+                    DisplayHelper::printNoData("lịch hẹn sắp tới");
+                }
+                else
+                {
+                    std::cout << "Tất cả lịch hẹn sắp tới:\n\n";
+                    DisplayHelper::printAppointmentTable(appointments);
+                }
+
+                std::cout << "\n";
+                std::cout << "1. Lọc theo ngày cụ thể\n";
+                std::cout << "0. Quay lại\n\n";
+
+                std::string choice = DisplayHelper::getInput("Nhập lựa chọn");
+                if (choice == "0" || choice.empty())
+                    return;
+
+                if (choice == "1")
+                {
+                    std::string date = selectDate();
+                    if (date.empty())
+                        continue;
+
+                    auto filtered = m_facade->getMySchedule(date);
+                    DisplayHelper::clearScreen();
+                    DisplayHelper::printHeader("LỊCH LÀM VIỆC");
+                    std::cout << "Lịch hẹn ngày " << DisplayHelper::formatDate(date) << ":\n\n";
+
+                    if (filtered.empty())
+                    {
+                        DisplayHelper::printNoData("lịch hẹn cho ngày này");
+                    }
+                    else
+                    {
+                        DisplayHelper::printAppointmentTable(filtered);
+                    }
+                    DisplayHelper::pause();
+                }
             }
-            else
-            {
-                DisplayHelper::printAppointmentTable(appointments);
-            }
-            DisplayHelper::pause();
         }
 
         void ConsoleUI::markAppointmentComplete()

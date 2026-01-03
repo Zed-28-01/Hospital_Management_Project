@@ -131,7 +131,7 @@ namespace HMS
                 return false;
             // Convert DD-MM-YYYY to YYYY-MM-DD for comparison
             std::string internalDate = Utils::dateFromInput(date);
-            return Utils::isFutureDate(internalDate);
+            return Utils::isTodayOrFuture(internalDate);
         }
 
         bool InputValidator::validatePastDate(const std::string &date)

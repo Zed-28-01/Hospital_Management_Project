@@ -231,6 +231,11 @@ namespace HMS
             return compareDates(date, getCurrentDate()) > 0;
         }
 
+        bool isTodayOrFuture(const std::string &date)
+        {
+            return compareDates(date, getCurrentDate()) >= 0;
+        }
+
         int getDaysInMonth(int month, int year)
         {
             if (month < 1 || month > 12)

@@ -129,6 +129,13 @@ int compareDates(const std::string& date1, const std::string& date2);
 bool isFutureDate(const std::string& date);
 
 /**
+ * @brief Check if date is today or in the future
+ * @param date The date to check (internal format YYYY-MM-DD)
+ * @return True if date is today or in the future
+ */
+bool isTodayOrFuture(const std::string& date);
+
+/**
  * @brief Get number of days in a month
  * @param month Month (1-12)
  * @param year Year (for leap year calculation)
