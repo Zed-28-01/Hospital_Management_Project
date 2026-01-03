@@ -400,6 +400,82 @@ namespace HMS
             return canCancel(appointmentID);
         }
 
+        // ==================== Cascade Operations ====================
+
+        int AppointmentService::cancelUpcomingByDoctor(const std::string &doctorID)
+        {
+            auto appointments = m_appointmentRepo->getByDoctor(doctorID);
+            std::string today = Utils::getCurrentDate();
+            std::string nowTime = Utils::getCurrentTime();
+            int cancelledCount = 0;
+
+            for (auto &appt : appointments)
+            {
+                // Only cancel SCHEDULED appointments
+                if (appt.getStatus() != AppointmentStatus::SCHEDULED)
+                    continue;
+
+                // Check if appointment is upcoming (today with future time, or future date)
+                bool isUpcoming = false;
+                if (appt.getDate() > today)
+                {
+                    isUpcoming = true;
+                }
+                else if (appt.getDate() == today && appt.getTime() >= nowTime)
+                {
+                    isUpcoming = true;
+                }
+
+                if (isUpcoming)
+                {
+                    appt.setStatus(AppointmentStatus::CANCELLED);
+                    if (m_appointmentRepo->update(appt))
+                    {
+                        cancelledCount++;
+                    }
+                }
+            }
+
+            return cancelledCount;
+        }
+
+        int AppointmentService::cancelUpcomingByPatient(const std::string &patientUsername)
+        {
+            auto appointments = m_appointmentRepo->getByPatient(patientUsername);
+            std::string today = Utils::getCurrentDate();
+            std::string nowTime = Utils::getCurrentTime();
+            int cancelledCount = 0;
+
+            for (auto &appt : appointments)
+            {
+                // Only cancel SCHEDULED appointments
+                if (appt.getStatus() != AppointmentStatus::SCHEDULED)
+                    continue;
+
+                // Check if appointment is upcoming (today with future time, or future date)
+                bool isUpcoming = false;
+                if (appt.getDate() > today)
+                {
+                    isUpcoming = true;
+                }
+                else if (appt.getDate() == today && appt.getTime() >= nowTime)
+                {
+                    isUpcoming = true;
+                }
+
+                if (isUpcoming)
+                {
+                    appt.setStatus(AppointmentStatus::CANCELLED);
+                    if (m_appointmentRepo->update(appt))
+                    {
+                        cancelledCount++;
+                    }
+                }
+            }
+
+            return cancelledCount;
+        }
+
         // ==================== Statistics ====================
 
         double AppointmentService::getTotalRevenue()

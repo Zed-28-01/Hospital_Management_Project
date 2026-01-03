@@ -1,4 +1,5 @@
 #include "bll/DoctorService.h"
+#include "bll/AppointmentService.h"
 #include "common/Constants.h"
 #include "common/Types.h"
 #include "common/Utils.h"
@@ -150,7 +151,11 @@ namespace HMS
 
             std::string username = doctorOpt->getUsername();
 
-            // Delete doctor profile first
+            // Auto-cancel upcoming scheduled appointments before deleting doctor
+            // This preserves appointment history while preventing orphaned future bookings
+            AppointmentService::getInstance()->cancelUpcomingByDoctor(doctorID);
+
+            // Delete doctor profile
             if (!m_doctorRepo->remove(doctorID))
             {
                 return false;

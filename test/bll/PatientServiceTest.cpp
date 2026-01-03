@@ -2,6 +2,7 @@
 #include <filesystem>
 
 #include "bll/PatientService.h"
+#include "bll/AppointmentService.h"
 #include "model/Patient.h"
 #include "model/Appointment.h"
 #include "common/Types.h"
@@ -29,6 +30,7 @@ protected:
         std::filesystem::create_directories(TEST_DATA_DIR);
 
         PatientService::resetInstance();
+        AppointmentService::resetInstance();
         service = PatientService::getInstance();
 
         auto patientRepo = DAL::PatientRepository::getInstance();
@@ -50,6 +52,7 @@ protected:
         appointmentRepo->clear();
 
         PatientService::resetInstance();
+        AppointmentService::resetInstance();
     }
 
     Patient createTestPatient(

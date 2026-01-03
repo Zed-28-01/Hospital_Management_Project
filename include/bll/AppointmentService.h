@@ -252,6 +252,22 @@ public:
      */
     bool canEdit(const std::string& appointmentID);
 
+    // ==================== Cascade Operations ====================
+
+    /**
+     * @brief Cancel all upcoming scheduled appointments for a doctor
+     * @param doctorID The doctor's ID
+     * @return Number of appointments cancelled
+     */
+    int cancelUpcomingByDoctor(const std::string& doctorID);
+
+    /**
+     * @brief Cancel all upcoming scheduled appointments for a patient
+     * @param patientUsername The patient's username
+     * @return Number of appointments cancelled
+     */
+    int cancelUpcomingByPatient(const std::string& patientUsername);
+
     // ==================== Statistics ====================
 
     /**

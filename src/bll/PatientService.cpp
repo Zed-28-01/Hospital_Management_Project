@@ -1,4 +1,5 @@
 #include "bll/PatientService.h"
+#include "bll/AppointmentService.h"
 #include "common/Utils.h"
 #include "common/Constants.h"
 
@@ -121,17 +122,23 @@ namespace HMS
 
             std::string username = patientOpt->getUsername();
 
+            // Auto-cancel upcoming scheduled appointments before deleting patient
+            // This preserves appointment history while preventing orphaned future bookings
+            if (!username.empty())
+            {
+                AppointmentService::getInstance()->cancelUpcomingByPatient(username);
+            }
+
             // Delete patient profile
             if (!m_patientRepo->remove(patientID))
             {
                 return false;
             }
 
-            // NOTE: Appointments are intentionally NOT deleted to preserve:
+            // NOTE: Past/completed appointments are intentionally NOT deleted to preserve:
             // - Historical medical records and audit trail
             // - Revenue/financial reporting accuracy
             // - Referential integrity for Prescriptions
-            // Orphaned appointments (with deleted patient) remain as historical data
 
             // Cascading delete: Remove associated account to prevent orphaned logins
             // This is a security requirement - deleted patients should not be able to log in
