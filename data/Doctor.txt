@@ -2,13 +2,13 @@
 # Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee
 # Gender: Nam, Nữ, Khác
 
-D001|bslinhcardio|BS. Trần Thị Linh|0901111001|Nữ|1978-03-15|Tim mạch|Thứ 2-6: 08:00-17:00|600000
-D002|bshaipediatrics|BS. Nguyễn Văn Hải|0901111002|Nam|1982-07-22|Nhi khoa|Thứ 2-7: 07:30-16:30|500000
-D003|bstuanneuro|BS. Lê Minh Tuấn|0901111003|Nam|1975-11-08|Thần kinh|Thứ 2-6: 09:00-18:00|700000
-D004|bsquynhortho|BS. Phạm Thị Quỳnh|0901111004|Nữ|1985-05-20|Chỉnh hình|Thứ 3-7: 08:00-17:00|650000
-D005|bshungderm|BS. Võ Quốc Hưng|0901111005|Nam|1980-09-12|Da liễu|Thứ 2-6: 08:30-17:30|450000
-D006|bsthaoendo|BS. Đặng Thị Thảo|0901111006|Nữ|1983-01-30|Nội tiết|Thứ 2-5: 07:00-16:00|550000
-D007|bsnamgastro|BS. Bùi Văn Nam|0901111007|Nam|1977-12-05|Tiêu hóa|Thứ 2-6: 09:00-18:00|600000
-D008|bslanoncology|BS. Hoàng Thị Lan|0901111008|Nữ|1981-08-18|Ung bướu|Thứ 2-6: 08:00-17:00|800000
-D009|bsdungoph|BS. Trương Văn Dũng|0901111009|Nam|1979-04-25|Mắt|Thứ 3-7: 08:30-17:30|500000
-D010|bsphirespiratory|BS. Lý Thị Phi|0901111010|Nữ|1984-06-14|Hô hấp|Thứ 2-6: 07:30-16:30|550000
+D001|bslinhcardio|BS. Trần Thị Linh|0901111001|Nữ|1978-03-15|Tim mạch|Thứ 2-CN: 08:00-17:00|600000
+D002|bshaipediatrics|BS. Nguyễn Văn Hải|0901111002|Nam|1982-07-22|Nhi khoa|Thứ 2-CN: 08:00-17:00|500000
+D003|bstuanneuro|BS. Lê Minh Tuấn|0901111003|Nam|1975-11-08|Thần kinh|Thứ 2-CN: 08:00-17:00|700000
+D004|bsquynhortho|BS. Phạm Thị Quỳnh|0901111004|Nữ|1985-05-20|Chỉnh hình|Thứ 3-CN: 08:00-17:00|650000
+D005|bshungderm|BS. Võ Quốc Hưng|0901111005|Nam|1980-09-12|Da liễu|Thứ 2-CN: 08:00-17:00|450000
+D006|bsthaoendo|BS. Đặng Thị Thảo|0901111006|Nữ|1983-01-30|Nội tiết|Thứ 2-CN: 08:00-17:00|550000
+D007|bsnamgastro|BS. Bùi Văn Nam|0901111007|Nam|1977-12-05|Tiêu hóa|Thứ 2-CN: 08:00-17:00|600000
+D008|bslanoncology|BS. Hoàng Thị Lan|0901111008|Nữ|1981-08-18|Ung bướu|Thứ 2-CN: 08:00-17:00|800000
+D009|bsdungoph|BS. Trương Văn Dũng|0901111009|Nam|1979-04-25|Mắt|Thứ 2-CN: 08:00-17:00|500000
+D010|bsphirespiratory|BS. Lý Thị Phi|0901111010|Nữ|1984-06-14|Hô hấp|Thứ 2-CN: 08:00-17:00|550000
