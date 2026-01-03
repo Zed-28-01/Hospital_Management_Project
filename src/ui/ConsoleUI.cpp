@@ -1,4 +1,5 @@
 #include "ui/ConsoleUI.h"
+#include "common/Utils.h"
 #include <ctime>
 #include <cstdio>
 
@@ -213,16 +214,18 @@ namespace HMS
             std::string dateOfBirth;
             while (true)
             {
-                dateOfBirth = DisplayHelper::getInput("Nhập ngày sinh (YYYY-MM-DD)");
-                if (dateOfBirth.empty())
+                std::string dateInput = DisplayHelper::getInput("Nhập ngày sinh (DD-MM-YYYY)");
+                if (dateInput.empty())
                     return;
 
-                if (!InputValidator::validateDate(dateOfBirth))
+                if (!InputValidator::validateDate(dateInput))
                 {
-                    std::cout << InputValidator::getDateError(dateOfBirth) << "\n";
+                    std::cout << InputValidator::getDateError(dateInput) << "\n";
                     continue;
                 }
-                if (!InputValidator::validatePastDate(dateOfBirth))
+                // Convert to internal format for validation and storage
+                dateOfBirth = ::HMS::Utils::dateFromInput(dateInput);
+                if (!InputValidator::validatePastDate(dateInput))
                 {
                     DisplayHelper::printError("Ngày sinh phải là ngày trong quá khứ.");
                     continue;
@@ -692,14 +695,15 @@ namespace HMS
             std::string dateOfBirth;
             while (true)
             {
-                dateOfBirth = DisplayHelper::getInput("Nhập ngày sinh (YYYY-MM-DD)");
-                if (dateOfBirth.empty())
+                std::string dateInput = DisplayHelper::getInput("Nhập ngày sinh (DD-MM-YYYY)");
+                if (dateInput.empty())
                     return;
-                if (!InputValidator::validateDate(dateOfBirth) || !InputValidator::validatePastDate(dateOfBirth))
+                if (!InputValidator::validateDate(dateInput) || !InputValidator::validatePastDate(dateInput))
                 {
-                    DisplayHelper::printError("Ngày sinh không hợp lệ.");
+                    DisplayHelper::printError("Ngày sinh không hợp lệ. Vui lòng nhập theo định dạng DD-MM-YYYY.");
                     continue;
                 }
+                dateOfBirth = ::HMS::Utils::dateFromInput(dateInput);
                 break;
             }
 
@@ -846,23 +850,53 @@ namespace HMS
 
         void ConsoleUI::viewDoctorSchedule()
         {
-            DisplayHelper::clearScreen();
-            DisplayHelper::printHeader("LỊCH LÀM VIỆC");
-
-            std::string date = selectDate();
-            if (date.empty())
-                return;
-
-            auto appointments = m_facade->getMySchedule(date);
-            if (appointments.empty())
+            while (true)
             {
-                DisplayHelper::printNoData("lịch hẹn cho ngày này");
+                DisplayHelper::clearScreen();
+                DisplayHelper::printHeader("LỊCH LÀM VIỆC");
+
+                // Show all upcoming appointments by default
+                auto appointments = m_facade->getMyUpcomingAppointments();
+                if (appointments.empty())
+                {
+                    DisplayHelper::printNoData("lịch hẹn sắp tới");
+                }
+                else
+                {
+                    std::cout << "Tất cả lịch hẹn sắp tới:\n\n";
+                    DisplayHelper::printAppointmentTable(appointments);
+                }
+
+                std::cout << "\n";
+                std::cout << "1. Lọc theo ngày cụ thể\n";
+                std::cout << "0. Quay lại\n\n";
+
+                std::string choice = DisplayHelper::getInput("Nhập lựa chọn");
+                if (choice == "0" || choice.empty())
+                    return;
+
+                if (choice == "1")
+                {
+                    std::string date = selectDate();
+                    if (date.empty())
+                        continue;
+
+                    auto filtered = m_facade->getMySchedule(date);
+                    DisplayHelper::clearScreen();
+                    DisplayHelper::printHeader("LỊCH LÀM VIỆC");
+                    std::cout << "Lịch hẹn ngày " << DisplayHelper::formatDate(date) << ":\n\n";
+
+                    if (filtered.empty())
+                    {
+                        DisplayHelper::printNoData("lịch hẹn cho ngày này");
+                    }
+                    else
+                    {
+                        DisplayHelper::printAppointmentTable(filtered);
+                    }
+                    DisplayHelper::pause();
+                }
             }
-            else
-            {
-                DisplayHelper::printAppointmentTable(appointments);
-            }
-            DisplayHelper::pause();
         }
 
         void ConsoleUI::markAppointmentComplete()
@@ -998,14 +1032,15 @@ namespace HMS
             std::string dateOfBirth;
             while (true)
             {
-                dateOfBirth = DisplayHelper::getInput("Nhập ngày sinh (YYYY-MM-DD)");
-                if (dateOfBirth.empty())
+                std::string dateInput = DisplayHelper::getInput("Nhập ngày sinh (DD-MM-YYYY)");
+                if (dateInput.empty())
                     return;
-                if (!InputValidator::validateDate(dateOfBirth) || !InputValidator::validatePastDate(dateOfBirth))
+                if (!InputValidator::validateDate(dateInput) || !InputValidator::validatePastDate(dateInput))
                 {
-                    DisplayHelper::printError("Ngày sinh không hợp lệ.");
+                    DisplayHelper::printError("Ngày sinh không hợp lệ. Vui lòng nhập theo định dạng DD-MM-YYYY.");
                     continue;
                 }
+                dateOfBirth = ::HMS::Utils::dateFromInput(dateInput);
                 break;
             }
 
@@ -1330,20 +1365,22 @@ namespace HMS
             std::string date;
             while (true)
             {
-                date = DisplayHelper::getInput("Nhập ngày (YYYY-MM-DD, bỏ trống để quay lại)");
-                if (date.empty())
+                std::string dateInput = DisplayHelper::getInput("Nhập ngày (DD-MM-YYYY, bỏ trống để quay lại)");
+                if (dateInput.empty())
                     return "";
 
-                if (!InputValidator::validateDate(date))
+                if (!InputValidator::validateDate(dateInput))
                 {
-                    std::cout << InputValidator::getDateError(date) << "\n";
+                    std::cout << InputValidator::getDateError(dateInput) << "\n";
                     continue;
                 }
-                if (!InputValidator::validateFutureDate(date))
+                if (!InputValidator::validateFutureDate(dateInput))
                 {
                     DisplayHelper::printError("Ngày phải là hôm nay hoặc trong tương lai.");
                     continue;
                 }
+                // Convert to internal format (YYYY-MM-DD) for storage
+                date = ::HMS::Utils::dateFromInput(dateInput);
                 break;
             }
             return date;

@@ -180,11 +180,18 @@ std::vector<Model::Appointment> HMSFacade::getMyAppointments() {
 }
 
 std::vector<Model::Appointment> HMSFacade::getMyUpcomingAppointments() {
-    if (getCurrentRole() != Role::PATIENT) {
-        return {};
+    if (getCurrentRole() == Role::PATIENT) {
+        return m_patientService->getUpcomingAppointments(getCurrentUsername());
     }
 
-    return m_patientService->getUpcomingAppointments(getCurrentUsername());
+    if (getCurrentRole() == Role::DOCTOR) {
+        auto doctor = m_doctorService->getDoctorByUsername(getCurrentUsername());
+        if (doctor) {
+            return m_doctorService->getUpcomingAppointments(doctor->getDoctorID());
+        }
+    }
+
+    return {};
 }
 
 double HMSFacade::getMyTotalBill() {

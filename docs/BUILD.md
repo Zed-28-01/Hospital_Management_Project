@@ -64,6 +64,18 @@ make clean
 ./HospitalApp
 ```
 
+**Timezone Note:** The application uses system time to validate appointment time slots. If the server runs in UTC timezone, you need to set Vietnam timezone:
+
+```bash
+# Option 1: Run with Vietnam timezone (each time)
+TZ='Asia/Ho_Chi_Minh' ./HospitalApp
+
+# Option 2: Set permanently in shell (recommended)
+echo "export TZ='Asia/Ho_Chi_Minh'" >> ~/.bashrc
+source ~/.bashrc
+./HospitalApp
+```
+
 ### Run Tests
 
 ```bash

@@ -1161,29 +1161,12 @@ namespace HMS
                 return date;
             }
 
-            // Convert YYYY-MM-DD to DD/MM/YYYY
+            // Convert YYYY-MM-DD to DD-MM-YYYY for display
             std::string day = date.substr(8, 2);
             std::string month = date.substr(5, 2);
             std::string year = date.substr(0, 4);
 
-            // Month names in Vietnamese
-            static const char *months[] = {
-                "Thg 1", "Thg 2", "Thg 3", "Thg 4", "Thg 5", "Thg 6",
-                "Thg 7", "Thg 8", "Thg 9", "Thg 10", "Thg 11", "Thg 12"};
-
-            try
-            {
-                int monthNum = std::stoi(month);
-                if (monthNum >= 1 && monthNum <= 12)
-                {
-                    return day + " " + months[monthNum - 1] + " " + year;
-                }
-            }
-            catch (...)
-            {
-            }
-
-            return day + "/" + month + "/" + year;
+            return day + "-" + month + "-" + year;
         }
 
         std::string DisplayHelper::formatStatus(AppointmentStatus status)

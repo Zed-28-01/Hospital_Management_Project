@@ -242,8 +242,9 @@ TEST(StatisticsTest, ReportGenerationDoesNotCrash_CoreMetrics)
 
     EXPECT_FALSE(report.empty());
 
-    EXPECT_NE(report.find("THONG KE HE THONG"), std::string::npos);
-    EXPECT_NE(report.find("Tong doanh thu"), std::string::npos);
+    // Check for Vietnamese text with diacritics
+    EXPECT_NE(report.find("THỐNG KÊ HỆ THỐNG"), std::string::npos);
+    EXPECT_NE(report.find("Tổng doanh thu"), std::string::npos);
 }
 
 TEST(StatisticsTest, ReportGeneration_IncludesMedicineStats)
@@ -259,12 +260,12 @@ TEST(StatisticsTest, ReportGeneration_IncludesMedicineStats)
 
     std::string report = stats.toReport();
 
-    EXPECT_NE(report.find("THONG KE THUOC"), std::string::npos);
-    EXPECT_NE(report.find("Tong so thuoc"), std::string::npos);
-    EXPECT_NE(report.find("Sap het hang"), std::string::npos);
-    EXPECT_NE(report.find("Da het han"), std::string::npos);
-    EXPECT_NE(report.find("Gia tri ton kho"), std::string::npos);
-    EXPECT_NE(report.find("Theo danh muc"), std::string::npos);
+    EXPECT_NE(report.find("THỐNG KÊ THUỐC"), std::string::npos);
+    EXPECT_NE(report.find("Tổng số thuốc"), std::string::npos);
+    EXPECT_NE(report.find("Sắp hết hàng"), std::string::npos);
+    EXPECT_NE(report.find("Đã hết hạn"), std::string::npos);
+    EXPECT_NE(report.find("Giá trị tồn kho"), std::string::npos);
+    EXPECT_NE(report.find("Theo danh mục"), std::string::npos);
     EXPECT_NE(report.find("Antibiotics"), std::string::npos);
 }
 
@@ -278,9 +279,9 @@ TEST(StatisticsTest, ReportGeneration_IncludesDepartmentStats)
 
     std::string report = stats.toReport();
 
-    EXPECT_NE(report.find("THONG KE KHOA/PHONG"), std::string::npos);
-    EXPECT_NE(report.find("Tong so khoa"), std::string::npos);
-    EXPECT_NE(report.find("Bac si theo khoa"), std::string::npos);
+    EXPECT_NE(report.find("THỐNG KÊ KHOA/PHÒNG"), std::string::npos);
+    EXPECT_NE(report.find("Tổng số khoa"), std::string::npos);
+    EXPECT_NE(report.find("Bác sĩ theo khoa"), std::string::npos);
     EXPECT_NE(report.find("Cardiology"), std::string::npos);
     EXPECT_NE(report.find("Doanh thu theo khoa"), std::string::npos);
 }
@@ -295,11 +296,11 @@ TEST(StatisticsTest, ReportGeneration_IncludesPrescriptionStats)
 
     std::string report = stats.toReport();
 
-    EXPECT_NE(report.find("THONG KE DON THUOC"), std::string::npos);
-    EXPECT_NE(report.find("Tong so don"), std::string::npos);
-    EXPECT_NE(report.find("Da phat thuoc"), std::string::npos);
-    EXPECT_NE(report.find("Cho phat thuoc"), std::string::npos);
-    EXPECT_NE(report.find("Tong so muc thuoc"), std::string::npos);
+    EXPECT_NE(report.find("THỐNG KÊ ĐƠN THUỐC"), std::string::npos);
+    EXPECT_NE(report.find("Tổng số đơn"), std::string::npos);
+    EXPECT_NE(report.find("Đã phát thuốc"), std::string::npos);
+    EXPECT_NE(report.find("Chờ phát thuốc"), std::string::npos);
+    EXPECT_NE(report.find("Tổng số mục thuốc"), std::string::npos);
 }
 
 TEST(StatisticsTest, ReportGeneration_SkipsMedicineStatsWhenEmpty)
@@ -309,7 +310,7 @@ TEST(StatisticsTest, ReportGeneration_SkipsMedicineStatsWhenEmpty)
 
     std::string report = stats.toReport();
 
-    EXPECT_EQ(report.find("THONG KE THUOC"), std::string::npos);
+    EXPECT_EQ(report.find("THỐNG KÊ THUỐC"), std::string::npos);
 }
 
 TEST(StatisticsTest, ReportGeneration_SkipsDepartmentStatsWhenEmpty)
@@ -319,7 +320,7 @@ TEST(StatisticsTest, ReportGeneration_SkipsDepartmentStatsWhenEmpty)
 
     std::string report = stats.toReport();
 
-    EXPECT_EQ(report.find("THONG KE KHOA/PHONG"), std::string::npos);
+    EXPECT_EQ(report.find("THỐNG KÊ KHOA/PHÒNG"), std::string::npos);
 }
 
 TEST(StatisticsTest, ReportGeneration_SkipsPrescriptionStatsWhenEmpty)
@@ -329,7 +330,7 @@ TEST(StatisticsTest, ReportGeneration_SkipsPrescriptionStatsWhenEmpty)
 
     std::string report = stats.toReport();
 
-    EXPECT_EQ(report.find("THONG KE DON THUOC"), std::string::npos);
+    EXPECT_EQ(report.find("THỐNG KÊ ĐƠN THUỐC"), std::string::npos);
 }
 
 // ==================== Map Field Tests ====================
@@ -460,11 +461,11 @@ TEST(StatisticsTest, FullStatistics_AllFieldsSet)
     // Verify report generation doesn't crash
     std::string report = stats.toReport();
     EXPECT_FALSE(report.empty());
-    EXPECT_NE(report.find("THONG KE HE THONG"), std::string::npos);
-    EXPECT_NE(report.find("THONG KE DOANH THU"), std::string::npos);
-    EXPECT_NE(report.find("THONG KE THUOC"), std::string::npos);
-    EXPECT_NE(report.find("THONG KE KHOA/PHONG"), std::string::npos);
-    EXPECT_NE(report.find("THONG KE DON THUOC"), std::string::npos);
+    EXPECT_NE(report.find("THỐNG KÊ HỆ THỐNG"), std::string::npos);
+    EXPECT_NE(report.find("THỐNG KÊ DOANH THU"), std::string::npos);
+    EXPECT_NE(report.find("THỐNG KÊ THUỐC"), std::string::npos);
+    EXPECT_NE(report.find("THỐNG KÊ KHOA/PHÒNG"), std::string::npos);
+    EXPECT_NE(report.find("THỐNG KÊ ĐƠN THUỐC"), std::string::npos);
 }
 
 /*

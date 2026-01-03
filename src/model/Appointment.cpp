@@ -276,8 +276,8 @@ namespace HMS
                     return std::nullopt;
                 }
 
-                // Validate date and time formats
-                if (!Utils::isValidDate(date) || !Utils::isValidTime(time))
+                // Validate date and time formats (internal format YYYY-MM-DD)
+                if (!Utils::isValidDateInternal(date) || !Utils::isValidTime(time))
                 {
                     return std::nullopt;
                 }

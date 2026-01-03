@@ -198,8 +198,8 @@ public:
     std::vector<Model::Appointment> getMyAppointments();
 
     /**
-     * @brief Get current patient's upcoming appointments
-     * @return Vector of upcoming appointments
+     * @brief Get current user's upcoming appointments (works for both Patient and Doctor)
+     * @return Vector of upcoming appointments sorted by date/time
      */
     std::vector<Model::Appointment> getMyUpcomingAppointments();
 
