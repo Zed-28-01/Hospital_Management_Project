@@ -311,7 +311,7 @@ namespace HMS
             }
 
             // Validate username
-            if (!Utils::isValidUsername(patient.getUsername()))
+            if (!patient.getUsername().empty() && !Utils::isValidUsername(patient.getUsername()))
             {
                 return false;
             }
