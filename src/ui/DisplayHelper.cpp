@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm>
 #include <limits>
+#include <format>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -41,21 +42,26 @@ namespace HMS
             constexpr const char *CYAN_LOCAL = "\033[36m";
             constexpr const char *BOLD_LOCAL = "\033[1m";
 
-            int getVisibleLength(const std::string &str) {
+            int getVisibleLength(const std::string &str)
+            {
                 int length = 0;
                 bool inAnsi = false;
                 for (size_t i = 0; i < str.length(); ++i)
                 {
                     unsigned char c = static_cast<unsigned char>(str[i]);
-                    if (c == 0x1B) {
+                    if (c == 0x1B)
+                    {
                         inAnsi = true;
                         continue;
                     }
-                    if (inAnsi) {
-                        if (isalpha(c)) inAnsi = false;
+                    if (inAnsi)
+                    {
+                        if (isalpha(c))
+                            inAnsi = false;
                         continue;
                     }
-                    if ((c & 0xC0) != 0x80) {
+                    if ((c & 0xC0) != 0x80)
+                    {
                         length++;
                     }
                 }
@@ -65,7 +71,11 @@ namespace HMS
             std::vector<std::string> wrapText(const std::string &text, int width)
             {
                 std::vector<std::string> lines;
-                if (text.empty()) { lines.push_back(""); return lines; }
+                if (text.empty())
+                {
+                    lines.push_back("");
+                    return lines;
+                }
 
                 std::istringstream words(text);
                 std::string word;
@@ -76,37 +86,48 @@ namespace HMS
                     int wordLen = getVisibleLength(word);
                     int currentLen = getVisibleLength(currentLine);
 
-                    if (wordLen > width) {
-                        if (!currentLine.empty()) {
+                    if (wordLen > width)
+                    {
+                        if (!currentLine.empty())
+                        {
                             lines.push_back(currentLine);
                             currentLine = "";
                         }
                         lines.push_back(word);
                     }
-                    else if (currentLen + (currentLen > 0 ? 1 : 0) + wordLen > width) {
+                    else if (currentLen + (currentLen > 0 ? 1 : 0) + wordLen > width)
+                    {
                         lines.push_back(currentLine);
                         currentLine = word;
                     }
-                    else {
+                    else
+                    {
                         currentLine += (currentLine.empty() ? "" : " ") + word;
                     }
                 }
-                if (!currentLine.empty()) lines.push_back(currentLine);
+                if (!currentLine.empty())
+                    lines.push_back(currentLine);
                 return lines;
             }
 
             void printTableInternal(const std::vector<std::string> &headers,
                                     const std::vector<std::vector<std::string>> &rows,
-                                    const std::vector<int> &colWidths) {
+                                    const std::vector<int> &colWidths)
+            {
 
-                if (headers.empty()) return;
+                if (headers.empty())
+                    return;
                 std::vector<int> widths = colWidths;
-                if (widths.empty()) widths.resize(headers.size(), 15);
+                if (widths.empty())
+                    widths.resize(headers.size(), 15);
 
-                for (size_t i = 0; i < headers.size(); ++i) {
+                for (size_t i = 0; i < headers.size(); ++i)
+                {
                     widths[i] = std::max(widths[i], getVisibleLength(headers[i]));
-                    for (const auto &row : rows) {
-                        if (i < row.size()) {
+                    for (const auto &row : rows)
+                    {
+                        if (i < row.size())
+                        {
                             int contentLen = getVisibleLength(row[i]);
                             widths[i] = std::max(widths[i], std::min(contentLen, 40));
                         }
@@ -114,40 +135,49 @@ namespace HMS
                 }
 
                 int totalWidth = 1;
-                for (int w : widths) totalWidth += w + 3;
+                for (int w : widths)
+                    totalWidth += w + 3;
 
                 std::cout << BOLD_LOCAL;
                 DisplayHelper::printSeparator(totalWidth, '=');
                 std::cout << CYAN_LOCAL << "|";
-                for (size_t i = 0; i < headers.size(); ++i) {
+                for (size_t i = 0; i < headers.size(); ++i)
+                {
                     int visibleLen = getVisibleLength(headers[i]);
                     int padding = widths[i] - visibleLen;
-                    if (padding < 0) padding = 0;
+                    if (padding < 0)
+                        padding = 0;
                     std::cout << " " << headers[i] << std::string(padding, ' ') << " |";
                 }
                 std::cout << RESET_LOCAL << "\n";
                 DisplayHelper::printSeparator(totalWidth, '=');
 
-                for (const auto &row : rows) {
+                for (const auto &row : rows)
+                {
                     std::vector<std::vector<std::string>> rowBlocks;
                     size_t maxHeight = 1;
 
-                    for (size_t i = 0; i < headers.size(); ++i) {
+                    for (size_t i = 0; i < headers.size(); ++i)
+                    {
                         std::string cellText = (i < row.size()) ? row[i] : "";
                         std::vector<std::string> lines = wrapText(cellText, widths[i]);
                         rowBlocks.push_back(lines);
                         maxHeight = std::max(maxHeight, lines.size());
                     }
 
-                    for (size_t h = 0; h < maxHeight; ++h) {
+                    for (size_t h = 0; h < maxHeight; ++h)
+                    {
                         std::cout << "|";
-                        for (size_t col = 0; col < headers.size(); ++col) {
+                        for (size_t col = 0; col < headers.size(); ++col)
+                        {
                             std::string textToPrint = "";
-                            if (h < rowBlocks[col].size()) textToPrint = rowBlocks[col][h];
+                            if (h < rowBlocks[col].size())
+                                textToPrint = rowBlocks[col][h];
 
                             int visibleLen = getVisibleLength(textToPrint);
                             int padding = widths[col] - visibleLen;
-                            if (padding < 0) padding = 0;
+                            if (padding < 0)
+                                padding = 0;
 
                             std::cout << " " << textToPrint << std::string(padding, ' ') << " |";
                         }
@@ -307,14 +337,14 @@ namespace HMS
         }
 
         // ==================== Headers & Titles ====================
-        
+
         void DisplayHelper::printAppHeader()
         {
             clearScreen();
             printSeparator(60, '=');
             std::cout << BOLD << CYAN;
             std::cout << "            HỆ THỐNG QUẢN LÝ BỆNH VIỆN\n";
-            std::cout << "          HOSPITAL MANAGEMENT SYSTEM\n";
+            std::cout << "            HOSPITAL MANAGEMENT SYSTEM\n";
             std::cout << RESET;
             printSeparator(60, '=');
             std::cout << "\n";
@@ -540,16 +570,16 @@ namespace HMS
         void DisplayHelper::printPatientInfo(const Model::Patient &patient)
         {
             printSubHeader("THÔNG TIN BỆNH NHÂN");
-            std::cout << std::left;
-            std::cout << std::setw(20) << "Mã bệnh nhân:" << patient.getPatientID() << "\n";
-            std::cout << std::setw(20) << "Tên:" << patient.getName() << "\n";
-            std::cout << std::setw(20) << "Số điện thoại:" << patient.getPhone() << "\n";
-            std::cout << std::setw(20) << "Giới tính:" << genderToString(patient.getGender()) << "\n";
-            std::cout << std::setw(20) << "Ngày sinh:" << formatDate(patient.getDateOfBirth()) << "\n";
-            std::cout << std::setw(20) << "Địa chỉ:" << patient.getAddress() << "\n";
+            std::cout << std::format("{:<20}: {}\n", "Mã bệnh nhân", patient.getPatientID());
+            std::cout << std::format("{:<20}: {}\n", "Tên", patient.getName());
+            std::cout << std::format("{:<20}: {}\n", "Số điện thoại", patient.getPhone());
+            std::cout << std::format("{:<20}: {}\n", "Giới tính", genderToString(patient.getGender()));
+            std::cout << std::format("{:<20}: {}\n", "Ngày sinh", formatDate(patient.getDateOfBirth()));
+            std::cout << std::format("{:<20}: {}\n", "Địa chỉ", patient.getAddress());
+
             if (!patient.getMedicalHistory().empty())
             {
-                std::cout << std::setw(20) << "Tiền sử bệnh:" << patient.getMedicalHistory() << "\n";
+                std::cout << std::format("{:<20}: {}\n", "Tiền sử bệnh", patient.getMedicalHistory());
             }
             printThinSeparator(60);
         }
@@ -557,42 +587,43 @@ namespace HMS
         void DisplayHelper::printDoctorInfo(const Model::Doctor &doctor)
         {
             printSubHeader("THÔNG TIN BÁC SĨ");
-            std::cout << std::left;
-            std::cout << std::setw(20) << "Mã bác sĩ:" << doctor.getDoctorID() << "\n";
-            std::cout << std::setw(20) << "Tên:" << doctor.getName() << "\n";
-            std::cout << std::setw(20) << "Số điện thoại:" << doctor.getPhone() << "\n";
-            std::cout << std::setw(20) << "Giới tính:" << genderToString(doctor.getGender()) << "\n";
-            std::cout << std::setw(20) << "Ngày sinh:" << formatDate(doctor.getDateOfBirth()) << "\n";
-            std::cout << std::setw(20) << "Chuyên khoa:" << doctor.getSpecialization() << "\n";
-            std::cout << std::setw(20) << "Lịch làm việc:" << doctor.getSchedule() << "\n";
-            std::cout << std::setw(20) << "Phí khám:" << formatMoney(doctor.getConsultationFee()) << "\n";
+
+            std::cout << std::format("{:<20}: {}\n", "Mã bác sĩ", doctor.getDoctorID());
+            std::cout << std::format("{:<20}: {}\n", "Tên", doctor.getName());
+            std::cout << std::format("{:<20}: {}\n", "Số điện thoại", doctor.getPhone());
+            std::cout << std::format("{:<20}: {}\n", "Giới tính", genderToString(doctor.getGender()));
+            std::cout << std::format("{:<20}: {}\n", "Ngày sinh", formatDate(doctor.getDateOfBirth()));
+            std::cout << std::format("{:<20}: {}\n", "Chuyên khoa", doctor.getSpecialization());
+            std::cout << std::format("{:<20}: {}\n", "Lịch làm việc", doctor.getSchedule());
+            std::cout << std::format("{:<20}: {}\n", "Phí khám", formatMoney(doctor.getConsultationFee()));
+
             printThinSeparator(60);
         }
 
         void DisplayHelper::printAppointmentInfo(const Model::Appointment &appointment)
         {
             printSubHeader("THÔNG TIN LỊCH HẸN");
-            std::cout << std::left;
-            std::cout << std::setw(20) << "Mã lịch hẹn:" << appointment.getAppointmentID() << "\n";
-            std::cout << std::setw(20) << "Mã bệnh nhân:" << appointment.getPatientUsername() << "\n";
-            std::cout << std::setw(20) << "Mã bác sĩ:" << appointment.getDoctorID() << "\n";
-            std::cout << std::setw(20) << "Ngày khám:" << formatDate(appointment.getDate()) << "\n";
-            std::cout << std::setw(20) << "Giờ khám:" << appointment.getTime() << "\n";
-            std::cout << std::setw(20) << "Triệu chứng:" << appointment.getDisease() << "\n";
-            std::cout << std::setw(20) << "Trạng thái:" << formatStatus(appointment.getStatus()) << "\n";
+            std::cout << std::format("{:<20}: {}\n", "Mã lịch hẹn", appointment.getAppointmentID());
+            std::cout << std::format("{:<20}: {}\n", "Mã bệnh nhân", appointment.getPatientUsername());
+            std::cout << std::format("{:<20}: {}\n", "Mã bác sĩ", appointment.getDoctorID());
+            std::cout << std::format("{:<20}: {}\n", "Ngày khám", formatDate(appointment.getDate()));
+            std::cout << std::format("{:<20}: {}\n", "Giờ khám", appointment.getTime());
+            std::cout << std::format("{:<20}: {}\n", "Triệu chứng", appointment.getDisease());
+            std::cout << std::format("{:<20}: {}\n", "Trạng thái", formatStatus(appointment.getStatus()));
             printThinSeparator(60);
         }
 
         void DisplayHelper::printStatistics(const Model::Statistics &stats)
         {
             printSubHeader("THỐNG KÊ HỆ THỐNG");
-            std::cout << std::left;
-            std::cout << std::setw(30) << "Tổng số bệnh nhân:" << stats.totalPatients << "\n";
-            std::cout << std::setw(30) << "Tổng số bác sĩ:" << stats.totalDoctors << "\n";
-            std::cout << std::setw(30) << "Tổng số lịch hẹn:" << stats.totalAppointments << "\n";
-            std::cout << std::setw(30) << "Lịch hẹn hoàn thành:" << stats.completedAppointments << "\n";
-            std::cout << std::setw(30) << "Lịch hẹn bị hủy:" << stats.cancelledAppointments << "\n";
-            std::cout << std::setw(30) << "Tổng doanh thu:" << formatMoney(stats.totalRevenue) << "\n";
+
+            std::cout << std::format("{:<32}: {}\n", "Tổng số bệnh nhân", stats.totalPatients);
+            std::cout << std::format("{:<32}: {}\n", "Tổng số bác sĩ", stats.totalDoctors);
+            std::cout << std::format("{:<32}: {}\n", "Tổng số lịch hẹn", stats.totalAppointments);
+            std::cout << std::format("{:<32}: {}\n", "Hoàn thành", stats.completedAppointments);
+            std::cout << std::format("{:<32}: {}\n", "Đã hủy", stats.cancelledAppointments);
+            std::cout << std::format("{:<32}: {}\n", "Tổng doanh thu", formatMoney(stats.totalRevenue));
+
             printThinSeparator(60);
         }
 
@@ -600,20 +631,20 @@ namespace HMS
         {
             printSubHeader("THÔNG TIN THUỐC");
             std::cout << std::left;
-            std::cout << std::setw(25) << "Mã thuốc:" << medicine.getMedicineID() << "\n";
-            std::cout << std::setw(25) << "Tên thuốc:" << medicine.getName() << "\n";
-            std::cout << std::setw(25) << "Tên khoa học:" << medicine.getGenericName() << "\n";
-            std::cout << std::setw(25) << "Danh mục:" << medicine.getCategory() << "\n";
-            std::cout << std::setw(25) << "Nhà sản xuất:" << medicine.getManufacturer() << "\n";
-            std::cout << std::setw(25) << "Đơn giá:" << formatMoney(medicine.getUnitPrice()) << "\n";
-            std::cout << std::setw(25) << "Tồn kho:" << medicine.getQuantityInStock() << "\n";
-            std::cout << std::setw(25) << "Mức đặt hàng lại:" << medicine.getReorderLevel() << "\n";
-            std::cout << std::setw(25) << "Ngày hết hạn:" << formatDate(medicine.getExpiryDate()) << "\n";
-            std::cout << std::setw(25) << "Dạng bào chế:" << medicine.getDosageForm() << "\n";
-            std::cout << std::setw(25) << "Liều lượng:" << medicine.getStrength() << "\n";
+            std::cout << std::format("{:<25}: {}\n", "Mã thuốc", medicine.getMedicineID());
+            std::cout << std::format("{:<25}: {}\n", "Tên thuốc", medicine.getName());
+            std::cout << std::format("{:<25}: {}\n", "Tên khoa học", medicine.getGenericName());
+            std::cout << std::format("{:<25}: {}\n", "Danh mục", medicine.getCategory());
+            std::cout << std::format("{:<25}: {}\n", "Nhà sản xuất", medicine.getManufacturer());
+            std::cout << std::format("{:<25}: {}\n", "Đơn giá", formatMoney(medicine.getUnitPrice()));
+            std::cout << std::format("{:<25}: {}\n", "Tồn kho", medicine.getQuantityInStock());
+            std::cout << std::format("{:<25}: {}\n", "Mức đặt hàng lại", medicine.getReorderLevel());
+            std::cout << std::format("{:<25}: {}\n", "Ngày hết hạn", formatDate(medicine.getExpiryDate()));
+            std::cout << std::format("{:<25}: {}\n", "Dạng bào chế", medicine.getDosageForm());
+            std::cout << std::format("{:<25}: {}\n", "Liều lượng", medicine.getStrength());
             if (!medicine.getDescription().empty())
             {
-                std::cout << std::setw(25) << "Mô tả:" << medicine.getDescription() << "\n";
+                std::cout << std::format("{:<25}: {}\n", "Mô tả", medicine.getDescription());
             }
             printThinSeparator(60);
         }
@@ -621,28 +652,26 @@ namespace HMS
         void DisplayHelper::printDepartmentInfo(const Model::Department &department)
         {
             printSubHeader("THÔNG TIN KHOA");
-            std::cout << std::left;
-            std::cout << std::setw(25) << "Mã khoa:" << department.getDepartmentID() << "\n";
-            std::cout << std::setw(25) << "Tên khoa:" << department.getName() << "\n";
-            std::cout << std::setw(25) << "Mô tả:" << department.getDescription() << "\n";
-            std::cout << std::setw(25) << "Trưởng khoa:" << department.getHeadDoctorID() << "\n";
-            std::cout << std::setw(25) << "Vị trí:" << department.getLocation() << "\n";
-            std::cout << std::setw(25) << "Số điện thoại:" << department.getPhone() << "\n";
+            std::cout << std::format("{:<25}: {}\n", "Mã khoa", department.getDepartmentID());
+            std::cout << std::format("{:<25}: {}\n", "Tên khoa", department.getName());
+            std::cout << std::format("{:<25}: {}\n", "Mô tả", department.getDescription());
+            std::cout << std::format("{:<25}: {}\n", "Trưởng khoa", department.getHeadDoctorID());
+            std::cout << std::format("{:<25}: {}\n", "Vị trí", department.getLocation());
+            std::cout << std::format("{:<25}: {}\n", "Số điện thoại", department.getPhone());
             printThinSeparator(60);
         }
 
         void DisplayHelper::printPrescriptionInfo(const Model::Prescription &prescription)
         {
             printSubHeader("THÔNG TIN ĐƠN THUỐC");
-            std::cout << std::left;
-            std::cout << std::setw(25) << "Mã đơn thuốc:" << prescription.getPrescriptionID() << "\n";
-            std::cout << std::setw(25) << "Mã bệnh nhân:" << prescription.getPatientUsername() << "\n";
-            std::cout << std::setw(25) << "Mã bác sĩ:" << prescription.getDoctorID() << "\n";
-            std::cout << std::setw(25) << "Ngày kê đơn:" << formatDate(prescription.getPrescriptionDate()) << "\n";
-            std::cout << std::setw(25) << "Chẩn đoán:" << prescription.getDiagnosis() << "\n";
+            std::cout << std::format("{:<25}: {}\n", "Mã đơn thuốc", prescription.getPrescriptionID());
+            std::cout << std::format("{:<25}: {}\n", "Mã bệnh nhân", prescription.getPatientUsername());
+            std::cout << std::format("{:<25}: {}\n", "Mã bác sĩ", prescription.getDoctorID());
+            std::cout << std::format("{:<25}: {}\n", "Ngày kê đơn", formatDate(prescription.getPrescriptionDate()));
+            std::cout << std::format("{:<25}: {}\n", "Chẩn đoán", prescription.getDiagnosis());
             if (!prescription.getNotes().empty())
             {
-                std::cout << std::setw(25) << "Ghi chú:" << prescription.getNotes() << "\n";
+                std::cout << std::format("{:<25}: {}\n", "Ghi chú", prescription.getNotes());
             }
 
             auto items = prescription.getItems();
@@ -689,7 +718,7 @@ namespace HMS
                                        const std::vector<std::vector<std::string>> &rows,
                                        const std::vector<int> &colWidths)
         {
-           printTableInternal(headers, rows, colWidths);
+            printTableInternal(headers, rows, colWidths);
         }
 
         void DisplayHelper::printPatientTable(const std::vector<Model::Patient> &patients)
@@ -921,10 +950,11 @@ namespace HMS
             printSubHeader("DANH SÁCH BỆNH NHÂN");
             for (size_t i = 0; i < patients.size(); ++i)
             {
-                std::cout << "  " << (i + 1) << ". "
-                          << std::left << std::setw(30) << patients[i].getName()
-                          << " (ID: " << patients[i].getPatientID()
-                          << ", SDT: " << patients[i].getPhone() << ")\n";
+                std::cout << std::format("{:>3}. {:<25} (ID: {}, SDT: {})\n",
+                                        i + 1,
+                                        patients[i].getName(),
+                                        patients[i].getPatientID(),
+                                        patients[i].getPhone());
             }
             std::cout << "\n";
         }
@@ -940,11 +970,13 @@ namespace HMS
             printSubHeader("DANH SÁCH BÁC SĨ");
             for (size_t i = 0; i < doctors.size(); ++i)
             {
-                std::cout << "  " << (i + 1) << ". "
-                          << std::left << std::setw(30) << doctors[i].getName()
-                          << " - " << std::setw(20) << doctors[i].getSpecialization()
-                          << " (ID: " << doctors[i].getDoctorID() << ")\n";
+                std::cout << std::format("{:>3}. {:<25} - {:<15} (ID: {})\n",
+                                        i + 1,
+                                        doctors[i].getName(),
+                                        doctors[i].getSpecialization(),
+                                        doctors[i].getDoctorID());
             }
+
             std::cout << "\n";
         }
 
@@ -959,12 +991,12 @@ namespace HMS
             printSubHeader("DANH SÁCH LỊCH HẸN");
             for (size_t i = 0; i < appointments.size(); ++i)
             {
-                std::cout << "  " << (i + 1) << ". "
-                          << formatDate(appointments[i].getDate()) << " "
-                          << appointments[i].getTime()
-                          << " - BS: " << appointments[i].getDoctorID()
-                          << " - " << formatStatus(appointments[i].getStatus())
-                          << "\n";
+                std::cout << std::format("{:>3}. {:<12} {:<7} - BS: {:<6} - {}\n",
+                                        i + 1,
+                                        formatDate(appointments[i].getDate()),
+                                        appointments[i].getTime(),
+                                        appointments[i].getDoctorID(),
+                                        formatStatus(appointments[i].getStatus()));
             }
             std::cout << "\n";
         }
