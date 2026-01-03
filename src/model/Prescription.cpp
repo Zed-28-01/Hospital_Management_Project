@@ -226,58 +226,123 @@ namespace HMS
             std::cout << "========================================\n\n";
         }
 
-        std::string Prescription::toPrintFormat() const
-        {
+        std::string Prescription::toPrintFormat() const {
             std::ostringstream oss;
+            const int BOX_WIDTH = 78;
+            const int LABEL_WIDTH = 12;
 
-            oss << "╔══════════════════════════════════════════════════════════════╗\n";
-            oss << "║                      MEDICAL PRESCRIPTION                    ║\n";
-            oss << "╠══════════════════════════════════════════════════════════════╣\n";
-            oss << std::format("║ Rx No: {:<55} ║\n", m_prescriptionID);
-            oss << std::format("║ Date:  {:<55} ║\n",
-                               Utils::formatDateDisplay(m_prescriptionDate));
-            oss << "╠══════════════════════════════════════════════════════════════╣\n";
-            oss << std::format("║ Patient: {:<53} ║\n", m_patientUsername);
-            oss << std::format("║ Doctor:  {:<53} ║\n", m_doctorID);
+            const int CONTENT_WIDTH = BOX_WIDTH - LABEL_WIDTH - 6;
 
-            if (!m_diagnosis.empty())
-            {
-                oss << "╠══════════════════════════════════════════════════════════════╣\n";
-                oss << std::format("║ Diagnosis: {:<51} ║\n", m_diagnosis);
-            }
-
-            oss << "╠══════════════════════════════════════════════════════════════╣\n";
-            oss << "║                        MEDICATIONS                           ║\n";
-            oss << "╠══════════════════════════════════════════════════════════════╣\n";
-
-            for (size_t i = 0; i < m_items.size(); ++i)
-            {
-                const auto &item = m_items[i];
-                std::string medicineName =
-                    item.medicineName.empty() ? item.medicineID : item.medicineName;
-
-                oss << std::format("║ {}. {:<58} ║\n", i + 1, medicineName);
-                oss << std::format("║    Qty: {}  |  Dosage: {:<38} ║\n", item.quantity,
-                                   item.dosage);
-                oss << std::format("║    Duration: {:<48} ║\n", item.duration);
-                if (!item.instructions.empty())
-                {
-                    oss << std::format("║    Note: {:<52} ║\n", item.instructions);
+            // 1. Hàm tính chiều rộng hiển thị của chuỗi (bỏ qua byte phụ trong UTF-8)
+            auto getVisualWidth = [](const std::string& s) -> int {
+                int width = 0;
+                for (size_t i = 0; i < s.length(); ++i) {
+                    // Trong UTF-8, các byte bắt đầu bằng 10xxxxxx là byte phụ, không đếm
+                    if ((s[i] & 0xc0) != 0x80) width++;
                 }
-                if (i < m_items.size() - 1)
-                {
-                    oss << "║──────────────────────────────────────────────────────────────║"
-                           "\n";
+                return width;
+            };
+
+            // 2. Hàm vẽ đường ngang (Dùng vòng lặp để không bị lỗi byte)
+            auto drawLine = [&](const std::string& left, const std::string& mid, const std::string& right) {
+                oss << left;
+                for (int i = 0; i < BOX_WIDTH - 2; ++i) oss << mid;
+                oss << right << "\n";
+            };
+
+            // 3. Hàm wrap text hỗ trợ tiếng Việt
+            auto wrapText = [&](const std::string& text, int width) -> std::vector<std::string> {
+                std::vector<std::string> lines;
+                if (text.empty()) return {""};
+                std::string remaining = text;
+                while (!remaining.empty()) {
+                    if (getVisualWidth(remaining) <= width) {
+                        lines.push_back(remaining);
+                        break;
+                    }
+                    size_t bytePos = 0;
+                    int currentVisual = 0;
+                    size_t lastSpaceByte = 0;
+                    for (size_t i = 0; i < remaining.length(); ++i) {
+                        if ((remaining[i] & 0xc0) != 0x80) {
+                            if (currentVisual + 1 > width) break;
+                            currentVisual++;
+                        }
+                        bytePos = i + 1;
+                        if (remaining[i] == ' ') lastSpaceByte = i;
+                    }
+                    size_t finalCut = (lastSpaceByte > 0) ? lastSpaceByte : bytePos;
+                    lines.push_back(remaining.substr(0, finalCut));
+                    remaining = remaining.substr(finalCut);
+                    while (!remaining.empty() && remaining[0] == ' ') remaining.erase(0, 1);
                 }
+                return lines;
+            };
+
+            // 4. Hàm in một dòng nội dung có khung
+            auto printField = [&](const std::string& label, const std::string& value) {
+                std::vector<std::string> lines = wrapText(value, CONTENT_WIDTH);
+                for (size_t i = 0; i < lines.size(); ++i) {
+                    oss << "║ "; // Ký tự dọc đầu dòng
+                    if (i == 0) {
+                        // Dòng đầu có label
+                        oss << label << std::string(std::max(0, LABEL_WIDTH - getVisualWidth(label)), ' ') << " : ";
+                    } else {
+                        // Các dòng sau thụt lề
+                        oss << std::string(LABEL_WIDTH + 3, ' ');
+                    }
+                    // In nội dung và bù khoảng trắng cho đến khi chạm cạnh phải
+                    int contentW = getVisualWidth(lines[i]);
+                    oss << lines[i] << std::string(std::max(0, CONTENT_WIDTH - contentW), ' ') << "║\n";
+                }
+            };
+
+            // 5. Hàm in căn giữa
+            auto printCenter = [&](const std::string& text) {
+                int textW = getVisualWidth(text);
+                int totalSpace = BOX_WIDTH - 2 - textW;
+                int left = totalSpace / 2;
+                int right = totalSpace - left;
+                oss << "║" << std::string(left, ' ') << text << std::string(right, ' ') << "║\n";
+            };
+
+            // ===== VẼ KHUNG =====
+            drawLine("╔", "═", "╗");
+            printCenter("ĐƠN THUỐC");
+            drawLine("╠", "═", "╣");
+
+            printField("Mã đơn", m_prescriptionID);
+            printField("Ngày", Utils::formatDateDisplay(m_prescriptionDate));
+
+            drawLine("╠", "═", "╣");
+            printField("Bệnh nhân", m_patientUsername);
+            printField("Bác sĩ", m_doctorID);
+
+            if (!m_diagnosis.empty()) {
+                drawLine("╠", "═", "╣");
+                printField("Chẩn đoán", m_diagnosis);
             }
 
-            if (!m_notes.empty())
-            {
-                oss << "╠══════════════════════════════════════════════════════════════╣\n";
-                oss << std::format("║ Notes: {:<55} ║\n", m_notes);
+            drawLine("╠", "═", "╣");
+            printCenter("THUỐC ĐÃ KÊ");
+            drawLine("╠", "═", "╣");
+
+            for (size_t i = 0; i < m_items.size(); ++i) {
+                const auto& item = m_items[i];
+                std::string name = item.medicineName.empty() ? item.medicineID : item.medicineName;
+                printField(std::to_string(i+1) + ". Thuốc", name);
+                printField("Số lượng", std::to_string(item.quantity));
+                printField("Liều dùng", item.dosage);
+                if (!item.instructions.empty()) printField("Ghi chú", item.instructions);
+
+                if (i < m_items.size() - 1) drawLine("╟", "─", "╢");
             }
 
-            oss << "╚══════════════════════════════════════════════════════════════╝\n";
+            if (!m_notes.empty()) {
+                drawLine("╠", "═", "╣");
+                printField("Lưu ý", m_notes);
+            }
+            drawLine("╚", "═", "╝");
 
             return oss.str();
         }
