@@ -1,8 +1,7 @@
 #include "model/Statistics.h"
 #include "common/Utils.h"
-#include <iomanip>
 #include <iostream>
-#include <sstream>
+#include <format>
 
 namespace HMS
 {
@@ -130,55 +129,60 @@ namespace HMS
 
         std::string Statistics::toReport() const
         {
-            std::ostringstream oss;
-            oss << std::fixed << std::setprecision(2);
+            std::string report;
 
             // ===== Core Statistics =====
-            oss << "THỐNG KÊ HỆ THỐNG\n";
-            oss << "   - Tổng bệnh nhân: " << totalPatients << "\n";
-            oss << "   - Tổng bác sĩ:    " << totalDoctors << "\n";
-            oss << "   - Tổng lịch hẹn:  " << totalAppointments << "\n";
-            oss << "   - Hoàn thành: " << completedAppointments
-                << " (" << getCompletionRate() << "%)\n";
-            oss << "   - Đã hủy:     " << cancelledAppointments
-                << " (" << getCancellationRate() << "%)\n";
-            oss << "   - Vắng mặt:   " << noShowAppointments << "\n";
+            report += "THỐNG KÊ HỆ THỐNG\n";
+            report += std::format("   - {:<20} : {}\n", "Tổng bệnh nhân", totalPatients);
+            report += std::format("   - {:<20} : {}\n", "Tổng bác sĩ", totalDoctors);
+            report += std::format("   - {:<20} : {}\n", "Tổng lịch hẹn", totalAppointments);
+            report += std::format("   - {:<20} : {} ({:.2f}%)\n",
+                                "Hoàn thành", completedAppointments, getCompletionRate());
+            report += std::format("   - {:<20} : {} ({:.2f}%)\n",
+                                "Đã hủy", cancelledAppointments, getCancellationRate());
+            report += std::format("   - {:<20} : {}\n", "Vắng mặt", noShowAppointments);
+
             // ===== Financial Statistics =====
-            oss << "THỐNG KÊ DOANH THU\n";
-            oss << "   - Tổng doanh thu: " << Utils::formatMoney(totalRevenue) << "\n";
-            oss << "   - Đã thanh toán:  " << Utils::formatMoney(paidRevenue)
-                << " (" << getPaymentRate() << "%)\n";
-            oss << "   - Chưa thanh toán: " << Utils::formatMoney(unpaidRevenue) << "\n";
-            oss << "   - Trung bình/ca:  " << Utils::formatMoney(averageConsultationFee) << "\n";
+            report += "THỐNG KÊ DOANH THU\n";
+            report += std::format("   - {:<20} : {}\n",
+                                "Tổng doanh thu", Utils::formatMoney(totalRevenue));
+            report += std::format("   - {:<20} : {} ({:.2f}%)\n",
+                                "Đã thanh toán", Utils::formatMoney(paidRevenue), getPaymentRate());
+            report += std::format("   - {:<20} : {}\n",
+                                "Chưa thanh toán", Utils::formatMoney(unpaidRevenue));
+            report += std::format("   - {:<20} : {}\n",
+                                "Trung bình/ca", Utils::formatMoney(averageConsultationFee));
 
             // ===== Specialization Statistics =====
             if (!doctorsBySpecialization.empty())
             {
-                oss << "THỐNG KÊ THEO CHUYÊN KHOA\n";
-                for (const auto &pair : doctorsBySpecialization)
+                report += "THỐNG KÊ THEO CHUYÊN KHOA\n";
+                for (const auto &[specialization, count] : doctorsBySpecialization)
                 {
-                    oss << "   - " << pair.first << ": " << pair.second << " bác sĩ\n";
-                }
+                    report += std::format("   - {:<20} : {} bác sĩ\n", specialization, count);                }
             }
 
             // ===== Medicine Statistics (Advance) =====
             if (totalMedicines > 0)
             {
-                oss << "THỐNG KÊ THUỐC\n";
-                oss << "   - Tổng số thuốc:    " << totalMedicines << "\n";
-                oss << "   - Sắp hết hàng:     " << lowStockMedicines
-                    << " (" << getLowStockRate() << "%)\n";
-                oss << "   - Đã hết hạn:       " << expiredMedicines
-                    << " (" << getExpiredRate() << "%)\n";
-                oss << "   - Sắp hết hạn:      " << expiringSoonMedicines << "\n";
-                oss << "   - Giá trị tồn kho:  " << Utils::formatMoney(totalInventoryValue) << "\n";
+                report += "THỐNG KÊ THUỐC\n";
+                report += std::format("   - {:<20} : {}\n", "Tổng số thuốc", totalMedicines);
+                report += std::format("   - {:<20} : {} ({:.2f}%)\n",
+                                    "Sắp hết hàng", lowStockMedicines, getLowStockRate());
+                report += std::format("   - {:<20} : {} ({:.2f}%)\n",
+                                    "Đã hết hạn", expiredMedicines, getExpiredRate());
+                report += std::format("   - {:<20} : {}\n",
+                                    "Sắp hết hạn", expiringSoonMedicines);
+                report += std::format("   - {:<20} : {}\n",
+                                    "Giá trị tồn kho", Utils::formatMoney(totalInventoryValue));
+
 
                 if (!medicinesByCategory.empty())
                 {
-                    oss << "   Theo danh mục:\n";
+                    report += "   Theo danh mục:\n";
                     for (const auto &pair : medicinesByCategory)
                     {
-                        oss << "     - " << pair.first << ": " << pair.second << " loại\n";
+                        report += std::format("     - {:<20} : {} loại\n", pair.first, pair.second);
                     }
                 }
             }
@@ -186,25 +190,24 @@ namespace HMS
             // ===== Department Statistics (Advance) =====
             if (totalDepartments > 0)
             {
-                oss << "THỐNG KÊ KHOA/PHÒNG\n";
-                oss << "   - Tổng số khoa: " << totalDepartments << "\n";
+                report += "THỐNG KÊ KHOA/PHÒNG\n";
+                report += std::format("   - {:<20} : {}\n", "Tổng số khoa", totalDepartments);
 
                 if (!doctorsByDepartment.empty())
                 {
-                    oss << "   Bác sĩ theo khoa:\n";
+                    report += "   Bác sĩ theo khoa:\n";
                     for (const auto &pair : doctorsByDepartment)
                     {
-                        oss << "     - " << pair.first << ": " << pair.second << " bác sĩ\n";
+                        report += std::format("     - {:<20} : {} bác sĩ\n", pair.first, pair.second);
                     }
                 }
 
                 if (!revenueByDepartment.empty())
                 {
-                    oss << "   Doanh thu theo khoa:\n";
+                    report += "   Doanh thu theo khoa:\n";
                     for (const auto &pair : revenueByDepartment)
                     {
-                        oss << "     - " << pair.first << ": "
-                            << Utils::formatMoney(pair.second) << "\n";
+                        report += std::format("     - {:<20} : {}\n", pair.first, Utils::formatMoney(pair.second));
                     }
                 }
             }
@@ -212,16 +215,15 @@ namespace HMS
             // ===== Prescription Statistics (Advance) =====
             if (totalPrescriptions > 0)
             {
-                oss << "THỐNG KÊ ĐƠN THUỐC\n";
-                oss << "   - Tổng số đơn:      " << totalPrescriptions << "\n";
-                oss << "   - Đã phát thuốc:    " << dispensedPrescriptions
-                    << " (" << getDispenseRate() << "%)\n";
-                oss << "   - Chờ phát thuốc:   " << pendingPrescriptions << "\n";
-                oss << "   - Tổng số mục thuốc: " << totalPrescriptionItems << "\n";
+                report += "THỐNG KÊ ĐƠN THUỐC\n";
+                report += std::format("   - {:<20} : {}\n", "Tổng số đơn", totalPrescriptions);
+                report += std::format("   - {:<20} : {} ({:.2f}%)\n", "Đã phát thuốc", dispensedPrescriptions, getDispenseRate());
+                report += std::format("   - {:<20} : {}\n", "Chờ phát thuốc", pendingPrescriptions);
+                report += std::format("   - {:<20} : {}\n", "Tổng số mục thuốc", totalPrescriptionItems);
             }
 
-            return oss.str();
+            return report;
         }
 
     } // namespace Model
-} // namespace HMS
+} // namespace HMS,
