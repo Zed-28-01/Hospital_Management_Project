@@ -346,6 +346,40 @@ private:
      */
     void exportReport();
 
+    // ==================== Sub-menus ====================
+
+    /**
+     * @brief Show medicine management sub-menu (Admin)
+     */
+    void showMedicineMenu();
+
+    /**
+     * @brief Show department management sub-menu (Admin)
+     */
+    void showDepartmentMenu();
+
+    /**
+     * @brief Show report generation sub-menu (Admin)
+     */
+    void showReportMenu();
+
+    /**
+     * @brief Show prescription management sub-menu (Doctor)
+     */
+    void showPrescriptionMenu();
+
+    // ==================== Patient View-Only Features ====================
+
+    /**
+     * @brief View patient's prescriptions (Patient)
+     */
+    void viewMyPrescriptions();
+
+    /**
+     * @brief Search medicines by patient (view-only)
+     */
+    void searchMedicinePatient();
+
     // ==================== Helper Methods ====================
 
     /**
@@ -368,10 +402,16 @@ private:
     std::string selectAppointment(const std::vector<Model::Appointment>& appointments);
 
     /**
-     * @brief Display date selection
+     * @brief Display date selection (future dates only)
      * @return Selected date in YYYY-MM-DD format
      */
     std::string selectDate();
+
+    /**
+     * @brief Display date selection (past dates only, for reports)
+     * @return Selected date in YYYY-MM-DD format
+     */
+    std::string selectPastDate();
 
     /**
      * @brief Display time slot selection

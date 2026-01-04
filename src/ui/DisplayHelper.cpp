@@ -410,13 +410,20 @@ namespace HMS
             printAppHeader();
             std::cout << BOLD << GREEN << "MENU BỆNH NHÂN" << RESET << " - Xin chào, " << BOLD << username << RESET << "\n";
             printThinSeparator(60);
-            std::cout << "  1. Xem thông tin cá nhân\n";
-            std::cout << "  2. Đặt lịch khám\n";
-            std::cout << "  3. Xem lịch sử khám bệnh\n";
-            std::cout << "  4. Xem lịch hẹn sắp tới\n";
-            std::cout << "  5. Hủy lịch hẹn\n";
-            std::cout << "  6. Xem tổng hóa đơn\n";
-            std::cout << "  0. Đăng xuất\n";
+            std::cout << BOLD << "  Thông tin cá nhân:\n" << RESET;
+            std::cout << "    1. Xem thông tin cá nhân\n";
+            printThinSeparator(60);
+            std::cout << BOLD << "  Lịch hẹn:\n" << RESET;
+            std::cout << "    2. Đặt lịch khám\n";
+            std::cout << "    3. Xem lịch sử khám bệnh\n";
+            std::cout << "    4. Xem lịch hẹn sắp tới\n";
+            std::cout << "    5. Hủy lịch hẹn\n";
+            printThinSeparator(60);
+            std::cout << BOLD << "  Đơn thuốc & Thanh toán:\n" << RESET;
+            std::cout << "    6. Xem đơn thuốc của tôi\n";
+            std::cout << "    7. Tra cứu thuốc\n";
+            std::cout << "    8. Xem tổng hóa đơn\n";
+            std::cout << "    0. Đăng xuất\n";
             printThinSeparator(60);
             std::cout << "\n";
         }
@@ -426,14 +433,20 @@ namespace HMS
             printAppHeader();
             std::cout << BOLD << BLUE << "MENU BÁC SĨ" << RESET << " - Xin chào, Dr. " << BOLD << username << RESET << "\n";
             printThinSeparator(60);
-            std::cout << "  1. Xem lịch làm việc\n";
-            std::cout << "  2. Đánh dấu lịch hẹn hoàn thành\n";
-            std::cout << "  3. Danh sách bệnh nhân\n";
-            std::cout << "  4. Tìm kiếm bệnh nhân\n";
-            std::cout << "  5. Thêm bệnh nhân mới\n";
-            std::cout << "  6. Cập nhật thông tin bệnh nhân\n";
-            std::cout << "  7. Xóa bệnh nhân\n";
-            std::cout << "  0. Đăng xuất\n";
+            std::cout << BOLD << "  Lịch hẹn:\n" << RESET;
+            std::cout << "    1. Xem lịch làm việc\n";
+            std::cout << "    2. Đánh dấu lịch hẹn hoàn thành\n";
+            printThinSeparator(60);
+            std::cout << BOLD << "  Quản lý Bệnh nhân:\n" << RESET;
+            std::cout << "    3. Danh sách bệnh nhân\n";
+            std::cout << "    4. Tìm kiếm bệnh nhân\n";
+            std::cout << "    5. Thêm bệnh nhân mới\n";
+            std::cout << "    6. Cập nhật thông tin bệnh nhân\n";
+            std::cout << "    7. Xóa bệnh nhân\n";
+            printThinSeparator(60);
+            std::cout << BOLD << "  Đơn thuốc:\n" << RESET;
+            std::cout << "    8. Quản lý đơn thuốc\n";
+            std::cout << "    0. Đăng xuất\n";
             printThinSeparator(60);
             std::cout << "\n";
         }
@@ -443,14 +456,21 @@ namespace HMS
             printAppHeader();
             std::cout << BOLD << YELLOW << "MENU QUẢN TRỊ" << RESET << " - Xin chào, Admin " << BOLD << username << RESET << "\n";
             printThinSeparator(60);
-            std::cout << "  1. Danh sách bác sĩ\n";
-            std::cout << "  2. Tìm kiếm bác sĩ\n";
-            std::cout << "  3. Thêm bác sĩ mới\n";
-            std::cout << "  4. Cập nhật thông tin bác sĩ\n";
-            std::cout << "  5. Xóa bác sĩ\n";
-            std::cout << "  6. Xem thống kê hệ thống\n";
-            std::cout << "  7. Xem báo cáo\n";
-            std::cout << "  0. Đăng xuất\n";
+            std::cout << BOLD << "  Quản lý Bác sĩ:\n" << RESET;
+            std::cout << "    1. Danh sách bác sĩ\n";
+            std::cout << "    2. Tìm kiếm bác sĩ\n";
+            std::cout << "    3. Thêm bác sĩ mới\n";
+            std::cout << "    4. Cập nhật thông tin bác sĩ\n";
+            std::cout << "    5. Xóa bác sĩ\n";
+            printThinSeparator(60);
+            std::cout << BOLD << "  Quản lý Nâng cao:\n" << RESET;
+            std::cout << "    6. Quản lý Khoa\n";
+            std::cout << "    7. Quản lý Thuốc\n";
+            std::cout << "    8. Tạo báo cáo\n";
+            printThinSeparator(60);
+            std::cout << BOLD << "  Thống kê & Hệ thống:\n" << RESET;
+            std::cout << "    9. Xem thống kê hệ thống\n";
+            std::cout << "    0. Đăng xuất\n";
             printThinSeparator(60);
             std::cout << "\n";
         }
@@ -594,7 +614,7 @@ namespace HMS
             std::cout << std::format("{:<20}: {}\n", "Giới tính", genderToString(doctor.getGender()));
             std::cout << std::format("{:<20}: {}\n", "Ngày sinh", formatDate(doctor.getDateOfBirth()));
             std::cout << std::format("{:<20}: {}\n", "Chuyên khoa", doctor.getSpecialization());
-            std::cout << std::format("{:<20}: {}\n", "Lịch làm việc", doctor.getSchedule());
+            std::cout << std::format("{:<20}: {}\n", "Lịch làm việc", "Thứ 2-CN: 08:00-17:00");
             std::cout << std::format("{:<20}: {}\n", "Phí khám", formatMoney(doctor.getConsultationFee()));
 
             printThinSeparator(60);
@@ -1040,11 +1060,14 @@ namespace HMS
             printSubHeader("DANH SÁCH THUỐC");
             for (size_t i = 0; i < medicines.size(); ++i)
             {
-                std::cout << "  " << (i + 1) << ". "
-                          << std::left << std::setw(35) << medicines[i].getName()
-                          << " - " << std::setw(15) << medicines[i].getCategory()
-                          << " (ID: " << medicines[i].getMedicineID()
-                          << ", Tồn: " << medicines[i].getQuantityInStock() << ")\n";
+                std::cout << std::format(
+                    "{:>2}. {:<25} - {:<25} (ID: {:<5}, Tồn: {})\n",
+                    i + 1,
+                    medicines[i].getName(),
+                    medicines[i].getCategory(),
+                    medicines[i].getMedicineID(),
+                    medicines[i].getQuantityInStock()
+                );
             }
             std::cout << "\n";
         }
@@ -1060,10 +1083,13 @@ namespace HMS
             printSubHeader("DANH SÁCH KHOA");
             for (size_t i = 0; i < departments.size(); ++i)
             {
-                std::cout << "  " << (i + 1) << ". "
-                          << std::left << std::setw(30) << departments[i].getName()
-                          << " (ID: " << departments[i].getDepartmentID()
-                          << ", Vị trí: " << departments[i].getLocation() << ")\n";
+                std::cout << std::format(
+                    "{:>2}. {:<20} (ID: {:<5}, Vị trí: {})\n",
+                    i + 1,
+                    departments[i].getName(),
+                    departments[i].getDepartmentID(),
+                    departments[i].getLocation()
+                );
             }
             std::cout << "\n";
         }

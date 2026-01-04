@@ -11,14 +11,14 @@ namespace Model {
  * @brief Represents a doctor in the hospital management system
  *
  * Inherits from Person and adds doctor-specific attributes
- * such as doctor ID, specialization, schedule, and consultation fee.
+ * such as doctor ID, specialization, and consultation fee.
+ * All doctors work Monday-Sunday from 08:00 to 17:00.
  */
 class Doctor : public Person {
 private:
     std::string m_doctorID;
     std::string m_username;         // Links to Account
     std::string m_specialization;
-    std::string m_schedule;         // e.g., "Mon-Fri 08:00-17:00"
     double m_consultationFee;
 
 public:
@@ -38,7 +38,6 @@ public:
      * @param gender Gender
      * @param dateOfBirth Date of birth
      * @param specialization Medical specialization
-     * @param schedule Working schedule
      * @param consultationFee Fee per consultation
      */
     Doctor(const std::string& doctorID,
@@ -48,7 +47,6 @@ public:
            Gender gender,
            const std::string& dateOfBirth,
            const std::string& specialization,
-           const std::string& schedule,
            double consultationFee);
 
     /**
@@ -83,12 +81,6 @@ public:
     std::string getSpecialization() const;
 
     /**
-     * @brief Get doctor's working schedule
-     * @return Schedule string
-     */
-    std::string getSchedule() const;
-
-    /**
      * @brief Get doctor's consultation fee
      * @return Fee amount
      */
@@ -101,12 +93,6 @@ public:
      * @param specialization New specialization
      */
     void setSpecialization(const std::string& specialization);
-
-    /**
-     * @brief Set doctor's working schedule
-     * @param schedule New schedule
-     */
-    void setSchedule(const std::string& schedule);
 
     /**
      * @brief Set doctor's consultation fee
@@ -125,7 +111,7 @@ public:
      * @brief Serialize doctor to string for file storage
      * @return Pipe-delimited string representation
      *
-     * Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee
+     * Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|consultationFee
      */
     std::string serialize() const override;
 

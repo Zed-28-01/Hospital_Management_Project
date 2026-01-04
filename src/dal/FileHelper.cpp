@@ -283,7 +283,7 @@ namespace HMS
             {
                 return "# "
                        "doctorID|username|name|phone|gender|dateOfBirth|specialization|"
-                       "schedule|fee";
+                       "consultationFee";
             }
             if (fileType == "Appointment")
             {

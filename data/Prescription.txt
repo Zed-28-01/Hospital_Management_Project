@@ -12,3 +12,4 @@ PRE007|APT007|giangdo|D001|2024-02-28|Bệnh tim mạch vành sau đặt stent|T
 PRE008|APT008|hienmai|D007|2024-03-01|Sau điều trị HP thành công|Duy trì chế độ ăn nhẹ, tái khám sau 3 tháng|1|MED003:30:1 viên/ngày:30 ngày:Trước bữa sáng 30 phút
 PRE009|APT009|khanhluong|D003|2024-03-03|Migraine mãn tính|Tránh stress, ngủ đủ giấc, tránh ánh sáng mạnh|1|MED004:30:1 viên khi đau:30 ngày:Uống khi đau đầu, tối đa 3 viên/ngày;MED016:20:1 viên/ngày:20 ngày:Phòng ngừa
 PRE010|APT010|lamngo|D001|2024-03-05|Rối loạn lipid máu, cholesterol cao|Ăn ít mỡ động vật, tăng vận động|1|MED013:30:1 viên/ngày:30 ngày:Uống trước khi ngủ;MED015:30:1 viên/ngày:30 ngày:Buổi tối
+

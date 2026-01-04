@@ -121,7 +121,7 @@ protected:
         const std::string &name = "Dr. Test")
     {
         return Doctor(id, "user_" + id, name, "0987654321", Gender::MALE,
-                      "1980-01-01", "General Medicine", "Mon-Fri 9:00-17:00",
+                      "1980-01-01", "General Medicine",
                       500000.0);
     }
 
@@ -453,6 +453,24 @@ TEST_F(DepartmentServiceTest, AssignDoctor_ValidAssignment_Success)
     EXPECT_TRUE(service->isDoctorInDepartment(dept->getDepartmentID(), "DOC001"));
 }
 
+TEST_F(DepartmentServiceTest, AssignDoctor_UpdatesDoctorSpecialization)
+{
+    // Bug fix: Verify that doctor's specialization is updated when assigned to department
+    auto dept = service->createDepartment("Cardiology", "Desc", "Loc", "0901234567");
+    Doctor doc = createTestDoctor("DOC001", "Dr. One");
+    doc.setSpecialization("General Medicine"); // Original specialization
+    docRepo->add(doc);
+
+    bool result = service->assignDoctor(dept->getDepartmentID(), "DOC001");
+
+    EXPECT_TRUE(result);
+
+    // Verify doctor's specialization is now updated to match the department name
+    auto updatedDoc = docRepo->getById("DOC001");
+    ASSERT_TRUE(updatedDoc.has_value());
+    EXPECT_EQ(updatedDoc->getSpecialization(), "Cardiology");
+}
+
 TEST_F(DepartmentServiceTest, AssignDoctor_AlreadyAssigned_ReturnsTrue)
 {
     // Test idempotent behavior - assigning same doctor again returns true
@@ -476,12 +494,20 @@ TEST_F(DepartmentServiceTest, AssignDoctor_CrossDepartmentTransfer_Success)
     service->assignDoctor(deptA->getDepartmentID(), "DOC001");
     EXPECT_TRUE(service->isDoctorInDepartment(deptA->getDepartmentID(), "DOC001"));
 
+    // Verify specialization is updated to DeptA
+    auto docAfterFirstAssign = docRepo->getById("DOC001");
+    EXPECT_EQ(docAfterFirstAssign->getSpecialization(), "DeptA");
+
     // Now assign to DeptB - should auto-transfer
     bool result = service->assignDoctor(deptB->getDepartmentID(), "DOC001");
 
     EXPECT_TRUE(result);
     EXPECT_FALSE(service->isDoctorInDepartment(deptA->getDepartmentID(), "DOC001"));
     EXPECT_TRUE(service->isDoctorInDepartment(deptB->getDepartmentID(), "DOC001"));
+
+    // Verify specialization is updated to DeptB
+    auto docAfterTransfer = docRepo->getById("DOC001");
+    EXPECT_EQ(docAfterTransfer->getSpecialization(), "DeptB");
 }
 
 TEST_F(DepartmentServiceTest, AssignDoctor_NonExistentDepartment_Fail)
@@ -1016,7 +1042,7 @@ TEST_F(DepartmentServiceTest, IntegrationTest_RevenueCalculation)
     docRepo->add(createTestDoctor("DOC001", "Dr. Money"));
     service->assignDoctor(dept->getDepartmentID(), "DOC001");
 
-    // Add various appointments
+    // Add various appointments - default isPaid=true
     appRepo->add(createTestAppointment("A1", "DOC001", 100.0, AppointmentStatus::COMPLETED));
     appRepo->add(createTestAppointment("A2", "DOC001", 200.0, AppointmentStatus::COMPLETED));
     appRepo->add(createTestAppointment("A3", "DOC001", 150.0, AppointmentStatus::SCHEDULED));
@@ -1024,9 +1050,46 @@ TEST_F(DepartmentServiceTest, IntegrationTest_RevenueCalculation)
 
     auto stats = service->getDepartmentStats(dept->getDepartmentID());
 
-    // Only completed appointments count
+    // Only completed AND paid appointments count
     EXPECT_EQ(stats.appointmentCount, 2);
     EXPECT_DOUBLE_EQ(stats.totalRevenue, 300.0);
+}
+
+TEST_F(DepartmentServiceTest, GetDepartmentStats_OnlyCountsPaidRevenue)
+{
+    // Bug fix test: Verify revenue only counts completed AND paid appointments
+    auto dept = service->createDepartment("RevenueDept", "Desc", "Loc", "0901234567");
+    docRepo->add(createTestDoctor("DOC001", "Dr. Money"));
+    service->assignDoctor(dept->getDepartmentID(), "DOC001");
+
+    // Add appointments with mixed payment status
+    // Paid and completed - should count
+    Appointment paid1("A1", "patient_user", "DOC001", "2023-01-01", "10:00",
+                      "Checkup", 100.0, true, AppointmentStatus::COMPLETED, "Note");
+    Appointment paid2("A2", "patient_user", "DOC001", "2023-01-02", "11:00",
+                      "Checkup", 200.0, true, AppointmentStatus::COMPLETED, "Note");
+
+    // Unpaid but completed - should NOT count in revenue
+    Appointment unpaid1("A3", "patient_user", "DOC001", "2023-01-03", "12:00",
+                        "Checkup", 150.0, false, AppointmentStatus::COMPLETED, "Note");
+    Appointment unpaid2("A4", "patient_user", "DOC001", "2023-01-04", "13:00",
+                        "Checkup", 50.0, false, AppointmentStatus::COMPLETED, "Note");
+
+    // Scheduled/cancelled - should not count regardless of payment status
+    Appointment scheduled("A5", "patient_user", "DOC001", "2023-01-05", "14:00",
+                          "Checkup", 75.0, true, AppointmentStatus::SCHEDULED, "Note");
+
+    appRepo->add(paid1);
+    appRepo->add(paid2);
+    appRepo->add(unpaid1);
+    appRepo->add(unpaid2);
+    appRepo->add(scheduled);
+
+    auto stats = service->getDepartmentStats(dept->getDepartmentID());
+
+    // Only paid + completed appointments count (A1 and A2)
+    EXPECT_EQ(stats.appointmentCount, 2);
+    EXPECT_DOUBLE_EQ(stats.totalRevenue, 300.0);  // 100 + 200, excludes unpaid
 }
 
 /*

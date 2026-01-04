@@ -51,11 +51,10 @@ protected:
         Gender gender = Gender::MALE,
         const std::string &dateOfBirth = "1980-01-01",
         const std::string &specialization = "General Medicine",
-        const std::string &schedule = "Mon-Fri 9:00-17:00",
         double consultationFee = 500000.0)
     {
         return Doctor(doctorID, username, name, phone, gender, dateOfBirth,
-                      specialization, schedule, consultationFee);
+                      specialization, consultationFee);
     }
 };
 
@@ -224,7 +223,7 @@ TEST_F(DoctorRepositoryTest, Update_ExistingDoctor_ReturnsTrue)
 
     Doctor updated("D001", "updateme", "Updated Name", "9999999999",
                    Gender::MALE, "1980-01-01", "New Specialization",
-                   "New Schedule", 1000000.0);
+                   1000000.0);
     EXPECT_TRUE(repo->update(updated));
 
     auto result = repo->getById("D001");
@@ -246,7 +245,7 @@ TEST_F(DoctorRepositoryTest, Update_SameUsername_AllowsUpdate)
 
     // Update with same username should work
     Doctor updated("D001", "sameuser", "Updated Name", "9999999999",
-                   Gender::MALE, "1980-01-01", "Updated", "Schedule", 600000.0);
+                   Gender::MALE, "1980-01-01", "Updated", 600000.0);
     EXPECT_TRUE(repo->update(updated));
 }
 
@@ -260,7 +259,7 @@ TEST_F(DoctorRepositoryTest, Update_UsernameConflict_AllowedInDAL)
 
     // Change doctor1's username to doctor2's username - allowed in DAL
     Doctor updated("D001", "user2", "Name", "0123456789",
-                   Gender::MALE, "1980-01-01", "Spec", "Schedule", 500000.0);
+                   Gender::MALE, "1980-01-01", "Spec", 500000.0);
     EXPECT_TRUE(repo->update(updated)); // Should succeed - DAL doesn't check username
 }
 
@@ -619,9 +618,9 @@ TEST_F(DoctorRepositoryTest, GetNextId_IgnoresInvalidFormat_ReturnsCorrectNext)
 TEST_F(DoctorRepositoryTest, SaveAndLoad_DataPersisted)
 {
     repo->add(createTestDoctor("D001", "user1", "Dr. One", "0111111111",
-                               Gender::MALE, "1980-01-01", "Cardiology", "Mon-Fri 9-17", 500000));
+                               Gender::MALE, "1980-01-01", "Cardiology", 500000));
     repo->add(createTestDoctor("D002", "user2", "Dr. Two", "0222222222",
-                               Gender::FEMALE, "1985-05-15", "Neurology", "Tue-Sat 10-18", 600000));
+                               Gender::FEMALE, "1985-05-15", "Neurology", 600000));
     repo->save();
 
     // Reset and reload
@@ -647,7 +646,7 @@ TEST_F(DoctorRepositoryTest, SaveAndLoad_AllFieldsPersisted)
 {
     Doctor doctor = createTestDoctor("D001", "testuser", "Dr. John Doe", "0123456789",
                                      Gender::MALE, "1980-05-15", "Cardiology",
-                                     "Mon-Fri 9:00-17:00", 750000.0);
+                                     750000.0);
     repo->add(doctor);
     repo->save();
 
@@ -666,7 +665,6 @@ TEST_F(DoctorRepositoryTest, SaveAndLoad_AllFieldsPersisted)
     EXPECT_EQ(loaded->getGender(), Gender::MALE);
     EXPECT_EQ(loaded->getDateOfBirth(), "1980-05-15");
     EXPECT_EQ(loaded->getSpecialization(), "Cardiology");
-    EXPECT_EQ(loaded->getSchedule(), "Mon-Fri 9:00-17:00");
     EXPECT_DOUBLE_EQ(loaded->getConsultationFee(), 750000.0);
 }
 
@@ -737,7 +735,7 @@ TEST_F(DoctorRepositoryTest, SetFilePath_ForcesReload)
     std::string secondFile = TEST_DATA_DIR + "test_doctors_2.txt";
     {
         std::ofstream out(secondFile);
-        out << "# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee\n";
+        out << "# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|consultationFee\n";
         Doctor doctor = createTestDoctor("D002", "user2", "Different Doctor");
         out << doctor.serialize() << "\n";
     }
@@ -826,7 +824,7 @@ TEST_F(DoctorRepositoryTest, GetBySpecialization_EmptySpecialization_ReturnsEmpt
 TEST_F(DoctorRepositoryTest, Add_ZeroConsultationFee_Allowed)
 {
     Doctor doctor = createTestDoctor("D001", "user1", "Dr. Free", "0111111111",
-                                     Gender::MALE, "1980-01-01", "General", "Mon-Fri", 0.0);
+                                     Gender::MALE, "1980-01-01", "General", 0.0);
     EXPECT_TRUE(repo->add(doctor));
 
     auto result = repo->getById("D001");
@@ -837,7 +835,7 @@ TEST_F(DoctorRepositoryTest, Add_ZeroConsultationFee_Allowed)
 TEST_F(DoctorRepositoryTest, Add_NegativeConsultationFee_Allowed)
 {
     Doctor doctor = createTestDoctor("D001", "user1", "Dr. Test", "0111111111",
-                                     Gender::MALE, "1980-01-01", "General", "Mon-Fri", -100.0);
+                                     Gender::MALE, "1980-01-01", "General", -100.0);
     EXPECT_TRUE(repo->add(doctor));
 
     auto result = repo->getById("D001");
@@ -849,7 +847,7 @@ TEST_F(DoctorRepositoryTest, Add_VeryLargeConsultationFee_Handled)
 {
     double largeFee = 999999999.99;
     Doctor doctor = createTestDoctor("D001", "user1", "Dr. Expensive", "0111111111",
-                                     Gender::MALE, "1980-01-01", "General", "Mon-Fri", largeFee);
+                                     Gender::MALE, "1980-01-01", "General", largeFee);
     EXPECT_TRUE(repo->add(doctor));
 
     auto result = repo->getById("D001");
@@ -860,11 +858,11 @@ TEST_F(DoctorRepositoryTest, Add_VeryLargeConsultationFee_Handled)
 TEST_F(DoctorRepositoryTest, Update_AllFields_Persisted)
 {
     Doctor original = createTestDoctor("D001", "original", "Original Name", "0111111111",
-                                       Gender::MALE, "1980-01-01", "Original Spec", "Original Schedule", 500000.0);
+                                       Gender::MALE, "1980-01-01", "Original Spec", 500000.0);
     repo->add(original);
 
     Doctor updated("D001", "updated", "Updated Name", "9999999999",
-                   Gender::FEMALE, "1990-12-31", "Updated Spec", "Updated Schedule", 1000000.0);
+                   Gender::FEMALE, "1990-12-31", "Updated Spec", 1000000.0);
     EXPECT_TRUE(repo->update(updated));
 
     auto result = repo->getById("D001");
@@ -875,7 +873,6 @@ TEST_F(DoctorRepositoryTest, Update_AllFields_Persisted)
     EXPECT_EQ(result->getGender(), Gender::FEMALE);
     EXPECT_EQ(result->getDateOfBirth(), "1990-12-31");
     EXPECT_EQ(result->getSpecialization(), "Updated Spec");
-    EXPECT_EQ(result->getSchedule(), "Updated Schedule");
     EXPECT_DOUBLE_EQ(result->getConsultationFee(), 1000000.0);
 }
 
@@ -945,7 +942,7 @@ TEST_F(DoctorRepositoryTest, ComplexSequence_AddUpdateRemove_ConsistentState)
 
     // Update doctor 2
     Doctor updated("D002", "user2_updated", "Doctor Two Updated", "9999999999",
-                   Gender::MALE, "1980-01-01", "Updated Spec", "Schedule", 750000.0);
+                   Gender::MALE, "1980-01-01", "Updated Spec", 750000.0);
     EXPECT_TRUE(repo->update(updated));
 
     // Remove doctor 1
@@ -972,11 +969,11 @@ TEST_F(DoctorRepositoryTest, MultipleUpdates_LastUpdatePersists)
     repo->add(createTestDoctor("D001", "user1", "Version 1"));
 
     Doctor v2("D001", "user1", "Version 2", "0123456789",
-              Gender::MALE, "1980-01-01", "Spec", "Schedule", 500000.0);
+              Gender::MALE, "1980-01-01", "Spec", 500000.0);
     repo->update(v2);
 
     Doctor v3("D001", "user1", "Version 3", "0123456789",
-              Gender::MALE, "1980-01-01", "Spec", "Schedule", 500000.0);
+              Gender::MALE, "1980-01-01", "Spec", 500000.0);
     repo->update(v3);
 
     auto result = repo->getById("D001");
@@ -1101,7 +1098,7 @@ TEST_F(DoctorRepositoryTest, SaveAndLoad_WithSpecialCharactersInData_Preserved)
 {
     Doctor doctor = createTestDoctor("D001", "username_ok", "Dr. Name With Dash-And'Quote",
                                      "0123456789", Gender::MALE, "1980-01-01",
-                                     "General Medicine", "Mon-Fri 9-5", 500000.0);
+                                     "General Medicine", 500000.0);
     repo->add(doctor);
     repo->save();
 
@@ -1136,7 +1133,7 @@ TEST_F(DoctorRepositoryTest, Load_CorruptedLine_SkipsLine)
     // Create file with one good line and one corrupted line
     {
         std::ofstream out(testFilePath);
-        out << "# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee\n";
+        out << "# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|consultationFee\n";
 
         Doctor good = createTestDoctor("D001", "user1", "Good Doctor");
         out << good.serialize() << "\n";
@@ -1158,7 +1155,7 @@ TEST_F(DoctorRepositoryTest, Load_FileWithOnlyComments_LoadsEmpty)
         std::ofstream out(testFilePath);
         out << "# This is a comment\n";
         out << "# Another comment\n";
-        out << "# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee\n";
+        out << "# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|consultationFee\n";
     }
 
     repo->load();
@@ -1169,7 +1166,7 @@ TEST_F(DoctorRepositoryTest, Load_FileWithEmptyLines_SkipsThem)
 {
     {
         std::ofstream out(testFilePath);
-        out << "# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee\n";
+        out << "# Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|consultationFee\n";
         out << "\n";
 
         Doctor doctor = createTestDoctor("D001", "user1");
@@ -1249,11 +1246,11 @@ TEST_F(DoctorRepositoryTest, FullWorkflow_AddUpdateSearchRemovePersist)
 {
     // Add multiple doctors
     repo->add(createTestDoctor("D001", "john_doe", "Dr. John Doe", "0111111111",
-                               Gender::MALE, "1975-03-15", "Cardiology", "Mon-Fri 9-17", 750000.0));
+                               Gender::MALE, "1975-03-15", "Cardiology", 750000.0));
     repo->add(createTestDoctor("D002", "jane_smith", "Dr. Jane Smith", "0222222222",
-                               Gender::FEMALE, "1980-07-22", "Neurology", "Tue-Sat 10-18", 850000.0));
+                               Gender::FEMALE, "1980-07-22", "Neurology", 850000.0));
     repo->add(createTestDoctor("D003", "bob_jones", "Dr. Bob Jones", "0333333333",
-                               Gender::MALE, "1985-11-30", "Orthopedics", "Mon-Wed-Fri 8-16", 600000.0));
+                               Gender::MALE, "1985-11-30", "Orthopedics", 600000.0));
 
     // Verify count
     EXPECT_EQ(repo->count(), 3u);
@@ -1264,7 +1261,7 @@ TEST_F(DoctorRepositoryTest, FullWorkflow_AddUpdateSearchRemovePersist)
 
     // Update a doctor
     Doctor updated("D002", "jane_smith", "Dr. Jane Smith-Wilson", "0222222222",
-                   Gender::FEMALE, "1980-07-22", "Neurosurgery", "Tue-Sat 10-18", 950000.0);
+                   Gender::FEMALE, "1980-07-22", "Neurosurgery", 950000.0);
     EXPECT_TRUE(repo->update(updated));
 
     // Verify update

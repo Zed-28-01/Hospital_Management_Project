@@ -478,7 +478,8 @@ TEST(PrescriptionTest, ToPrintFormatReturnsNonEmptyString)
     EXPECT_NE(printFormat.find("PRE001"), std::string::npos);
     EXPECT_NE(printFormat.find("patient001"), std::string::npos);
     EXPECT_NE(printFormat.find("Paracetamol"), std::string::npos);
-    EXPECT_NE(printFormat.find("PRESCRIPTION"), std::string::npos);
+    // toPrintFormat() uses Vietnamese text
+    EXPECT_NE(printFormat.find("ĐƠN THUỐC"), std::string::npos);
 }
 
 /*

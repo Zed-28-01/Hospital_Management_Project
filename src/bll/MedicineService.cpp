@@ -287,7 +287,7 @@ namespace HMS
                 alert.medicineID = med.getMedicineID();
                 alert.medicineName = med.getName();
                 alert.expiryDate = med.getExpiryDate();
-                alert.daysUntilExpiry = Utils::compareDates(med.getExpiryDate(), Utils::getCurrentDate());
+                alert.daysUntilExpiry = Utils::daysBetweenDates(med.getExpiryDate(), Utils::getCurrentDate());
                 alert.alertType = "EXPIRED";
                 alerts.push_back(alert);
             }
@@ -300,7 +300,7 @@ namespace HMS
                     alert.medicineID = med.getMedicineID();
                     alert.medicineName = med.getName();
                     alert.expiryDate = med.getExpiryDate();
-                    alert.daysUntilExpiry = Utils::compareDates(med.getExpiryDate(), Utils::getCurrentDate());
+                    alert.daysUntilExpiry = Utils::daysBetweenDates(med.getExpiryDate(), Utils::getCurrentDate());
                     alert.alertType = "EXPIRING_SOON";
                     alerts.push_back(alert);
                 }

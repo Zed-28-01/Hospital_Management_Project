@@ -346,7 +346,8 @@ namespace HMS
                 m_medicines, std::back_inserter(result),
                 [&keyword](const auto &med)
                 {
-                    return Utils::containsIgnoreCase(med.getName(), keyword) ||
+                    return Utils::containsIgnoreCase(med.getMedicineID(), keyword) ||
+                           Utils::containsIgnoreCase(med.getName(), keyword) ||
                            Utils::containsIgnoreCase(med.getGenericName(), keyword) ||
                            Utils::containsIgnoreCase(med.getCategory(), keyword) ||
                            Utils::containsIgnoreCase(med.getManufacturer(), keyword);
