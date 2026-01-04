@@ -465,10 +465,13 @@ TEST_F(DepartmentServiceTest, AssignDoctor_UpdatesDoctorSpecialization)
 
     EXPECT_TRUE(result);
 
-    // Verify doctor's specialization is now updated to match the department name
+    // Verify doctor now has both specializations (multi-specialization support)
     auto updatedDoc = docRepo->getById("DOC001");
     ASSERT_TRUE(updatedDoc.has_value());
-    EXPECT_EQ(updatedDoc->getSpecialization(), "Cardiology");
+    EXPECT_TRUE(updatedDoc->hasSpecialization("Cardiology"));
+    EXPECT_TRUE(updatedDoc->hasSpecialization("General Medicine"));
+    auto specs = updatedDoc->getSpecializations();
+    EXPECT_EQ(specs.size(), 2);
 }
 
 TEST_F(DepartmentServiceTest, AssignDoctor_AlreadyAssigned_ReturnsTrue)
@@ -494,20 +497,23 @@ TEST_F(DepartmentServiceTest, AssignDoctor_CrossDepartmentTransfer_Success)
     service->assignDoctor(deptA->getDepartmentID(), "DOC001");
     EXPECT_TRUE(service->isDoctorInDepartment(deptA->getDepartmentID(), "DOC001"));
 
-    // Verify specialization is updated to DeptA
+    // Verify specialization includes both General Medicine and DeptA
     auto docAfterFirstAssign = docRepo->getById("DOC001");
-    EXPECT_EQ(docAfterFirstAssign->getSpecialization(), "DeptA");
+    EXPECT_TRUE(docAfterFirstAssign->hasSpecialization("DeptA"));
+    EXPECT_TRUE(docAfterFirstAssign->hasSpecialization("General Medicine"));
 
-    // Now assign to DeptB - should auto-transfer
+    // Now assign to DeptB - should auto-transfer (remove from DeptA, add to DeptB)
     bool result = service->assignDoctor(deptB->getDepartmentID(), "DOC001");
 
     EXPECT_TRUE(result);
     EXPECT_FALSE(service->isDoctorInDepartment(deptA->getDepartmentID(), "DOC001"));
     EXPECT_TRUE(service->isDoctorInDepartment(deptB->getDepartmentID(), "DOC001"));
 
-    // Verify specialization is updated to DeptB
+    // Verify DeptA specialization is removed, DeptB added, General Medicine preserved
     auto docAfterTransfer = docRepo->getById("DOC001");
-    EXPECT_EQ(docAfterTransfer->getSpecialization(), "DeptB");
+    EXPECT_TRUE(docAfterTransfer->hasSpecialization("DeptB"));
+    EXPECT_FALSE(docAfterTransfer->hasSpecialization("DeptA"));
+    EXPECT_TRUE(docAfterTransfer->hasSpecialization("General Medicine"));
 }
 
 TEST_F(DepartmentServiceTest, AssignDoctor_NonExistentDepartment_Fail)

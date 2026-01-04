@@ -4,6 +4,7 @@
 
 #include <format>
 #include <iostream>
+#include <algorithm>
 
 namespace HMS
 {
@@ -46,6 +47,16 @@ namespace HMS
             return m_specialization;
         }
 
+        std::vector<std::string> Doctor::getSpecializations() const
+        {
+            // Parse comma-separated specializations
+            if (m_specialization.empty())
+            {
+                return {};
+            }
+            return Utils::split(m_specialization, ',');
+        }
+
         double Doctor::getConsultationFee() const
         {
             return m_consultationFee;
@@ -55,6 +66,90 @@ namespace HMS
         void Doctor::setSpecialization(const std::string &specialization)
         {
             m_specialization = specialization;
+        }
+
+        void Doctor::addSpecialization(const std::string &specialization)
+        {
+            if (specialization.empty())
+            {
+                return;
+            }
+
+            std::string trimmedSpec = Utils::trim(specialization);
+
+            // Check if already has this specialization (case-insensitive)
+            if (hasSpecialization(trimmedSpec))
+            {
+                return;
+            }
+
+            // Add to existing specializations
+            if (m_specialization.empty())
+            {
+                m_specialization = trimmedSpec;
+            }
+            else
+            {
+                m_specialization += "," + trimmedSpec;
+            }
+        }
+
+        bool Doctor::removeSpecialization(const std::string &specialization)
+        {
+            if (specialization.empty() || m_specialization.empty())
+            {
+                return false;
+            }
+
+            std::string trimmedSpec = Utils::trim(specialization);
+            auto specs = getSpecializations();
+
+            // Find and remove the specialization (case-insensitive)
+            auto it = std::remove_if(specs.begin(), specs.end(),
+                [&trimmedSpec](const std::string& s) {
+                    return Utils::toLower(Utils::trim(s)) == Utils::toLower(trimmedSpec);
+                });
+
+            if (it == specs.end())
+            {
+                return false; // Not found
+            }
+
+            specs.erase(it, specs.end());
+
+            // Rebuild the comma-separated string
+            m_specialization.clear();
+            for (size_t i = 0; i < specs.size(); ++i)
+            {
+                if (i > 0)
+                {
+                    m_specialization += ",";
+                }
+                m_specialization += Utils::trim(specs[i]);
+            }
+
+            return true;
+        }
+
+        bool Doctor::hasSpecialization(const std::string &specialization) const
+        {
+            if (specialization.empty() || m_specialization.empty())
+            {
+                return false;
+            }
+
+            std::string trimmedSpec = Utils::toLower(Utils::trim(specialization));
+            auto specs = getSpecializations();
+
+            return std::any_of(specs.begin(), specs.end(),
+                [&trimmedSpec](const std::string& s) {
+                    return Utils::toLower(Utils::trim(s)) == trimmedSpec;
+                });
+        }
+
+        void Doctor::clearSpecializations()
+        {
+            m_specialization.clear();
         }
 
         void Doctor::setConsultationFee(double fee)

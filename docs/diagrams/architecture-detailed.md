@@ -18,44 +18,29 @@ graph TB
     subgraph BLL["BUSINESS LOGIC LAYER"]
         direction LR
 
-        subgraph AuthFlow["🔐 Auth Flow"]
+        subgraph CoreServices["Core Services"]
             AuthService[AuthService]
-            AccountRepo1[AccountRepository]
-            AuthService --> AccountRepo1
-        end
-
-        subgraph PatientFlow["👤 Patient Flow"]
             PatientService[PatientService]
-            PatientRepo1[PatientRepository]
-            AppointmentRepo1[AppointmentRepository]
-            PatientService --> PatientRepo1
-            PatientService --> AppointmentRepo1
-        end
-
-        subgraph DoctorFlow["👨‍⚕️ Doctor Flow"]
             DoctorService[DoctorService]
-            DoctorRepo1[DoctorRepository]
-            AppointmentRepo2[AppointmentRepository]
-            DoctorService --> DoctorRepo1
-            DoctorService --> AppointmentRepo2
-        end
-
-        subgraph AppointmentFlow["📅 Appointment Flow"]
             AppointmentService[AppointmentService]
-            AppointmentRepo3[AppointmentRepository]
-            PatientRepo2[PatientRepository]
-            DoctorRepo2[DoctorRepository]
-            AppointmentService --> AppointmentRepo3
-            AppointmentService --> PatientRepo2
-            AppointmentService --> DoctorRepo2
+            AdminService[AdminService]
         end
 
-        subgraph AdminFlow["⚡ Admin Flow"]
-            AdminService[AdminService]
-            AdminService -.aggregates.-> PatientService
-            AdminService -.aggregates.-> DoctorService
-            AdminService -.aggregates.-> AppointmentService
+        subgraph AdvancedServices["Advanced Services"]
+            MedicineService[MedicineService]
+            DepartmentService[DepartmentService]
+            PrescriptionService[PrescriptionService]
+            ReportGenerator[ReportGenerator]
         end
+
+        AdminService -.aggregates.-> PatientService
+        AdminService -.aggregates.-> DoctorService
+        AdminService -.aggregates.-> AppointmentService
+
+        DepartmentService --> DoctorService
+        PrescriptionService --> AppointmentService
+        PrescriptionService --> MedicineService
+        ReportGenerator -.uses.-> AdminService
     end
 
     subgraph DAL["DATA ACCESS LAYER"]
@@ -63,12 +48,18 @@ graph TB
         PatientRepo[PatientRepository]
         DoctorRepo[DoctorRepository]
         AppointmentRepo[AppointmentRepository]
+        MedicineRepo[MedicineRepository]
+        DepartmentRepo[DepartmentRepository]
+        PrescriptionRepo[PrescriptionRepository]
         FileHelper[FileHelper]
 
         AccountRepo --> FileHelper
         PatientRepo --> FileHelper
         DoctorRepo --> FileHelper
         AppointmentRepo --> FileHelper
+        MedicineRepo --> FileHelper
+        DepartmentRepo --> FileHelper
+        PrescriptionRepo --> FileHelper
     end
 
     subgraph Files["DATA FILES"]
@@ -76,6 +67,9 @@ graph TB
         PatientTxt[(Patient.txt)]
         DoctorTxt[(Doctor.txt)]
         AppointmentTxt[(Appointment.txt)]
+        MedicineTxt[(Medicine.txt)]
+        DepartmentTxt[(Department.txt)]
+        PrescriptionTxt[(Prescription.txt)]
     end
 
     Facade --> AuthService
@@ -83,32 +77,47 @@ graph TB
     Facade --> DoctorService
     Facade --> AppointmentService
     Facade --> AdminService
+    Facade --> MedicineService
+    Facade --> DepartmentService
+    Facade --> PrescriptionService
+    Facade --> ReportGenerator
 
-    AccountRepo1 -.same instance.-> AccountRepo
-    PatientRepo1 -.same instance.-> PatientRepo
-    PatientRepo2 -.same instance.-> PatientRepo
-    DoctorRepo1 -.same instance.-> DoctorRepo
-    DoctorRepo2 -.same instance.-> DoctorRepo
-    AppointmentRepo1 -.same instance.-> AppointmentRepo
-    AppointmentRepo2 -.same instance.-> AppointmentRepo
-    AppointmentRepo3 -.same instance.-> AppointmentRepo
+    AuthService --> AccountRepo
+    PatientService --> PatientRepo
+    PatientService --> AppointmentRepo
+    DoctorService --> DoctorRepo
+    DoctorService --> AppointmentRepo
+    AppointmentService --> AppointmentRepo
+    AppointmentService --> PatientRepo
+    AppointmentService --> DoctorRepo
+    MedicineService --> MedicineRepo
+    DepartmentService --> DepartmentRepo
+    DepartmentService --> DoctorRepo
+    PrescriptionService --> PrescriptionRepo
+    PrescriptionService --> AppointmentRepo
+    PrescriptionService --> MedicineRepo
 
     FileHelper --> AccountTxt
     FileHelper --> PatientTxt
     FileHelper --> DoctorTxt
     FileHelper --> AppointmentTxt
+    FileHelper --> MedicineTxt
+    FileHelper --> DepartmentTxt
+    FileHelper --> PrescriptionTxt
 
     style UI fill:#e3f2fd
     style BLL fill:#fff8e1
     style DAL fill:#f3e5f5
     style Files fill:#e8f5e9
+    style CoreServices fill:#fff9c4
+    style AdvancedServices fill:#ffe0b2
 ```
 
 ---
 
 ## 📋 Bảng Dependencies Chi Tiết
 
-### Services → Repositories
+### Core Services → Repositories
 
 | Service | Uses Repositories | Lý Do |
 |---------|------------------|-------|
@@ -118,6 +127,15 @@ graph TB
 | **AppointmentService** | • AppointmentRepository<br>• PatientRepository<br>• DoctorRepository | CRUD appointments<br>Validate patient exists<br>Get doctor's consultation fee |
 | **AdminService** | • PatientService<br>• DoctorService<br>• AppointmentService | Tổng hợp thống kê<br>Không trực tiếp dùng Repos |
 
+### Advanced Services → Repositories
+
+| Service | Uses Repositories | Lý Do |
+|---------|------------------|-------|
+| **MedicineService** | • MedicineRepository | Quản lý kho thuốc<br>Low stock alerts<br>Expiry tracking |
+| **DepartmentService** | • DepartmentRepository<br>• DoctorRepository | Quản lý khoa/phòng ban<br>Assign doctors to departments |
+| **PrescriptionService** | • PrescriptionRepository<br>• AppointmentRepository<br>• MedicineRepository | Tạo/quản lý đơn thuốc<br>Link với appointment<br>Validate medicine availability |
+| **ReportGenerator** | • AdminService<br>• (via services) | Tạo báo cáo<br>Export sang nhiều formats |
+
 ### Repositories → Files
 
 | Repository | File | Operations |
@@ -126,6 +144,9 @@ graph TB
 | PatientRepository | Patient.txt | Read/Write patients |
 | DoctorRepository | Doctor.txt | Read/Write doctors |
 | AppointmentRepository | Appointment.txt | Read/Write appointments |
+| MedicineRepository | Medicine.txt | Read/Write medicines |
+| DepartmentRepository | Department.txt | Read/Write departments |
+| PrescriptionRepository | Prescription.txt | Read/Write prescriptions |
 
 **Tất cả repositories đều sử dụng FileHelper cho I/O operations.**
 

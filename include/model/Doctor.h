@@ -2,6 +2,7 @@
 
 #include "Person.h"
 #include <string>
+#include <vector>
 
 namespace HMS {
 namespace Model {
@@ -75,10 +76,17 @@ public:
     std::string getUsername() const;
 
     /**
-     * @brief Get doctor's medical specialization
+     * @brief Get doctor's medical specialization (primary/first or all joined)
      * @return Specialization string
+     * @note For backwards compatibility. Returns first specialization or all comma-joined
      */
     std::string getSpecialization() const;
+
+    /**
+     * @brief Get all doctor's medical specializations
+     * @return Vector of specialization strings
+     */
+    std::vector<std::string> getSpecializations() const;
 
     /**
      * @brief Get doctor's consultation fee
@@ -89,10 +97,37 @@ public:
     // ==================== Setters ====================
 
     /**
-     * @brief Set doctor's specialization
+     * @brief Set doctor's specialization (overwrites all existing)
      * @param specialization New specialization
+     * @note For backwards compatibility. Overwrites all specializations
      */
     void setSpecialization(const std::string& specialization);
+
+    /**
+     * @brief Add a specialization to the doctor
+     * @param specialization Specialization to add
+     * @note Duplicate specializations are ignored
+     */
+    void addSpecialization(const std::string& specialization);
+
+    /**
+     * @brief Remove a specialization from the doctor
+     * @param specialization Specialization to remove
+     * @return True if removed, false if not found
+     */
+    bool removeSpecialization(const std::string& specialization);
+
+    /**
+     * @brief Check if doctor has a specific specialization
+     * @param specialization Specialization to check
+     * @return True if doctor has this specialization
+     */
+    bool hasSpecialization(const std::string& specialization) const;
+
+    /**
+     * @brief Clear all specializations
+     */
+    void clearSpecializations();
 
     /**
      * @brief Set doctor's consultation fee

@@ -126,6 +126,32 @@ namespace HMS
                 return false;
             }
 
+            // Get the department to access its details
+            auto depOpt = m_departmentRepo->getById(departmentID);
+            if (!depOpt.has_value())
+            {
+                return false;
+            }
+
+            Model::Department dep = depOpt.value();
+            std::string departmentName = dep.getName();
+
+            // Get all doctors in this department
+            auto doctorIDs = dep.getDoctorIDs();
+
+            // Remove this department's specialization from all assigned doctors
+            for (const auto &docID : doctorIDs)
+            {
+                auto doctorOpt = m_doctorRepo->getById(docID);
+                if (doctorOpt.has_value())
+                {
+                    Model::Doctor doctor = doctorOpt.value();
+                    doctor.removeSpecialization(departmentName);
+                    m_doctorRepo->update(doctor);
+                }
+            }
+
+            // Now delete the department
             return m_departmentRepo->remove(departmentID);
         }
 
@@ -195,15 +221,16 @@ namespace HMS
             if (currDep.has_value() && currDep->getDepartmentID() != departmentID)
             {
                 unassignDoctor(currDep->getDepartmentID(), doctorID);
-                // Re-fetch department after potential modification
+                // Re-fetch both department and doctor after potential modification
                 dep = m_departmentRepo->getById(departmentID).value();
+                doctor = m_doctorRepo->getById(doctorID).value();
             }
 
             // Add doctor to department
             dep.addDoctor(doctorID);
 
-            // Update doctor's specialization to match the new department
-            doctor.setSpecialization(dep.getName());
+            // Add department specialization to doctor (not overwrite)
+            doctor.addSpecialization(dep.getName());
 
             // Save both department and doctor changes
             return m_departmentRepo->update(dep) && m_doctorRepo->update(doctor);
@@ -226,8 +253,20 @@ namespace HMS
                 return false;
             }
 
+            // Get doctor to update specializations
+            auto doctorOpt = m_doctorRepo->getById(doctorID);
+            if (!doctorOpt.has_value())
+            {
+                return false;
+            }
+
+            Model::Doctor doctor = doctorOpt.value();
+
             // Remove doctor from department
             dep.removeDoctor(doctorID);
+
+            // Remove specialization from doctor
+            doctor.removeSpecialization(dep.getName());
 
             // Clear head if unassigned doctor was the head
             if (dep.getHeadDoctorID() == doctorID)
@@ -235,7 +274,8 @@ namespace HMS
                 dep.setHeadDoctorID("");
             }
 
-            return m_departmentRepo->update(dep);
+            // Save both department and doctor changes
+            return m_departmentRepo->update(dep) && m_doctorRepo->update(doctor);
         }
 
         bool DepartmentService::setDepartmentHead(const std::string &departmentID, const std::string &doctorID)

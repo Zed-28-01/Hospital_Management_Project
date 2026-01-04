@@ -202,7 +202,7 @@ Hospital_Management_Project/
 │
 ├── include/                        # Header files
 │   │
-│   ├── model/                      # Entity classes (Cấu trúc dữ liệu)
+│   ├── model/                      # Entity classes (Cấu trúc dữ liệu cơ bản)
 │   │   ├── Person.h
 │   │   ├── Patient.h
 │   │   ├── Doctor.h
@@ -243,10 +243,10 @@ Hospital_Management_Project/
 │   │   ├── Types.h                 # Type aliases và enums
 │   │   └── Utils.h                 # Các hàm tiện ích
 │   │
-│   └── advance/                     # Tính năng nâng cao
-│       ├── Department.h
-│       ├── Medicine.h
-│       ├── Prescription.h
+│   └── advance/                    # Tính năng nâng cao (Entity classes)
+│       ├── Department.h            # Entity: Khoa/Phòng ban
+│       ├── Medicine.h              # Entity: Thuốc
+│       ├── Prescription.h          # Entity: Đơn thuốc
 │       └── ReportGenerator.h       # Công cụ tạo báo cáo
 │
 ├── src/                            # Source files
