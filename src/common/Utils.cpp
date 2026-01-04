@@ -161,7 +161,10 @@ namespace HMS
                 return false;
             if (month < 1 || month > 12)
                 return false;
-            if (day < 1 || day > 31)
+
+            // Validate day is within valid range for the specific month
+            int maxDays = getDaysInMonth(month, year);
+            if (day < 1 || day > maxDays)
                 return false;
 
             return true;

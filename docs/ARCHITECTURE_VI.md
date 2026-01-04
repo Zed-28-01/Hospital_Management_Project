@@ -58,9 +58,9 @@
 
 ### Architecture Diagrams
 
-For visual representation of the architecture:
-- **[Overview Diagram](diagrams/architecture-overview.md)** - Simple, high-level view (recommended for README.md)
-- **[Detailed Diagram](diagrams/architecture-detailed.md)** - Complete dependencies and class diagrams
+Để rõ hơn về cấu trúc các file hãy truy cập vào:
+- **[Overview Diagram](diagrams/architecture-overview.md)** - Tổng quát hóa
+- **[Detailed Diagram](diagrams/architecture-detailed.md)** - Rõ ràng và cụ thể về các class
 
 
 ### Trách Nhiệm Các Tầng
@@ -516,7 +516,7 @@ make clean
 | **I**nterface Segregation | IRepository cung cấp interface tập trung; Services có methods cụ thể |
 | **D**ependency Inversion | Services phụ thuộc vào Repository interfaces, không phải concrete implementations |
 
-## Phụ Lục B: Các Tính Năng Nâng Cao (ĐÃ TRIỂN KHAI ✅)
+## Phụ Lục B: Các Tính Năng Nâng Cao (ĐÃ TRIỂN KHAI )
 
 Các tính năng nâng cao sau đã được triển khai đầy đủ:
 
