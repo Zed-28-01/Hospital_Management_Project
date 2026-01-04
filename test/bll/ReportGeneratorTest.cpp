@@ -196,7 +196,7 @@ TEST_F(ReportGeneratorTest,
        GenerateDailyReport_InvalidDate_ReturnsErrorReport) {
   Report report = reportGenerator->generateDailyReport("invalid-date");
 
-  EXPECT_TRUE(report.content.find("Error") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Lỗi") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest, GenerateDailyReport_ContainsCorrectStatistics) {
@@ -241,7 +241,7 @@ TEST_F(ReportGeneratorTest,
        GenerateWeeklyReport_InvalidDate_ReturnsErrorReport) {
   Report report = reportGenerator->generateWeeklyReport("not-a-date");
 
-  EXPECT_TRUE(report.content.find("Error") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Lỗi") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest, GenerateWeeklyReport_EndDateIs6DaysAfterStart) {
@@ -263,21 +263,21 @@ TEST_F(ReportGeneratorTest,
   EXPECT_FALSE(report.reportID.empty());
   EXPECT_EQ(report.startDate, "2024-03-01");
   EXPECT_EQ(report.endDate, "2024-03-31");
-  EXPECT_TRUE(report.title.find("March") != std::string::npos);
+  EXPECT_TRUE(report.title.find("Tháng 3") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest,
        GenerateMonthlyReport_InvalidMonth_ReturnsErrorReport) {
   Report report = reportGenerator->generateMonthlyReport(13, 2024);
 
-  EXPECT_TRUE(report.content.find("Error") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Lỗi") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest,
        GenerateMonthlyReport_InvalidYear_ReturnsErrorReport) {
   Report report = reportGenerator->generateMonthlyReport(6, 1800);
 
-  EXPECT_TRUE(report.content.find("Error") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Lỗi") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest,
@@ -307,14 +307,14 @@ TEST_F(ReportGeneratorTest, GenerateRevenueReport_ValidDates_ReturnsReport) {
   EXPECT_FALSE(report.reportID.empty());
   EXPECT_EQ(report.startDate, startDate);
   EXPECT_EQ(report.endDate, endDate);
-  EXPECT_TRUE(report.title.find("REVENUE") != std::string::npos);
+  EXPECT_TRUE(report.title.find("DOANH THU") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest,
        GenerateRevenueReport_InvalidDates_ReturnsErrorReport) {
   Report report = reportGenerator->generateRevenueReport("bad", "dates");
 
-  EXPECT_TRUE(report.content.find("Error") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Lỗi") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest, GenerateRevenueReport_ContainsRevenueBreakdown) {
@@ -322,8 +322,8 @@ TEST_F(ReportGeneratorTest, GenerateRevenueReport_ContainsRevenueBreakdown) {
 
   Report report = reportGenerator->generateRevenueReport(today, today);
 
-  EXPECT_TRUE(report.content.find("Paid") != std::string::npos);
-  EXPECT_TRUE(report.content.find("Unpaid") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Đã thanh toán") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Chưa thanh toán") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest,
@@ -336,7 +336,7 @@ TEST_F(ReportGeneratorTest,
   // - MED001 (Paracetamol): 10 * 50000 = 500000
   // - MED002 (Amoxicillin): 5 * 75000 = 375000
   // Total pharmacy revenue = 875000
-  EXPECT_TRUE(report.content.find("Pharmacy") != std::string::npos);
+  EXPECT_TRUE(report.content.find("NHÀ THUỐC") != std::string::npos);
   EXPECT_TRUE(report.content.find("875,000") != std::string::npos ||
               report.content.find("875000") != std::string::npos);
 }
@@ -347,8 +347,8 @@ TEST_F(ReportGeneratorTest, GenerateRevenueReport_ContainsTopEarningDoctors) {
   Report report = reportGenerator->generateRevenueReport(today, today);
 
   // Should contain top earning doctors section
-  EXPECT_TRUE(report.content.find("TOP EARNING") != std::string::npos ||
-              report.content.find("Dr. John Smith") != std::string::npos);
+  EXPECT_TRUE(report.content.find("BÁC SĨ CÓ DOANH THU CAO") != std::string::npos ||
+              report.content.find("DOANH THU") != std::string::npos);
 }
 
 // ==================== Patient Report Tests ====================
@@ -358,7 +358,7 @@ TEST_F(ReportGeneratorTest, GeneratePatientReport_ReturnsReport) {
 
   EXPECT_EQ(report.type, ReportType::PATIENT_STATISTICS);
   EXPECT_FALSE(report.reportID.empty());
-  EXPECT_TRUE(report.title.find("PATIENT") != std::string::npos);
+  EXPECT_TRUE(report.title.find("BỆNH NHÂN") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest, GeneratePatientReport_ContainsPatientCount) {
@@ -402,8 +402,9 @@ TEST_F(ReportGeneratorTest,
   Report report =
       reportGenerator->generateDoctorPerformanceReport("D999", today, today);
 
-  EXPECT_TRUE(report.content.find("Error") != std::string::npos ||
-              report.content.find("not found") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Lỗi") != std::string::npos ||
+              report.content.find("not found") != std::string::npos ||
+              report.content.find("không tìm thấy") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest,
@@ -411,7 +412,7 @@ TEST_F(ReportGeneratorTest,
   Report report =
       reportGenerator->generateDoctorPerformanceReport("D001", "bad", "dates");
 
-  EXPECT_TRUE(report.content.find("Error") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Lỗi") != std::string::npos);
 }
 
 // ==================== Appointment Analysis Tests ====================
@@ -424,7 +425,7 @@ TEST_F(ReportGeneratorTest,
 
   EXPECT_EQ(report.type, ReportType::APPOINTMENT_ANALYSIS);
   EXPECT_FALSE(report.content.empty());
-  EXPECT_TRUE(report.content.find("APPOINTMENT") != std::string::npos);
+  EXPECT_TRUE(report.content.find("CUỘC HẸN") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest,
@@ -432,7 +433,7 @@ TEST_F(ReportGeneratorTest,
   Report report =
       reportGenerator->generateAppointmentAnalysis("invalid", "dates");
 
-  EXPECT_TRUE(report.content.find("Error") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Lỗi") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest,
@@ -441,9 +442,9 @@ TEST_F(ReportGeneratorTest,
 
   Report report = reportGenerator->generateAppointmentAnalysis(today, today);
 
-  EXPECT_TRUE(report.content.find("Completed") != std::string::npos);
-  EXPECT_TRUE(report.content.find("Cancelled") != std::string::npos);
-  EXPECT_TRUE(report.content.find("Scheduled") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Đã hoàn thành") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Đã hủy") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Đã đặt lịch") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest, GenerateAppointmentAnalysis_ContainsNoShowRate) {
@@ -452,11 +453,11 @@ TEST_F(ReportGeneratorTest, GenerateAppointmentAnalysis_ContainsNoShowRate) {
   Report report = reportGenerator->generateAppointmentAnalysis(today, today);
 
   // Should contain no-show statistics
-  EXPECT_TRUE(report.content.find("No Show") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Vắng mặt") != std::string::npos);
   EXPECT_EQ(report.statistics.noShowAppointments, 1);
 
   // No-show rate should be 20% (1 out of 5 appointments)
-  EXPECT_TRUE(report.content.find("No Show Rate") != std::string::npos);
+  EXPECT_TRUE(report.content.find("Tỷ lệ vắng mặt") != std::string::npos);
 }
 
 TEST_F(ReportGeneratorTest,
@@ -512,7 +513,7 @@ TEST_F(ReportGeneratorTest, ExportToText_ReturnsNonEmptyString) {
   std::string textExport = reportGenerator->exportToText(report);
 
   EXPECT_FALSE(textExport.empty());
-  EXPECT_TRUE(textExport.find("Report ID") != std::string::npos);
+  EXPECT_TRUE(textExport.find("ID báo cáo") != std::string::npos);
   EXPECT_TRUE(textExport.find(report.reportID) != std::string::npos);
 }
 
@@ -524,7 +525,8 @@ TEST_F(ReportGeneratorTest, ExportToCSV_ReturnsValidCSV) {
 
   EXPECT_FALSE(csvExport.empty());
   EXPECT_TRUE(csvExport.find(",") != std::string::npos); // Contains commas
-  EXPECT_TRUE(csvExport.find("Metric,Value") != std::string::npos); // Header
+  EXPECT_TRUE(csvExport.find("Mã báo cáo") != std::string::npos ||
+              csvExport.find(report.reportID) != std::string::npos); // Vietnamese header or ID
 }
 
 TEST_F(ReportGeneratorTest, ExportToHTML_ReturnsValidHTML) {

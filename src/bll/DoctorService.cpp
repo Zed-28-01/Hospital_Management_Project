@@ -49,6 +49,7 @@ namespace HMS
             m_doctorRepo = DAL::DoctorRepository::getInstance();
             m_appointmentRepo = DAL::AppointmentRepository::getInstance();
             m_accountRepo = DAL::AccountRepository::getInstance();
+            m_departmentRepo = DAL::DepartmentRepository::getInstance();
         }
         DoctorService::~DoctorService() = default;
 
@@ -153,6 +154,16 @@ namespace HMS
             // Auto-cancel upcoming scheduled appointments before deleting doctor
             // This preserves appointment history while preventing orphaned future bookings
             AppointmentService::getInstance()->cancelUpcomingByDoctor(doctorID);
+
+            // Remove doctor from any department they belong to
+            // This prevents orphaned doctor IDs in department records
+            auto department = m_departmentRepo->getDepartmentByDoctor(doctorID);
+            if (department.has_value())
+            {
+                auto dept = department.value();
+                dept.removeDoctor(doctorID);
+                m_departmentRepo->update(dept);
+            }
 
             // Delete doctor profile
             if (!m_doctorRepo->remove(doctorID))

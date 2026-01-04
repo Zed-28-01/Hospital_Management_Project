@@ -3,6 +3,7 @@
 #include "../dal/DoctorRepository.h"
 #include "../dal/AppointmentRepository.h"
 #include "../dal/AccountRepository.h"
+#include "../dal/DepartmentRepository.h"
 #include "../model/Doctor.h"
 #include "../model/Appointment.h"
 #include "../common/Types.h"
@@ -30,6 +31,7 @@ private:
     DAL::DoctorRepository* m_doctorRepo;
     DAL::AppointmentRepository* m_appointmentRepo;
     DAL::AccountRepository* m_accountRepo;
+    DAL::DepartmentRepository* m_departmentRepo;
 
     // ==================== Private Constructor ====================
     DoctorService();
