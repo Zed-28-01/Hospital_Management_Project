@@ -41,8 +41,8 @@ Example: P001|patient001|Nguyen Van A|0901234567|Male|1990-01-15|Ha Noi|None
 
 ### Doctor.txt
 ```
-Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|schedule|consultationFee
-Example: D001|doctor001|Dr. Tran B|0902345678|Female|1980-05-20|Cardiology|Mon-Fri 9AM-5PM|500000
+Format: doctorID|username|name|phone|gender|dateOfBirth|specialization|consultationFee
+Example: D001|doctor001|Dr. Tran B|0902345678|Female|1980-05-20|Cardiology|500000
 ```
 
 ### Appointment.txt
