@@ -14,10 +14,7 @@
 				"ms-azuretools.vscode-containers",
 				"dracula-theme.theme-dracula",
 				"mhutchie.git-graph",
-				"bierner.markdown-mermaid",
-				"Anthropic.claude-code",
-				"GitHub.copilot",
-				"GitHub.copilot-chat"
+				"bierner.markdown-mermaid"
 			],
 			"settings": {
 				"C_Cpp.default.cppStandard": "c++23",
