@@ -129,7 +129,9 @@ namespace HMS
                 return false;
             if (month < 1 || month > 12)
                 return false;
-            if (day < 1 || day > 31)
+
+            int maxDays = getDaysInMonth(month, year);
+            if (day < 1 || day > maxDays)
                 return false;
 
             return true;

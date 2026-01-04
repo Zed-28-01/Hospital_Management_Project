@@ -1,5 +1,22 @@
 # Hospital Management System - Build Guide
 
+## ⚠️ IMPORTANT TIMEZONE NOTICE ⚠️
+
+**The application REQUIRES Vietnam timezone (Asia/Ho_Chi_Minh) for appointment scheduling features to work correctly!**
+
+### Timezone Setup (REQUIRED)
+
+```bash
+# RECOMMENDED: Set timezone permanently
+export TZ='Asia/Ho_Chi_Minh'
+echo "export TZ='Asia/Ho_Chi_Minh'" >> ~/.bashrc
+source ~/.bashrc
+```
+
+**Without timezone configuration, appointment scheduling and time validation features will not work correctly!**
+
+---
+
 ## Prerequisites
 
 - **CMake** >= 3.10
@@ -13,12 +30,23 @@ The devcontainer configuration includes all prerequisites.
 ## Quick Start
 
 ```bash
-# From project root directory
+# Step 1: Set timezone (REQUIRED - only once)
+export TZ='Asia/Ho_Chi_Minh'
+echo "export TZ='Asia/Ho_Chi_Minh'" >> ~/.bashrc
+source ~/.bashrc
+
+# Step 2: Build application
+cd /workspaces/Hospital_Management_Project
 mkdir -p build && cd build
 cmake ..
 make HospitalApp
-./HospitalApp
+
+# Step 3: Run application from project ROOT directory
+cd ..
+./build/HospitalApp
 ```
+
+**⚠️ NOTE:** You must run `./build/HospitalApp` from the project root directory, NOT from the `build/` directory
 
 ---
 
@@ -44,7 +72,7 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 # Build main application only
 make HospitalApp
 
-# Build the static library (used by tests)
+# Build static library (used by tests)
 make HospitalLib
 
 # Build tests only
@@ -53,6 +81,9 @@ make HospitalTests
 # Build everything
 make all
 
+# Fast build with multiple CPU cores
+make -j$(nproc)
+
 # Clean build artifacts
 make clean
 ```
@@ -60,25 +91,21 @@ make clean
 ### Run Application
 
 ```bash
-# From build directory
-./HospitalApp
+# ⚠️ IMPORTANT: Run from project ROOT directory, NOT from build/
+cd /workspaces/Hospital_Management_Project
+./build/HospitalApp
 ```
 
-**Timezone Note:** The application uses system time to validate appointment time slots. If the server runs in UTC timezone, you need to set Vietnam timezone:
-
-```bash
-# Option 1: Run with Vietnam timezone (each time)
-TZ='Asia/Ho_Chi_Minh' ./HospitalApp
-
-# Option 2: Set permanently in shell (recommended)
-echo "export TZ='Asia/Ho_Chi_Minh'" >> ~/.bashrc
-source ~/.bashrc
-./HospitalApp
-```
+**Why run from root directory?**
+- Application uses `data/` path to store data
+- If run from `build/`, application won't find data files
 
 ### Run Tests
 
 ```bash
+# Run from build directory
+cd /workspaces/Hospital_Management_Project/build
+
 # Run all tests
 ./HospitalTests
 
@@ -89,9 +116,6 @@ source ~/.bashrc
 ./HospitalTests --gtest_filter=PatientTest.*
 
 # Run with CTest
-ctest
-
-# Run with verbose CTest
 ctest --verbose
 ```
 
@@ -127,39 +151,54 @@ Build targets:
 
 ## Development Workflow
 
-### Adding New Source Files
+### Rebuild After Code Changes
 
-1. Add header file to appropriate `include/<layer>/` directory
-2. Add source file to corresponding `src/<layer>/` directory
-3. Run `cmake ..` again (or CMake will auto-detect new files)
-4. Build with `make`
+```bash
+cd /workspaces/Hospital_Management_Project/build
+make HospitalApp
+cd ..
+./build/HospitalApp
+```
 
-### Adding New Tests
+### Clean Build (When Encountering Errors)
 
-1. Create test file in appropriate `test/<layer>/` directory
-2. Follow Google Test naming conventions
-3. Rebuild tests with `make HospitalTests`
+```bash
+cd /workspaces/Hospital_Management_Project
+rm -rf build
+mkdir build && cd build
+cmake ..
+make HospitalApp
+cd ..
+./build/HospitalApp
+```
 
 ### Directory Structure for Source Files
 
 ```
 src/
-├── model/          # Entity implementations
+├── model/              # Entity implementations
 │   ├── Person.cpp
 │   ├── Patient.cpp
 │   ├── Doctor.cpp
 │   ├── Admin.cpp
 │   ├── Account.cpp
-│   └── Appointment.cpp
+│   ├── Appointment.cpp
+│   ├── Medicine.cpp
+│   ├── Department.cpp
+│   ├── Prescription.cpp
+│   └── Report.cpp
 │
-├── dal/            # Data Access Layer
+├── dal/                # Data Access Layer
 │   ├── AccountRepository.cpp
 │   ├── PatientRepository.cpp
 │   ├── DoctorRepository.cpp
 │   ├── AppointmentRepository.cpp
+│   ├── MedicineRepository.cpp
+│   ├── DepartmentRepository.cpp
+│   ├── PrescriptionRepository.cpp
 │   └── FileHelper.cpp
 │
-├── bll/            # Business Logic Layer
+├── bll/                # Business Logic Layer
 │   ├── AuthService.cpp
 │   ├── PatientService.cpp
 │   ├── DoctorService.cpp
@@ -170,97 +209,155 @@ src/
 │   ├── PrescriptionService.cpp
 │   └── ReportGenerator.cpp
 │
-├── ui/             # Presentation Layer
+├── ui/                 # Presentation Layer
 │   ├── HMSFacade.cpp
 │   ├── ConsoleUI.cpp
 │   ├── InputValidator.cpp
 │   └── DisplayHelper.cpp
 │
-├── common/         # Utilities
+├── common/             # Utilities
 │   └── Utils.cpp
 │
-└── main.cpp        # Entry point
+└── main.cpp            # Entry point
 ```
+
+### Directory Structure for Data Files
+
+```
+data/
+├── Account.txt          # User accounts
+├── Patient.txt          # Patient information
+├── Doctor.txt           # Doctor information
+├── Appointment.txt      # Appointment schedules
+├── Medicine.txt         # Medicine catalog
+├── Department.txt       # Department catalog
+├── Prescription.txt     # Prescriptions
+└── Report.txt           # System reports
+```
+
+**Note:** CMake no longer copies data files to `build/` directory. The application accesses the `data/` directory in the project root directly to ensure data persistence.
 
 ---
 
 ## Common Issues
 
-### 1. CMake version error
+### 1. "Could not open file" error when running application
 
-```
-CMake Error at CMakeLists.txt:1 (cmake_minimum_required):
-  CMake 3.10 or higher is required.
-```
+**Cause:** Running application from wrong directory.
 
-**Solution:** Update CMake or use the devcontainer.
-
-### 2. GTest not found
-
-```
-CMake Error: Could not find GTest
-```
-
-**Solution:** Install Google Test:
+**Solution:** Must run from project root directory:
 ```bash
-sudo apt-get install libgtest-dev
+cd /workspaces/Hospital_Management_Project
+./build/HospitalApp
 ```
 
-### 3. C++23 features not supported
+### 2. Appointment scheduling features not working correctly
 
-```
-error: 'expected' is not a member of 'std'
-```
+**Cause:** Vietnam timezone not configured.
 
-**Solution:** Use GCC 14 or higher. The devcontainer is pre-configured with GCC 14.
-
-### 4. Linker errors for undefined references
-
-If you see undefined reference errors after adding new source files:
-
+**Solution:**
 ```bash
-# Clean and rebuild
+export TZ='Asia/Ho_Chi_Minh'
+echo "export TZ='Asia/Ho_Chi_Minh'" >> ~/.bashrc
+source ~/.bashrc
+```
+
+### 3. "CMake Error: The source directory ... is a file"
+
+**Cause:** Using `cmake ./HospitalApp` instead of `make HospitalApp`.
+
+**Solution:**
+```bash
 cd build
-rm -rf *
+cmake ..          # Run once to configure
+make HospitalApp  # Use this command to build
+```
+
+### 4. Build errors after code changes
+
+**Solution:** Clean build:
+```bash
+cd /workspaces/Hospital_Management_Project
+rm -rf build
+mkdir build && cd build
 cmake ..
-make all
+make HospitalApp
 ```
 
 ---
 
-## VS Code Integration
+## Quick Reference - Common Commands
 
-If using VS Code with the devcontainer:
+### Initial Setup (Run once)
+```bash
+# Set timezone permanently
+export TZ='Asia/Ho_Chi_Minh'
+echo "export TZ='Asia/Ho_Chi_Minh'" >> ~/.bashrc
+source ~/.bashrc
 
-1. Open Command Palette (Ctrl+Shift+P)
-2. Select "CMake: Configure"
-3. Select "CMake: Build" or press F7
-4. Run with F5 (Debug) or Ctrl+F5 (Run)
+# First build
+cd /workspaces/Hospital_Management_Project
+mkdir -p build && cd build
+cmake ..
+make HospitalApp
+```
+
+### Run Application
+```bash
+# Always run from project root directory
+cd /workspaces/Hospital_Management_Project
+./build/HospitalApp
+```
+
+### Rebuild After Code Changes
+```bash
+cd /workspaces/Hospital_Management_Project/build
+make HospitalApp
+cd ..
+./build/HospitalApp
+```
+
+### Run Tests
+```bash
+cd /workspaces/Hospital_Management_Project/build
+./HospitalTests
+```
+
+### Clean Build (When encountering errors)
+```bash
+cd /workspaces/Hospital_Management_Project
+rm -rf build
+mkdir build && cd build
+cmake ..
+make HospitalApp
+cd ..
+./build/HospitalApp
+```
+
+### Parallel Build (Faster)
+```bash
+# Automatically use all CPU cores
+make -j$(nproc)
+```
 
 ---
 
-## Release Build
-
-For production/release builds:
+## Quick System Check
 
 ```bash
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make all
+# Check timezone
+echo $TZ  # Should be: Asia/Ho_Chi_Minh
 
-# The executable will be optimized
-./HospitalApp
+# Check compiler
+g++ --version  # Must be >= 14
+
+# Check CMake
+cmake --version  # Must be >= 3.10
+
+# Check Google Test
+dpkg -l | grep libgtest
 ```
 
 ---
 
-## Installation (Optional)
-
-```bash
-# Install to system (default: /usr/local/bin)
-sudo make install
-
-# Install to custom location
-cmake -DCMAKE_INSTALL_PREFIX=/custom/path ..
-make install
-```
+**For more information about system architecture and design, see [ARCHITECTURE.md](ARCHITECTURE.md)**
