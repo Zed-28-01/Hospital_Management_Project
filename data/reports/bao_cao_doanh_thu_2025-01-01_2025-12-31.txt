@@ -1,0 +1,38 @@
+ID báo cáo: 
+Tạo ngày: 
+Từ:   
+
+ID báo cáo: RPT-R0010
+Tạo ngày: 2026-01-04
+Từ: 2025-01-01  2025-12-31
+
+==================================================
+BÁO CÁO DOANH THU
+Từ 2025-01-01 to 2025-12-31
+==================================================
+Ngày tạo: 2026-01-04 13:01
+
+DOANH THU KHÁM BỆNH
+----------------------
+  Hoàn thành:            70
+  Tổng doanh thu:        41610000 VND
+  Đã thanh toán:        41610000 VND
+  Chưa thanh toán:       0 VND
+  Tỷ lệ thanh toán:   100%
+
+DOANH THU NHÀ THUỐC
+----------------------
+  Đơn thuốc đã cấp:179
+  Doanh thu thuốc:       31870000 VND
+
+TỔNG
+------
+  Doanh thu tổng:        73480000 VND
+
+BÁC SĨ CÓ DOANH THU CAO
+--------------------------
+  1. BS. Đặng Thị Thảo:6600000 VND
+  2. BS. Bùi Văn Nam:    6600000 VND
+  3. BS. Trần Thị Linh:6000000 VND
+  4. BS. Lê Minh Tuấn:  4900000 VND
+  5. BS. Phạm Thị Quỳnh:2600000 VND

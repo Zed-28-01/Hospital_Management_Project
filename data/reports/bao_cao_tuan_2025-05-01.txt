@@ -1,0 +1,29 @@
+ID báo cáo: 
+Tạo ngày: 
+Từ:   
+
+ID báo cáo: RPT-W0008
+Tạo ngày: 2026-01-04
+Từ: 2025-05-01  2025-05-07
+
+==================================================
+BÁO CÁO TUẦN
+TỪ 2025-05-01 ĐẾN 2025-05-07
+==================================================
+TẠO NGÀY: 2026-01-04 13:01
+
+TỔNG QUAN
+-----------
+  Tổng số cuộc hẹn:2
+  Đã lên lịch:        0
+  Hoàn thành:            2
+  Đã hủy:              0
+  Vắng mặt:            0
+  Tỷ lệ hoàn thành:  100%
+
+DOANH THU
+---------
+  Tổng doanh thu:        1150000 VND
+  Đã thanh toán:        1150000 VND
+  Chưa thanh toán:       0 VND
+  Tỷ lệ thanh toán:   100%

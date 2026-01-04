@@ -13,3 +13,54 @@ D007|bsnamgastro|BS. Bùi Văn Nam|0901111007|Nam|1977-12-05|Tiêu hóa|600000
 D008|bslanoncology|BS. Hoàng Thị Lan|0901111008|Nữ|1981-08-18|Ung bướu|800000
 D009|bsdungoph|BS. Trương Văn Dũng|0901111009|Nam|1979-04-25|Mắt|500000
 D010|bsphirespiratory|BS. Lý Thị Phi|0901111010|Nữ|1984-06-14|Hô hấp|550000
+
+# Bác sĩ bổ sung cho các khoa
+# Khoa Tim mạch (DEP001)
+D011|bshungcardio|BS. Nguyễn Văn Hùng|0901111011|Nam|1980-02-10|Tim mạch|600000
+D012|bsthucardio|BS. Võ Thị Thu|0901111012|Nữ|1986-09-18|Tim mạch|580000
+D013|bsducardio|BS. Trần Minh Đức|0901111013|Nam|1979-11-25|Tim mạch|620000
+
+# Khoa Nhi (DEP002)
+D014|bslampediatrics|BS. Phạm Thị Lam|0901111014|Nữ|1985-04-12|Nhi khoa|500000
+D015|bssonpediatrics|BS. Đỗ Văn Sơn|0901111015|Nam|1983-08-20|Nhi khoa|520000
+D016|bsyenpediatrics|BS. Lê Thị Yến|0901111016|Nữ|1988-01-05|Nhi khoa|480000
+
+# Khoa Thần kinh (DEP003)
+D017|bsanhneuro|BS. Hoàng Văn Anh|0901111017|Nam|1976-10-30|Thần kinh|700000
+D018|bshongneuro|BS. Nguyễn Thị Hồng|0901111018|Nữ|1982-03-15|Thần kinh|680000
+D019|bsbinhneuro|BS. Trương Văn Bình|0901111019|Nam|1981-07-22|Thần kinh|720000
+
+# Khoa Chỉnh hình (DEP004)
+D020|bskhanhortho|BS. Lý Văn Khánh|0901111020|Nam|1984-12-08|Chỉnh hình|650000
+D021|bsnhiortho|BS. Bùi Thị Nhi|0901111021|Nữ|1987-05-16|Chỉnh hình|630000
+D022|bslocortho|BS. Đặng Văn Lộc|0901111022|Nam|1983-09-28|Chỉnh hình|670000
+
+# Khoa Da liễu (DEP005)
+D023|bsmaider|BS. Phạm Thị Mai|0901111023|Nữ|1986-02-14|Da liễu|450000
+D024|bshaoderm|BS. Võ Văn Hảo|0901111024|Nam|1981-11-03|Da liễu|470000
+D025|bslienderm|BS. Nguyễn Thị Liên|0901111025|Nữ|1984-06-20|Da liễu|460000
+
+# Khoa Nội tiết (DEP006)
+D026|bsquangendo|BS. Trần Văn Quang|0901111026|Nam|1979-08-25|Nội tiết|550000
+D027|bshienendo|BS. Lê Thị Hiền|0901111027|Nữ|1985-12-10|Nội tiết|530000
+D028|bstuendo|BS. Hoàng Văn Tú|0901111028|Nam|1982-04-07|Nội tiết|570000
+
+# Khoa Tiêu hóa (DEP007)
+D029|bsvangastro|BS. Đỗ Thị Vân|0901111029|Nữ|1980-03-22|Tiêu hóa|600000
+D030|bshagastro|BS. Nguyễn Văn Hà|0901111030|Nam|1978-10-15|Tiêu hóa|620000
+D031|bsthanhgastro|BS. Phạm Thị Thanh|0901111031|Nữ|1986-07-08|Tiêu hóa|580000
+
+# Khoa Ung bướu (DEP008)
+D032|bsdungoncology|BS. Lý Văn Dũng|0901111032|Nam|1977-05-18|Ung bướu|800000
+D033|bsngaoncology|BS. Trần Thị Nga|0901111033|Nữ|1983-09-12|Ung bướu|780000
+D034|bsminoncology|BS. Võ Văn Minh|0901111034|Nam|1980-01-28|Ung bướu|820000
+
+# Khoa Mắt (DEP009)
+D035|bsanoph|BS. Bùi Văn An|0901111035|Nam|1981-11-20|Mắt|500000
+D036|bshuongoph|BS. Đặng Thị Hương|0901111036|Nữ|1985-06-05|Mắt|520000
+D037|bslongoph|BS. Nguyễn Văn Long|0901111037|Nam|1983-02-17|Mắt|480000
+
+# Khoa Hô hấp (DEP010)
+D038|bsthuyresp|BS. Hoàng Thị Thủy|0901111038|Nữ|1984-08-30|Hô hấp|550000
+D039|bscuongresp|BS. Trần Văn Cường|0901111039|Nam|1982-12-14|Hô hấp|570000
+D040|bsoanresp|BS. Lê Thị Oanh|0901111040|Nữ|1987-04-22|Hô hấp|530000

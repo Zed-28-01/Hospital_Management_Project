@@ -1,0 +1,38 @@
+ID báo cáo: 
+Tạo ngày: 
+Từ:   
+
+ID báo cáo: RPT-M0009
+Tạo ngày: 2026-01-04
+Từ: 2024-09-01  2024-09-30
+
+==================================================
+BÁO CÁO THÁNG - Tháng 9 2024
+==================================================
+Tạo ngày: 2026-01-04 13:01
+
+TỔNG QUAN
+-----------
+  Tổng số cuộc hẹn:17
+  Đã đặt lịch:      0
+  Hoàn thành:            13
+  Đã hủy:              2
+  Vắng mặt:            2
+  Tỷ lệ hoàn thành:  76%
+
+DOANH THU
+---------
+  Tổng doanh thu:        7660000 VND
+  Đã thanh toán:        7660000 VND
+  Chưa thanh toán:       0 VND
+  Tỷ lệ thanh toán:   100%
+
+THEO CHUYÊN KHOA
+-----------------
+  Chỉnh hình:           1
+  Da liễu:               1
+  Hô hấp:               2
+  Nội tiết:            4
+  Thần kinh:             2
+  Tim mạch:              4
+  Tiêu hóa:              3

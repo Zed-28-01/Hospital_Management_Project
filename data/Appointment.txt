@@ -27,3 +27,326 @@ APT022|giangdo|D001|2024-02-10|11:00|Khám tim|600000|0|no_show|Bệnh nhân kh�
 APT023|hienmai|D007|2024-02-19|09:30|Khám dạ dày|600000|0|no_show|Không liên lạc được
 APT024|khanhluong|D003|2024-02-21|15:00|Đau đầu|700000|0|no_show|
 APT025|lamngo|D001|2026-04-01|08:00|Tái khám tim mạch|600000|0|scheduled|
+APT026|myduong|D006|2024-03-10|08:30|Theo dõi thiếu máu|550000|1|completed|Thiếu máu cải thiện, tiếp tục bổ sung sắt
+APT027|namtruong|D006|2024-03-12|10:00|Kiểm tra chức năng tuyến giáp|550000|1|completed|TSH bình thường, duy trì liều thuốc hiện tại
+APT028|oanhdang|D004|2024-03-15|14:30|Đau khớp gối|650000|1|completed|Viêm khớp nhẹ, vật lý trị liệu
+APT029|phatbui|D007|2024-03-18|09:00|Khám viêm gan B định kỳ|600000|1|completed|ALT, AST bình thường, tiếp tục theo dõi 6 tháng
+APT030|quynhly|D003|2024-03-20|11:30|Đau đầu migraine|700000|1|completed|Migraine có tiền triệu, kê thuốc cấp cứu
+APT031|anhnguyen|D001|2024-04-05|08:00|Kiểm tra huyết áp|600000|1|completed|Huyết áp kiểm soát tốt với thuốc hiện tại
+APT032|binhtran|D006|2024-04-08|13:00|Tái khám đái tháo đường|550000|1|completed|HbA1c 6.8%, đường huyết ổn định
+APT033|cuongle|D009|2024-04-10|10:30|Khám mắt định kỳ|500000|1|completed|Thị lực bình thường, không cần kính
+APT034|dungpham|D010|2024-04-12|15:00|Theo dõi hen suyễn|550000|1|completed|Hen kiểm soát tốt, giảm liều corticoid
+APT035|emvo|D005|2024-04-15|09:30|Kiểm tra dị ứng da|450000|1|completed|Không còn triệu chứng, ngừng thuốc
+APT036|phuonghoang|D002|2024-04-18|11:00|Khám thai tuần 24|500000|1|completed|Thai nhi phát triển tốt, siêu âm bình thường
+APT037|giangdo|D001|2024-04-20|08:30|Tái khám sau can thiệp mạch vành|600000|1|completed|EKG tốt, tiếp tục thuốc chống đông máu
+APT038|hienmai|D007|2024-04-22|14:00|Nội soi dạ dày tái khám|600000|1|completed|Dạ dày lành hoàn toàn, không tái phát
+APT039|khanhluong|D003|2024-04-25|10:00|Tê bì tay chân|700000|1|completed|Hội chứng ống cổ tay, khuyên phẫu thuật
+APT040|lamngo|D008|2024-04-28|09:00|Sàng lọc ung thư|800000|1|completed|Không phát hiện bất thường
+APT041|myduong|D006|2024-05-05|08:00|Kiểm tra hemoglobin|550000|1|completed|Hemoglobin tăng lên 11.5 g/dL
+APT042|namtruong|D006|2024-05-08|10:30|Tái khám suy giáp|550000|1|completed|Chức năng giáp ổn định
+APT043|oanhdang|D004|2024-05-10|14:00|Đau lưng mãn tính|650000|1|completed|Thoái hóa cột sống nhẹ, tập vật lý trị liệu
+APT044|phatbui|D007|2024-05-12|11:00|Theo dõi men gan|600000|1|completed|Men gan bình thường, tiếp tục điều trị
+APT045|quynhly|D003|2024-05-15|09:30|Migraine tái phát|700000|1|completed|Điều chỉnh thuốc phòng ngừa
+APT046|anhnguyen|D001|2024-06-01|08:00|Tái khám tim mạch|600000|1|completed|Chức năng tim tốt, EF 60%
+APT047|binhtran|D006|2024-06-05|10:00|Kiểm tra đường huyết lúc đói|550000|1|completed|Glucose 110 mg/dL, chế độ ăn tốt
+APT048|cuongle|D007|2024-06-08|13:30|Đau bụng trên|600000|1|completed|Trào ngược dạ dày thực quản, kê PPI
+APT049|dungpham|D010|2024-06-10|09:00|Khám hô hấp|550000|1|completed|Phổi sạch, không ran
+APT050|emvo|D005|2024-06-12|14:30|Mụn trứng cá|450000|1|completed|Mụn nhẹ, kê kem bôi ngoài
+APT051|phuonghoang|D002|2024-06-15|08:30|Khám thai tuần 28|500000|1|completed|Thai kỳ tiến triển tốt
+APT052|giangdo|D001|2024-06-18|11:00|Khám tim định kỳ|600000|1|completed|Không đau thắt ngực, tiếp tục điều trị
+APT053|hienmai|D007|2024-06-20|10:00|Khó tiêu|600000|1|completed|Rối loạn tiêu hóa chức năng, thuốc tiêu hóa
+APT054|khanhluong|D004|2024-06-22|15:00|Đau khớp tay|650000|1|completed|Viêm khớp dạng thấp nhẹ, theo dõi
+APT055|lamngo|D001|2024-06-25|09:30|Theo dõi lipid máu|600000|1|completed|LDL giảm xuống 100 mg/dL, tốt
+APT056|myduong|D006|2024-07-01|08:00|Tái khám thiếu máu|550000|1|completed|Hemoglobin 12.0 g/dL, bình thường
+APT057|namtruong|D006|2024-07-05|10:30|Kiểm tra TSH|550000|1|completed|TSH ổn định, không cần điều chỉnh liều
+APT058|oanhdang|D004|2024-07-08|14:00|Đau vai gáy|650000|1|completed|Hội chứng vai gáy, massage và thuốc giảm đau
+APT059|phatbui|D007|2024-07-10|11:00|Khám viêm gan B|600000|1|completed|HBV DNA âm tính, tốt
+APT060|quynhly|D003|2024-07-12|09:00|Đau đầu căng thẳng|700000|1|completed|Stress, cần thư giãn và nghỉ ngơi
+APT061|anhnguyen|D001|2024-08-02|08:30|Đau ngực khi gắng sức|600000|1|completed|Angina ổn định, tăng thuốc chống đau thắt ngực
+APT062|binhtran|D006|2024-08-05|10:00|Tê chân|550000|1|completed|Biến chứng thần kinh đái tháo đường nhẹ
+APT063|cuongle|D007|2024-08-08|13:00|Ợ nóng|600000|1|completed|GERD, tăng liều PPI
+APT064|dungpham|D010|2024-08-10|09:30|Ho khan kéo dài|550000|1|completed|Viêm họng mãn tính, thuốc ho
+APT065|emvo|D005|2024-08-12|14:00|Ngứa da toàn thân|450000|1|completed|Viêm da cơ địa, kem corticoid
+APT066|phuonghoang|D002|2024-08-15|08:00|Khám thai tuần 32|500000|1|completed|Thai nhi vị trí đầu, chuẩn bị sinh
+APT067|giangdo|D001|2024-08-18|11:30|Tái khám tim mạch|600000|1|completed|Chức năng tim ổn định
+APT068|hienmai|D007|2024-08-20|10:00|Đầy hơi khó tiêu|600000|1|completed|Hội chứng ruột kích thích, điều chỉnh chế độ ăn
+APT069|khanhluong|D003|2024-08-22|15:30|Chóng mặt|700000|1|completed|Rối loạn tiền đình, thuốc chống chóng mặt
+APT070|lamngo|D001|2024-08-25|09:00|Kiểm tra sức khỏe định kỳ|600000|1|completed|Sức khỏe tốt, tiếp tục điều trị
+APT071|myduong|D006|2024-09-02|08:30|Mệt mỏi|550000|1|completed|Thiếu máu tái phát nhẹ, tăng liều sắt
+APT072|namtruong|D006|2024-09-05|10:00|Tái khám suy giáp|550000|1|completed|Liều thuốc phù hợp
+APT073|oanhdang|D004|2024-09-08|14:30|Đau cổ tay|650000|1|completed|Viêm gân, nghỉ ngơi và chườm nóng
+APT074|phatbui|D007|2024-09-10|11:00|Theo dõi viêm gan B|600000|1|completed|Tình trạng ổn định
+APT075|quynhly|D003|2024-09-12|09:30|Migraine|700000|1|completed|Phát tác nhẹ, thuốc giảm đau
+APT076|anhnguyen|D001|2024-10-01|08:00|Khám tim định kỳ|600000|1|completed|Không triệu chứng mới
+APT077|binhtran|D006|2024-10-05|10:30|Kiểm tra đường huyết|550000|1|completed|HbA1c 7.0%, cần cải thiện chế độ ăn
+APT078|cuongle|D007|2024-10-08|13:00|Tái khám dạ dày|600000|1|completed|Không tái phát
+APT079|dungpham|D010|2024-10-10|09:00|Khám hen|550000|1|completed|Hen kiểm soát tốt
+APT080|emvo|D005|2024-10-12|14:00|Sẹo mụn|450000|1|completed|Điều trị sẹo bằng laser
+APT081|phuonghoang|D002|2024-10-15|08:30|Khám sau sinh 6 tuần|500000|1|completed|Hồi phục tốt sau sinh
+APT082|giangdo|D001|2024-10-18|11:00|Tái khám tim mạch|600000|1|completed|Chức năng tim tốt
+APT083|hienmai|D007|2024-10-20|10:00|Khám dạ dày|600000|1|completed|Không triệu chứng
+APT084|khanhluong|D003|2024-10-22|15:00|Đau đầu|700000|1|completed|Đau đầu căng thẳng
+APT085|lamngo|D001|2024-10-25|09:30|Theo dõi lipid|600000|1|completed|Cholesterol kiểm soát tốt
+APT086|myduong|D006|2024-11-02|08:00|Tái khám thiếu máu|550000|1|completed|Hemoglobin bình thường
+APT087|namtruong|D006|2024-11-05|10:00|Kiểm tra giáp|550000|1|completed|TSH ổn định
+APT088|oanhdang|D004|2024-11-08|14:00|Đau lưng|650000|1|completed|Thoái hóa cột sống, vật lý trị liệu
+APT089|phatbui|D007|2024-11-10|11:00|Khám gan|600000|1|completed|Men gan bình thường
+APT090|quynhly|D003|2024-11-12|09:00|Migraine|700000|1|completed|Tần suất giảm
+APT091|anhnguyen|D001|2024-12-01|08:00|Tái khám tim|600000|1|completed|Chức năng tim tốt
+APT092|binhtran|D006|2024-12-05|10:30|Kiểm tra đường huyết|550000|1|completed|Đường huyết ổn định
+APT093|cuongle|D007|2024-12-08|13:00|Khám dạ dày|600000|1|completed|Không triệu chứng
+APT094|dungpham|D010|2024-12-10|09:00|Khám hen|550000|1|completed|Hen kiểm soát tốt
+APT095|emvo|D005|2024-12-12|14:00|Khám da|450000|1|completed|Da khỏe mạnh
+APT096|phuonghoang|D002|2024-12-15|08:30|Khám phụ khoa|500000|1|completed|Sức khỏe tốt
+APT097|giangdo|D001|2024-12-18|11:00|Tái khám tim|600000|1|completed|Không triệu chứng
+APT098|hienmai|D007|2024-12-20|10:00|Khám dạ dày|600000|1|completed|Bình thường
+APT099|khanhluong|D003|2024-12-22|15:00|Tái khám thần kinh|700000|1|completed|Triệu chứng cải thiện
+APT100|lamngo|D001|2024-12-28|09:30|Tái khám cuối năm|600000|1|completed|Sức khỏe tốt, tiếp tục điều trị
+
+# Lịch hẹn năm 2025 - Completed
+APT101|myduong|D006|2025-01-05|08:00|Kiểm tra sức khỏe đầu năm|550000|1|completed|Sức khỏe tốt
+APT102|namtruong|D006|2025-01-08|10:00|Tái khám giáp|550000|1|completed|TSH ổn định
+APT103|oanhdang|D004|2025-01-10|14:00|Đau khớp|650000|1|completed|Viêm khớp nhẹ
+APT104|phatbui|D007|2025-01-12|11:00|Khám gan định kỳ|600000|1|completed|Men gan bình thường
+APT105|quynhly|D003|2025-01-15|09:00|Migraine|700000|1|completed|Điều chỉnh thuốc
+APT106|anhnguyen|D001|2025-02-01|08:30|Tái khám tim|600000|1|completed|EKG bình thường
+APT107|binhtran|D006|2025-02-05|10:00|Kiểm tra đường huyết|550000|1|completed|HbA1c 6.9%
+APT108|cuongle|D007|2025-02-08|13:00|Khám dạ dày|600000|1|completed|Không triệu chứng
+APT109|dungpham|D010|2025-02-10|09:00|Khám hen|550000|1|completed|Hen ổn định
+APT110|emvo|D005|2025-02-12|14:00|Dị ứng da|450000|1|completed|Không dị ứng
+APT111|giangdo|D001|2025-03-01|11:00|Tái khám tim mạch|600000|1|completed|Chức năng tim tốt
+APT112|hienmai|D007|2025-03-05|10:00|Tái khám dạ dày|600000|1|completed|Lành hoàn toàn
+APT113|khanhluong|D003|2025-03-08|15:00|Đau đầu|700000|1|completed|Đau đầu giảm
+APT114|lamngo|D001|2025-03-10|09:30|Kiểm tra lipid|600000|1|completed|Cholesterol tốt
+APT115|myduong|D006|2025-04-02|08:00|Tái khám|550000|1|completed|Sức khỏe tốt
+APT116|namtruong|D006|2025-04-05|10:00|Kiểm tra giáp|550000|1|completed|Giáp ổn định
+APT117|oanhdang|D004|2025-04-08|14:00|Đau lưng|650000|1|completed|Thoái hóa cột sống
+APT118|phatbui|D007|2025-04-10|11:00|Khám gan|600000|1|completed|Gan tốt
+APT119|quynhly|D003|2025-04-12|09:00|Migraine|700000|1|completed|Ổn định
+APT120|anhnguyen|D001|2025-05-01|08:00|Tái khám tim|600000|1|completed|Tim khỏe
+APT121|binhtran|D006|2025-05-05|10:00|Kiểm tra đường huyết|550000|1|completed|Đường huyết tốt
+APT122|cuongle|D007|2025-05-08|13:00|Khám dạ dày|600000|1|completed|Dạ dày tốt
+APT123|dungpham|D010|2025-05-10|09:00|Khám hen|550000|1|completed|Hen kiểm soát
+APT124|emvo|D005|2025-05-12|14:00|Khám da|450000|1|completed|Da khỏe
+APT125|giangdo|D001|2025-06-01|11:00|Tái khám tim|600000|1|completed|Tim tốt
+APT126|hienmai|D007|2025-06-05|10:00|Khám dạ dày|600000|1|completed|Không triệu chứng
+APT127|khanhluong|D003|2025-06-08|15:00|Tái khám|700000|1|completed|Cải thiện
+APT128|lamngo|D001|2025-06-10|09:30|Kiểm tra lipid|600000|1|completed|Lipid tốt
+APT129|myduong|D006|2025-07-02|08:00|Tái khám|550000|1|completed|Khỏe mạnh
+APT130|namtruong|D006|2025-07-05|10:00|Kiểm tra giáp|550000|1|completed|Giáp bình thường
+APT131|oanhdang|D004|2025-08-01|14:00|Đau khớp|650000|1|completed|Viêm khớp nhẹ
+APT132|phatbui|D007|2025-08-05|11:00|Khám gan|600000|1|completed|Gan ổn định
+APT133|quynhly|D003|2025-08-08|09:00|Migraine|700000|1|completed|Giảm tần suất
+APT134|anhnguyen|D001|2025-09-01|08:00|Tái khám tim|600000|1|completed|Chức năng tim tốt
+APT135|binhtran|D006|2025-09-05|10:00|Kiểm tra đường huyết|550000|1|completed|Đường huyết ổn
+APT136|cuongle|D007|2025-09-08|13:00|Khám dạ dày|600000|1|completed|Dạ dày khỏe
+APT137|dungpham|D010|2025-09-10|09:00|Khám hen|550000|1|completed|Hen tốt
+APT138|emvo|D005|2025-09-12|14:00|Khám da|450000|1|completed|Da tốt
+APT139|giangdo|D001|2025-10-01|11:00|Tái khám tim|600000|1|completed|Tim khỏe mạnh
+APT140|hienmai|D007|2025-10-05|10:00|Khám dạ dày|600000|1|completed|Bình thường
+APT141|khanhluong|D003|2025-10-08|15:00|Tái khám|700000|1|completed|Tốt hơn
+APT142|lamngo|D001|2025-10-10|09:30|Kiểm tra lipid|600000|1|completed|Cholesterol ổn
+APT143|myduong|D006|2025-11-02|08:00|Tái khám|550000|1|completed|Sức khỏe tốt
+APT144|namtruong|D006|2025-11-05|10:00|Kiểm tra giáp|550000|1|completed|TSH tốt
+APT145|oanhdang|D004|2025-11-08|14:00|Đau lưng|650000|1|completed|Giảm đau
+APT146|phatbui|D007|2025-11-10|11:00|Khám gan|600000|1|completed|Gan khỏe
+APT147|quynhly|D003|2025-11-12|09:00|Migraine|700000|1|completed|Ổn định tốt
+APT148|anhnguyen|D001|2025-12-01|08:00|Tái khám cuối năm|600000|1|completed|Sức khỏe tốt, chuẩn bị cho năm mới
+APT149|binhtran|D006|2025-12-05|10:00|Kiểm tra đường huyết cuối năm|550000|1|completed|HbA1c 6.8%, kiểm soát tốt
+APT150|cuongle|D007|2025-12-08|13:00|Khám dạ dày cuối năm|600000|1|completed|Không vấn đề
+
+# Lịch hẹn đã hủy - Cancelled (2024-2025)
+APT151|myduong|D006|2024-05-20|08:00|Tái khám thiếu máu|550000|0|cancelled|Bệnh nhân bận công tác
+APT152|namtruong|D006|2024-06-15|10:00|Kiểm tra giáp|550000|0|cancelled|Xin đổi lịch sang tuần sau
+APT153|oanhdang|D004|2024-07-22|14:00|Đau vai|650000|0|cancelled|Bác sĩ nghỉ phép đột xuất
+APT154|quynhly|D003|2024-08-18|09:00|Migraine|700000|0|cancelled|Bệnh nhân hết triệu chứng
+APT155|anhnguyen|D001|2024-09-25|08:00|Tái khám tim|600000|0|cancelled|Thời tiết xấu, hoãn lịch
+APT156|binhtran|D006|2024-10-30|10:00|Kiểm tra đường huyết|550000|0|cancelled|Bệnh nhân đi công tác xa
+APT157|cuongle|D007|2024-11-18|13:00|Khám dạ dày|600000|0|cancelled|Bệnh viện bảo trì thiết bị
+APT158|dungpham|D010|2025-01-20|09:00|Khám hen|550000|0|cancelled|Bệnh nhân ốm không thể đến
+APT159|emvo|D005|2025-03-14|14:00|Khám da|450000|0|cancelled|Đổi lịch do bận họp
+APT160|giangdo|D001|2025-04-25|11:00|Tái khám tim|600000|0|cancelled|Bác sĩ tham gia hội thảo
+APT161|hienmai|D007|2025-06-18|10:00|Khám dạ dày|600000|0|cancelled|Bệnh nhân yêu cầu đổi bác sĩ
+APT162|khanhluong|D003|2025-07-22|15:00|Đau đầu|700000|0|cancelled|Lịch trùng với lịch khác
+APT163|lamngo|D001|2025-09-16|09:30|Kiểm tra lipid|600000|0|cancelled|Bệnh nhân chưa làm xét nghiệm
+APT164|myduong|D006|2025-10-28|08:00|Tái khám|550000|0|cancelled|Bệnh nhân đi du lịch
+APT165|oanhdang|D004|2025-11-20|14:00|Đau lưng|650000|0|cancelled|Thiết bị X-quang hỏng
+
+# Lịch hẹn không đến - No Show (2024-2025)
+APT166|phatbui|D007|2024-04-22|11:00|Khám gan|600000|0|no_show|Không liên lạc được
+APT167|namtruong|D006|2024-06-10|10:00|Kiểm tra giáp|550000|0|no_show|Không đến, không báo trước
+APT168|quynhly|D003|2024-07-15|09:00|Migraine|700000|0|no_show|Điện thoại không liên lạc được
+APT169|anhnguyen|D001|2024-08-20|08:00|Tái khám tim|600000|0|no_show|Quên lịch hẹn
+APT170|binhtran|D006|2024-09-12|10:00|Kiểm tra đường huyết|550000|0|no_show|
+APT171|cuongle|D007|2024-10-18|13:00|Khám dạ dày|600000|0|no_show|Không đến và không thông báo
+APT172|dungpham|D010|2024-11-25|09:00|Khám hen|550000|0|no_show|Không liên lạc được
+APT173|emvo|D005|2025-02-18|14:00|Khám da|450000|0|no_show|Quên lịch
+APT174|giangdo|D001|2025-04-22|11:00|Tái khám tim|600000|0|no_show|Không đến, không báo
+APT175|hienmai|D007|2025-06-16|10:00|Khám dạ dày|600000|0|no_show|
+APT176|khanhluong|D003|2025-08-11|15:00|Đau đầu|700000|0|no_show|Điện thoại tắt máy
+APT177|lamngo|D001|2025-10-06|09:30|Kiểm tra lipid|600000|0|no_show|Không thông báo
+APT178|myduong|D006|2025-11-18|08:00|Tái khám|550000|0|no_show|Không liên lạc được
+
+# Lịch hẹn tương lai - Scheduled (2026)
+APT179|phuonghoang|D002|2026-01-10|08:30|Khám phụ khoa định kỳ|500000|0|scheduled|
+APT180|oanhdang|D004|2026-01-12|14:00|Đau khớp gối|650000|0|scheduled|
+APT181|phatbui|D007|2026-01-15|11:00|Theo dõi viêm gan B|600000|0|scheduled|
+APT182|quynhly|D003|2026-01-18|09:00|Migraine định kỳ|700000|0|scheduled|
+APT183|anhnguyen|D001|2026-01-20|08:00|Tái khám tim mạch|600000|0|scheduled|
+APT184|binhtran|D006|2026-01-22|10:00|Kiểm tra đường huyết|550000|0|scheduled|
+APT185|cuongle|D007|2026-01-25|13:00|Khám dạ dày định kỳ|600000|0|scheduled|
+APT186|dungpham|D010|2026-01-28|09:00|Theo dõi hen suyễn|550000|0|scheduled|
+APT187|emvo|D005|2026-02-01|14:00|Kiểm tra dị ứng|450000|0|scheduled|
+APT188|giangdo|D001|2026-02-05|11:00|Tái khám tim mạch vành|600000|0|scheduled|
+APT189|hienmai|D007|2026-02-08|10:00|Tái khám dạ dày|600000|0|scheduled|
+APT190|khanhluong|D003|2026-02-10|15:00|Đau đầu migraine|700000|0|scheduled|
+APT191|lamngo|D001|2026-02-12|09:30|Kiểm tra lipid máu|600000|0|scheduled|
+APT192|myduong|D006|2026-02-15|08:00|Theo dõi thiếu máu|550000|0|scheduled|
+APT193|namtruong|D006|2026-02-18|10:00|Kiểm tra chức năng giáp|550000|0|scheduled|
+APT194|oanhdang|D004|2026-02-20|14:00|Đau lưng mãn tính|650000|0|scheduled|
+APT195|phatbui|D007|2026-02-22|11:00|Khám gan định kỳ|600000|0|scheduled|
+APT196|quynhly|D003|2026-02-25|09:00|Tái khám thần kinh|700000|0|scheduled|
+APT197|anhnguyen|D001|2026-02-28|08:00|Kiểm tra huyết áp|600000|0|scheduled|
+APT198|binhtran|D006|2026-03-05|10:00|Tái khám đái tháo đường|550000|0|scheduled|
+APT199|cuongle|D007|2026-03-08|13:00|Nội soi dạ dày|600000|0|scheduled|
+APT200|dungpham|D010|2026-03-10|09:00|Khám hô hấp|550000|0|scheduled|
+APT201|emvo|D005|2026-03-12|14:00|Khám da liễu|450000|0|scheduled|
+APT202|phuonghoang|D002|2026-03-15|08:30|Khám sức khỏe sinh sản|500000|0|scheduled|
+APT203|giangdo|D001|2026-03-18|11:00|Theo dõi sau đặt stent|600000|0|scheduled|
+APT204|hienmai|D007|2026-04-05|10:00|Khám tiêu hóa|600000|0|scheduled|
+APT205|khanhluong|D003|2026-04-08|15:00|Tái khám thần kinh|700000|0|scheduled|
+APT206|lamngo|D001|2026-04-10|09:30|Khám tim mạch|600000|0|scheduled|
+APT207|myduong|D006|2026-04-12|08:00|Kiểm tra máu|550000|0|scheduled|
+APT208|namtruong|D006|2026-04-15|10:00|Tái khám nội tiết|550000|0|scheduled|
+APT209|oanhdang|D004|2026-04-18|14:00|Vật lý trị liệu|650000|0|scheduled|
+APT210|phatbui|D007|2026-04-20|11:00|Siêu âm gan|600000|0|scheduled|
+APT211|quynhly|D003|2026-04-22|09:00|Khám đau đầu|700000|0|scheduled|
+APT212|anhnguyen|D001|2026-04-25|08:00|ECG định kỳ|600000|0|scheduled|
+APT213|binhtran|D006|2026-04-28|10:00|Xét nghiệm HbA1c|550000|0|scheduled|
+APT214|cuongle|D007|2026-05-02|13:00|Tái khám dạ dày|600000|0|scheduled|
+APT215|dungpham|D010|2026-05-05|09:00|Đo chức năng hô hấp|550000|0|scheduled|
+APT216|emvo|D005|2026-05-08|14:00|Kiểm tra dị ứng thức ăn|450000|0|scheduled|
+APT217|phuonghoang|D002|2026-05-10|08:30|Khám phụ khoa|500000|0|scheduled|
+APT218|giangdo|D001|2026-05-12|11:00|Siêu âm tim|600000|0|scheduled|
+APT219|hienmai|D007|2026-05-15|10:00|Khám tiêu hóa định kỳ|600000|0|scheduled|
+APT220|khanhluong|D003|2026-05-18|15:00|MRI não|700000|0|scheduled|
+
+# Appointment với bác sĩ mới - 2024 Completed
+APT221|anhnguyen|D011|2024-03-08|09:00|Khám tim mạch|600000|1|completed|Đánh giá chức năng tim, mạch vành tốt
+APT222|binhtran|D026|2024-03-15|10:30|Kiểm tra đường huyết|550000|1|completed|Glucose ổn định, tiếp tục điều trị
+APT223|cuongle|D029|2024-03-22|14:00|Đau bụng|600000|1|completed|Viêm dạ dày nhẹ, kê thuốc
+APT224|dungpham|D038|2024-03-25|08:30|Khó thở|550000|1|completed|Hen phế quản, điều chỉnh thuốc
+APT225|emvo|D023|2024-03-28|11:00|Nổi mẩn ngứa|450000|1|completed|Dị ứng tiếp xúc, kem bôi
+APT226|giangdo|D012|2024-04-02|09:30|Tái khám tim|580000|1|completed|Tim hoạt động tốt
+APT227|hienmai|D030|2024-04-05|10:00|Khó tiêu|620000|1|completed|GERD, PPI
+APT228|khanhluong|D017|2024-04-08|14:30|Đau đầu|700000|1|completed|Đau đầu vận mạch
+APT229|lamngo|D013|2024-04-12|11:00|Kiểm tra tim|620000|1|completed|ECG bình thường
+APT230|myduong|D027|2024-04-15|08:00|Kiểm tra giáp|530000|1|completed|TSH bình thường
+APT231|namtruong|D028|2024-04-18|10:00|Tái khám nội tiết|570000|1|completed|Hormone ổn định
+APT232|oanhdang|D020|2024-04-22|14:00|Đau khớp vai|650000|1|completed|Viêm khớp vai, vật lý trị liệu
+APT233|phatbui|D031|2024-04-25|09:00|Khám gan|580000|1|completed|Gan tốt, tiếp tục theo dõi
+APT234|quynhly|D018|2024-04-28|11:30|Migraine|680000|1|completed|Điều chỉnh thuốc phòng ngừa
+APT235|anhnguyen|D013|2024-05-02|08:00|Tái khám tim|620000|1|completed|Chức năng tim tốt
+APT236|binhtran|D027|2024-05-05|10:00|Kiểm tra đường huyết|530000|1|completed|HbA1c 6.9%
+APT237|cuongle|D031|2024-05-08|13:00|Tái khám dạ dày|580000|1|completed|Dạ dày ổn định
+APT238|dungpham|D039|2024-05-12|09:00|Khám hen|570000|1|completed|Hen kiểm soát
+APT239|emvo|D024|2024-05-15|14:00|Mụn|470000|1|completed|Mụn nhẹ, điều trị tại chỗ
+APT240|giangdo|D011|2024-05-18|11:00|Theo dõi tim mạch|600000|1|completed|Không triệu chứng mới
+APT241|hienmai|D029|2024-05-22|10:00|Khám dạ dày|600000|1|completed|Không tái phát
+APT242|khanhluong|D019|2024-05-25|15:00|Đau đầu|720000|1|completed|Căng thẳng thần kinh
+APT243|lamngo|D012|2024-05-28|09:30|Kiểm tra lipid|580000|1|completed|Cholesterol tốt
+APT244|myduong|D026|2024-06-02|08:00|Tái khám thiếu máu|550000|1|completed|Hemoglobin cải thiện
+APT245|namtruong|D027|2024-06-05|10:00|Kiểm tra giáp|530000|1|completed|Giáp ổn định
+APT246|oanhdang|D021|2024-06-08|14:00|Đau lưng|630000|1|completed|Thoái hóa đốt sống
+APT247|phatbui|D030|2024-06-12|11:00|Khám gan|620000|1|completed|Men gan bình thường
+APT248|quynhly|D017|2024-06-15|09:00|Migraine|700000|1|completed|Ổn định
+APT249|anhnguyen|D011|2024-07-01|08:00|Tái khám tim|600000|1|completed|Tim khỏe
+APT250|binhtran|D028|2024-07-05|10:00|Kiểm tra nội tiết|570000|1|completed|Hormone tốt
+APT251|cuongle|D029|2024-07-08|13:00|Khám dạ dày|600000|1|completed|Không triệu chứng
+APT252|dungpham|D040|2024-07-12|09:00|Khám hô hấp|530000|1|completed|Phổi sạch
+APT253|emvo|D025|2024-07-15|14:00|Kiểm tra da|460000|1|completed|Da khỏe
+APT254|giangdo|D013|2024-07-18|11:00|Tái khám tim|620000|1|completed|Chức năng tim tốt
+APT255|hienmai|D031|2024-07-22|10:00|Khám tiêu hóa|580000|1|completed|Dạ dày tốt
+APT256|khanhluong|D018|2024-07-25|15:00|Đau đầu|680000|1|completed|Giảm tần suất
+APT257|lamngo|D011|2024-07-28|09:30|Kiểm tra tim|600000|1|completed|ECG tốt
+APT258|myduong|D027|2024-08-02|08:00|Tái khám|530000|1|completed|Sức khỏe tốt
+APT259|namtruong|D026|2024-08-05|10:00|Kiểm tra giáp|550000|1|completed|TSH ổn định
+APT260|oanhdang|D022|2024-08-08|14:00|Đau khớp|670000|1|completed|Viêm khớp nhẹ
+APT261|phatbui|D029|2024-08-12|11:00|Khám gan|600000|1|completed|Gan khỏe
+APT262|quynhly|D019|2024-08-15|09:00|Migraine|720000|1|completed|Duy trì điều trị
+APT263|anhnguyen|D012|2024-09-01|08:00|Tái khám tim|580000|1|completed|Tim tốt
+APT264|binhtran|D027|2024-09-05|10:00|Kiểm tra đường huyết|530000|1|completed|Đường huyết ổn
+APT265|cuongle|D030|2024-09-08|13:00|Khám dạ dày|620000|1|completed|Bình thường
+APT266|dungpham|D038|2024-09-12|09:00|Khám hen|550000|1|completed|Hen kiểm soát
+APT267|emvo|D023|2024-09-15|14:00|Khám da|450000|1|completed|Da khỏe
+APT268|giangdo|D011|2024-09-18|11:00|Tái khám tim|600000|1|completed|Không triệu chứng
+APT269|hienmai|D031|2024-09-22|10:00|Khám tiêu hóa|580000|1|completed|Tốt
+APT270|khanhluong|D017|2024-09-25|15:00|Tái khám thần kinh|700000|1|completed|Cải thiện
+
+# Appointment với bác sĩ mới - 2025 Completed
+APT271|lamngo|D013|2025-01-10|09:30|Tái khám tim|620000|1|completed|Tim mạch khỏe
+APT272|myduong|D026|2025-01-15|08:00|Kiểm tra máu|550000|1|completed|Hemoglobin bình thường
+APT273|namtruong|D028|2025-01-18|10:00|Tái khám nội tiết|570000|1|completed|Hormone ổn định
+APT274|oanhdang|D020|2025-01-22|14:00|Đau khớp|650000|1|completed|Viêm khớp nhẹ
+APT275|phatbui|D029|2025-01-25|11:00|Khám gan|600000|1|completed|Gan tốt
+APT276|quynhly|D018|2025-01-28|09:00|Migraine|680000|1|completed|Ổn định
+APT277|anhnguyen|D011|2025-02-05|08:00|Tái khám tim|600000|1|completed|Chức năng tim tốt
+APT278|binhtran|D027|2025-02-10|10:00|Kiểm tra đường huyết|530000|1|completed|HbA1c tốt
+APT279|cuongle|D031|2025-02-15|13:00|Khám dạ dày|580000|1|completed|Không triệu chứng
+APT280|dungpham|D039|2025-02-20|09:00|Khám hô hấp|570000|1|completed|Phổi khỏe
+APT281|emvo|D024|2025-02-25|14:00|Khám da|470000|1|completed|Da tốt
+APT282|giangdo|D012|2025-03-05|11:00|Tái khám tim|580000|1|completed|Tim khỏe
+APT283|hienmai|D030|2025-03-10|10:00|Khám tiêu hóa|620000|1|completed|Dạ dày tốt
+APT284|khanhluong|D019|2025-03-15|15:00|Đau đầu|720000|1|completed|Giảm triệu chứng
+APT285|lamngo|D011|2025-03-20|09:30|Kiểm tra lipid|600000|1|completed|Lipid ổn
+APT286|myduong|D027|2025-04-05|08:00|Tái khám|530000|1|completed|Khỏe mạnh
+APT287|namtruong|D026|2025-04-10|10:00|Kiểm tra giáp|550000|1|completed|Giáp bình thường
+APT288|oanhdang|D021|2025-04-15|14:00|Vật lý trị liệu|630000|1|completed|Cải thiện
+APT289|phatbui|D031|2025-04-20|11:00|Khám gan|580000|1|completed|Men gan tốt
+APT290|quynhly|D018|2025-04-25|09:00|Migraine|680000|1|completed|Duy trì điều trị
+
+# Appointment với bác sĩ mới - Cancelled
+APT291|anhnguyen|D011|2024-06-20|08:00|Tái khám tim|600000|0|cancelled|Bệnh nhân đi công tác
+APT292|binhtran|D027|2024-07-18|10:00|Kiểm tra nội tiết|530000|0|cancelled|Đổi lịch sang tuần sau
+APT293|cuongle|D029|2024-08-22|13:00|Khám dạ dày|600000|0|cancelled|Bác sĩ nghỉ phép
+APT294|dungpham|D038|2024-09-16|09:00|Khám hen|550000|0|cancelled|Bệnh nhân hủy
+APT295|emvo|D023|2025-02-18|14:00|Khám da|450000|0|cancelled|Bận việc gia đình
+APT296|giangdo|D012|2025-03-22|11:00|Tái khám tim|580000|0|cancelled|Thời tiết xấu
+APT297|hienmai|D030|2025-04-16|10:00|Khám dạ dày|620000|0|cancelled|Xin đổi bác sĩ
+APT298|khanhluong|D017|2024-10-12|15:00|Đau đầu|700000|0|cancelled|Lịch trùng
+APT299|lamngo|D013|2024-11-08|09:30|Kiểm tra tim|620000|0|cancelled|Chưa làm xét nghiệm
+APT300|myduong|D026|2025-05-14|08:00|Tái khám|550000|0|cancelled|Đi du lịch
+
+# Appointment với bác sĩ mới - No Show
+APT301|namtruong|D027|2024-05-18|10:00|Kiểm tra giáp|530000|0|no_show|Không liên lạc được
+APT302|oanhdang|D020|2024-06-22|14:00|Đau khớp|650000|0|no_show|Quên lịch hẹn
+APT303|phatbui|D029|2024-07-16|11:00|Khám gan|600000|0|no_show|Không đến không báo
+APT304|quynhly|D018|2024-08-14|09:00|Migraine|680000|0|no_show|Điện thoại tắt máy
+APT305|anhnguyen|D012|2024-09-20|08:00|Tái khám tim|580000|0|no_show|
+APT306|binhtran|D028|2024-10-18|10:00|Kiểm tra nội tiết|570000|0|no_show|Không thông báo
+APT307|cuongle|D031|2025-03-16|13:00|Khám dạ dày|580000|0|no_show|Không liên lạc được
+APT308|dungpham|D039|2025-04-12|09:00|Khám hô hấp|570000|0|no_show|Quên lịch
+
+# Appointment với bác sĩ mới - Scheduled (2026)
+APT309|emvo|D024|2026-01-08|14:00|Kiểm tra da|470000|0|scheduled|
+APT310|giangdo|D013|2026-01-15|11:00|Tái khám tim mạch|620000|0|scheduled|
+APT311|hienmai|D029|2026-01-20|10:00|Khám tiêu hóa|600000|0|scheduled|
+APT312|khanhluong|D017|2026-01-25|15:00|Đau đầu thần kinh|700000|0|scheduled|
+APT313|lamngo|D012|2026-02-03|09:30|Kiểm tra tim|580000|0|scheduled|
+APT314|myduong|D027|2026-02-08|08:00|Kiểm tra nội tiết|530000|0|scheduled|
+APT315|namtruong|D028|2026-02-15|10:00|Tái khám hormone|570000|0|scheduled|
+APT316|oanhdang|D021|2026-02-22|14:00|Vật lý trị liệu khớp|630000|0|scheduled|
+APT317|phatbui|D031|2026-02-28|11:00|Theo dõi gan|580000|0|scheduled|
+APT318|quynhly|D019|2026-03-05|09:00|Migraine tái khám|720000|0|scheduled|
+APT319|anhnguyen|D011|2026-03-12|08:00|Siêu âm tim|600000|0|scheduled|
+APT320|binhtran|D026|2026-03-18|10:00|Xét nghiệm đường huyết|550000|0|scheduled|
+APT321|cuongle|D030|2026-03-25|13:00|Nội soi dạ dày|620000|0|scheduled|
+APT322|dungpham|D040|2026-04-02|09:00|Đo chức năng phổi|530000|0|scheduled|
+APT323|emvo|D025|2026-04-08|14:00|Kiểm tra dị ứng|460000|0|scheduled|
+APT324|giangdo|D012|2026-04-15|11:00|Theo dõi sau stent|580000|0|scheduled|
+APT325|hienmai|D029|2026-04-22|10:00|Tái khám tiêu hóa|600000|0|scheduled|
+APT326|khanhluong|D018|2026-04-28|15:00|Khám thần kinh|680000|0|scheduled|
+APT327|lamngo|D013|2026-05-05|09:30|Kiểm tra mạch vành|620000|0|scheduled|
+APT328|myduong|D028|2026-05-12|08:00|Kiểm tra hormone giáp|570000|0|scheduled|
+APT329|namtruong|D027|2026-05-18|10:00|Tái khám nội tiết|530000|0|scheduled|
+APT330|oanhdang|D022|2026-05-25|14:00|Đau cột sống|670000|0|scheduled|

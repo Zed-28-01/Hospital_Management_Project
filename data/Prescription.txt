@@ -13,3 +13,206 @@ PRE008|APT008|hienmai|D007|2024-03-01|Sau điều trị HP thành công|Duy trì
 PRE009|APT009|khanhluong|D003|2024-03-03|Migraine mãn tính|Tránh stress, ngủ đủ giấc, tránh ánh sáng mạnh|1|MED004:30:1 viên khi đau:30 ngày:Uống khi đau đầu, tối đa 3 viên/ngày;MED016:20:1 viên/ngày:20 ngày:Phòng ngừa
 PRE010|APT010|lamngo|D001|2024-03-05|Rối loạn lipid máu, cholesterol cao|Ăn ít mỡ động vật, tăng vận động|1|MED013:30:1 viên/ngày:30 ngày:Uống trước khi ngủ;MED015:30:1 viên/ngày:30 ngày:Buổi tối
 
+# Đơn thuốc năm 2024
+PRE011|APT026|myduong|D006|2024-03-10|Thiếu máu do thiếu sắt|Ăn nhiều rau xanh, thịt đỏ, bổ sung sắt|1|MED020:60:1 viên/ngày:60 ngày:Uống sau bữa ăn
+PRE012|APT027|namtruong|D006|2024-03-12|Suy giáp|Tuân thủ dùng thuốc đều đặn, tái khám định kỳ|1|MED019:30:1 viên/ngày:30 ngày:Uống buổi sáng trước ăn 30 phút
+PRE013|APT028|oanhdang|D004|2024-03-15|Viêm khớp gối|Nghỉ ngơi, tránh vận động quá sức|1|MED004:20:1 viên khi đau:20 ngày:Uống sau ăn;MED010:2:Thoa 2-3 lần/ngày:30 ngày:Bôi vào vùng đau
+PRE014|APT029|phatbui|D007|2024-03-18|Viêm gan B mạn tính|Kiêng rượu bia hoàn toàn, ăn nhẹ|1|MED017:30:1 viên/ngày:30 ngày:Bổ sung vitamin nhóm B
+PRE015|APT030|quynhly|D003|2024-03-20|Migraine có tiền triệu|Ngủ đủ giấc, tránh stress|1|MED004:20:1 viên khi đau:20 ngày:Uống sớm khi có tiền triệu;MED017:30:1 viên/ngày:30 ngày:Bổ sung vitamin B
+PRE016|APT031|anhnguyen|D001|2024-04-05|Cao huyết áp kiểm soát tốt|Tiếp tục chế độ ăn ít muối|1|MED006:30:1 viên/ngày:30 ngày:Buổi sáng;MED011:30:1 viên/ngày:30 ngày:Buổi tối
+PRE017|APT032|binhtran|D006|2024-04-08|Đái tháo đường type 2|Kiểm soát cân nặng, tập thể dục|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Cùng bữa ăn sáng và tối
+PRE018|APT033|cuongle|D009|2024-04-10|Khám mắt định kỳ bình thường|Không có vấn đề về mắt|0|
+PRE019|APT034|dungpham|D010|2024-04-12|Hen suyễn kiểm soát|Tránh khói bụi, dị nguyên|1|MED009:2:2 nhát khi cần:30 ngày:Khi khó thở;MED016:20:1 viên/ngày:20 ngày:Phòng ngừa
+PRE020|APT035|emvo|D005|2024-04-15|Dị ứng da đã khỏi|Kiêng thức ăn gây dị ứng|0|
+PRE021|APT036|phuonghoang|D002|2024-04-18|Thai kỳ 24 tuần khỏe mạnh|Thai phụ nghỉ ngơi đầy đủ|1|MED018:30:1 viên sủi/ngày:30 ngày:Buổi sáng;MED020:30:1 viên/ngày:30 ngày:Bổ sung sắt
+PRE022|APT037|giangdo|D001|2024-04-20|Bệnh tim mạch vành sau can thiệp|Tuân thủ thuốc, tái khám đúng hẹn|1|MED014:30:1 viên/ngày:30 ngày:Buổi sáng;MED015:30:1 viên/ngày:30 ngày:Buổi tối;MED011:30:1 viên/ngày:30 ngày:Buổi tối
+PRE023|APT038|hienmai|D007|2024-04-22|Sau điều trị HP thành công|Duy trì chế độ ăn lành mạnh|1|MED012:30:1 viên/ngày:30 ngày:Trước ăn sáng 30 phút
+PRE024|APT039|khanhluong|D003|2024-04-25|Hội chứng ống cổ tay|Cần nghỉ ngơi tay, có thể cần phẫu thuật|1|MED004:20:1 viên khi đau:20 ngày:Uống sau ăn;MED017:30:1 viên/ngày:30 ngày:Bổ sung vitamin B
+PRE025|APT040|lamngo|D008|2024-04-28|Sàng lọc ung thư âm tính|Không phát hiện bất thường, tái khám sau 1 năm|0|
+PRE026|APT041|myduong|D006|2024-05-05|Thiếu máu cải thiện|Tiếp tục bổ sung sắt|1|MED020:60:1 viên/ngày:60 ngày:Uống sau ăn
+PRE027|APT042|namtruong|D006|2024-05-08|Suy giáp ổn định|Duy trì liều thuốc|1|MED019:30:1 viên/ngày:30 ngày:Sáng trước ăn 30 phút
+PRE028|APT043|oanhdang|D004|2024-05-10|Thoái hóa cột sống nhẹ|Tập vật lý trị liệu, tránh mang nặng|1|MED004:30:1-2 viên khi đau:30 ngày:Sau ăn;MED010:2:Thoa 2-3 lần/ngày:30 ngày:Bôi vùng đau
+PRE029|APT044|phatbui|D007|2024-05-12|Viêm gan B men gan bình thường|Tiếp tục điều trị, kiêng rượu|1|MED017:30:1 viên/ngày:30 ngày:Bổ sung vitamin B
+PRE030|APT045|quynhly|D003|2024-05-15|Migraine điều chỉnh thuốc|Ngủ đủ giấc, thư giãn|1|MED004:20:1 viên khi đau:20 ngày:Khi đau đầu;MED016:30:1 viên/ngày:30 ngày:Phòng ngừa
+PRE031|APT046|anhnguyen|D001|2024-06-01|Chức năng tim tốt EF 60%|Tiếp tục chế độ điều trị|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED011:30:1 viên/ngày:30 ngày:Tối
+PRE032|APT047|binhtran|D006|2024-06-05|Đường huyết kiểm soát tốt|Duy trì chế độ ăn và tập thể dục|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng và tối cùng bữa ăn
+PRE033|APT048|cuongle|D007|2024-06-08|Trào ngược dạ dày thực quản|Ăn nhẹ, nâng cao đầu giường khi ngủ|1|MED012:30:1 viên/ngày:30 ngày:Trước ăn sáng 30 phút
+PRE034|APT049|dungpham|D010|2024-06-10|Phổi sạch không ran|Hen kiểm soát tốt|1|MED009:2:Khi cần:30 ngày:Khi khó thở
+PRE035|APT050|emvo|D005|2024-06-12|Mụn trứng cá nhẹ|Giữ da sạch, không nặn mụn|1|MED023:1:Bôi 1 lần/ngày:30 ngày:Buổi tối
+PRE036|APT051|phuonghoang|D002|2024-06-15|Thai kỳ 28 tuần tiến triển tốt|Thai phụ chuẩn bị đồ dùng cho em bé|1|MED018:30:1 viên sủi/ngày:30 ngày:Sáng;MED020:30:1 viên/ngày:30 ngày:Bổ sung sắt
+PRE037|APT052|giangdo|D001|2024-06-18|Không đau thắt ngực|Tiếp tục điều trị|1|MED014:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE038|APT053|hienmai|D007|2024-06-20|Rối loạn tiêu hóa chức năng|Ăn đều đặn, tránh stress|1|MED012:30:1 viên/ngày:30 ngày:Trước ăn sáng;MED017:30:1 viên/ngày:30 ngày:Bổ sung vitamin B
+PRE039|APT054|khanhluong|D004|2024-06-22|Viêm khớp dạng thấp nhẹ|Theo dõi, tái khám sau 3 tháng|1|MED004:30:1 viên khi đau:30 ngày:Sau ăn;MED010:2:Thoa 2 lần/ngày:30 ngày:Vùng đau
+PRE040|APT055|lamngo|D001|2024-06-25|LDL giảm xuống 100 mg/dL|Tiếp tục ăn kiêng và thuốc|1|MED013:30:1 viên/ngày:30 ngày:Trước ngủ;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE041|APT056|myduong|D006|2024-07-01|Hemoglobin 12.0 g/dL bình thường|Duy trì chế độ ăn giàu sắt|1|MED020:30:1 viên/ngày:30 ngày:Sau ăn
+PRE042|APT057|namtruong|D006|2024-07-05|TSH ổn định|Không cần điều chỉnh liều|1|MED019:30:1 viên/ngày:30 ngày:Sáng trước ăn
+PRE043|APT058|oanhdang|D004|2024-07-08|Hội chứng vai gáy|Massage, vật lý trị liệu|1|MED004:20:1 viên khi đau:20 ngày:Sau ăn;MED010:2:Thoa 3 lần/ngày:30 ngày:Vùng đau
+PRE044|APT059|phatbui|D007|2024-07-10|HBV DNA âm tính|Tình trạng tốt, tiếp tục theo dõi|1|MED017:30:1 viên/ngày:30 ngày:Bổ sung vitamin B
+PRE045|APT060|quynhly|D003|2024-07-12|Đau đầu do stress|Cần thư giãn nghỉ ngơi|1|MED001:20:1-2 viên khi đau:20 ngày:Khi đau đầu;MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE046|APT061|anhnguyen|D001|2024-08-02|Angina ổn định|Tăng thuốc chống đau thắt ngực|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED011:60:1 viên 2 lần/ngày:30 ngày:Sáng và tối
+PRE047|APT062|binhtran|D006|2024-08-05|Biến chứng thần kinh đái tháo đường nhẹ|Kiểm soát đường huyết chặt chẽ|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng tối;MED017:60:1 viên 2 lần/ngày:30 ngày:Bổ sung B
+PRE048|APT063|cuongle|D007|2024-08-08|GERD|Tăng liều PPI|1|MED012:60:1 viên 2 lần/ngày:30 ngày:Sáng và tối trước ăn
+PRE049|APT064|dungpham|D010|2024-08-10|Viêm họng mãn tính|Uống nhiều nước, tránh khói bụi|1|MED002:30:1 viên 3 lần/ngày:10 ngày:Sau ăn;MED001:20:1 viên khi đau:20 ngày:Khi đau họng
+PRE050|APT065|emvo|D005|2024-08-12|Viêm da cơ địa|Giữ da ẩm, tránh chất kích ứng|1|MED016:14:1 viên/ngày:14 ngày:Sáng;MED010:2:Thoa 2 lần/ngày:30 ngày:Vùng viêm
+PRE051|APT066|phuonghoang|D002|2024-08-15|Thai nhi vị trí đầu, chuẩn bị sinh|Thai phụ chuẩn bị túi đồ đi sinh|1|MED018:30:1 viên sủi/ngày:30 ngày:Sáng;MED020:30:1 viên/ngày:30 ngày:Sắt
+PRE052|APT067|giangdo|D001|2024-08-18|Chức năng tim ổn định|Tiếp tục điều trị|1|MED014:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối;MED011:30:1 viên/ngày:30 ngày:Tối
+PRE053|APT068|hienmai|D007|2024-08-20|Hội chứng ruột kích thích|Điều chỉnh chế độ ăn, giảm stress|1|MED012:30:1 viên/ngày:30 ngày:Sáng trước ăn;MED022:10:1 viên khi tiêu chảy:10 ngày:Khi cần
+PRE054|APT069|khanhluong|D003|2024-08-22|Rối loạn tiền đình|Nghỉ ngơi, tránh vận động đột ngột|1|MED007:14:1 viên/ngày:14 ngày:Tối;MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE055|APT070|lamngo|D001|2024-08-25|Sức khỏe tốt|Tiếp tục điều trị hiện tại|1|MED013:30:1 viên/ngày:30 ngày:Trước ngủ;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE056|APT071|myduong|D006|2024-09-02|Thiếu máu tái phát nhẹ|Tăng liều sắt|1|MED020:90:1 viên 3 lần/ngày:30 ngày:Sau các bữa ăn
+PRE057|APT072|namtruong|D006|2024-09-05|Suy giáp liều thuốc phù hợp|Duy trì điều trị|1|MED019:30:1 viên/ngày:30 ngày:Sáng trước ăn
+PRE058|APT073|oanhdang|D004|2024-09-08|Viêm gân|Nghỉ ngơi, chườm nóng|1|MED004:20:1 viên khi đau:20 ngày:Sau ăn;MED010:2:Thoa 3 lần/ngày:30 ngày:Vùng viêm
+PRE059|APT074|phatbui|D007|2024-09-10|Viêm gan B ổn định|Tiếp tục theo dõi|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE060|APT075|quynhly|D003|2024-09-12|Migraine phát tác nhẹ|Uống thuốc sớm khi có triệu chứng|1|MED004:20:1 viên khi đau:20 ngày:Khi đau;MED016:30:1 viên/ngày:30 ngày:Phòng ngừa
+PRE061|APT076|anhnguyen|D001|2024-10-01|Không triệu chứng mới|Tiếp tục điều trị|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED011:30:1 viên/ngày:30 ngày:Tối
+PRE062|APT077|binhtran|D006|2024-10-05|HbA1c 7.0%, cần cải thiện|Tăng cường tập thể dục, ăn kiêng|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng tối cùng ăn
+PRE063|APT078|cuongle|D007|2024-10-08|Không tái phát|Duy trì chế độ ăn|1|MED012:30:1 viên/ngày:30 ngày:Sáng trước ăn
+PRE064|APT079|dungpham|D010|2024-10-10|Hen kiểm soát tốt|Tránh dị nguyên|1|MED009:2:Khi cần:30 ngày:Khi khó thở
+PRE065|APT080|emvo|D005|2024-10-12|Điều trị sẹo mụn bằng laser|Bảo vệ da khỏi ánh nắng|1|MED007:14:1 viên/ngày:14 ngày:Tối
+PRE066|APT081|phuonghoang|D002|2024-10-15|Hồi phục tốt sau sinh|Nghỉ ngơi, bổ dưỡng|1|MED020:60:1 viên/ngày:60 ngày:Bổ sung sắt sau sinh;MED018:30:1 viên sủi/ngày:30 ngày:Canxi
+PRE067|APT082|giangdo|D001|2024-10-18|Chức năng tim tốt|Tiếp tục điều trị|1|MED014:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE068|APT083|hienmai|D007|2024-10-20|Không triệu chứng|Tái khám sau 3 tháng|0|
+PRE069|APT084|khanhluong|D003|2024-10-22|Đau đầu căng thẳng|Thư giãn, massage|1|MED001:20:1 viên khi đau:20 ngày:Khi đau
+PRE070|APT085|lamngo|D001|2024-10-25|Cholesterol kiểm soát tốt|Duy trì chế độ ăn và thuốc|1|MED013:30:1 viên/ngày:30 ngày:Trước ngủ;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE071|APT086|myduong|D006|2024-11-02|Hemoglobin bình thường|Duy trì chế độ ăn|1|MED020:30:1 viên/ngày:30 ngày:Duy trì
+PRE072|APT087|namtruong|D006|2024-11-05|TSH ổn định|Không điều chỉnh|1|MED019:30:1 viên/ngày:30 ngày:Sáng
+PRE073|APT088|oanhdang|D004|2024-11-08|Thoái hóa cột sống|Vật lý trị liệu|1|MED004:30:1 viên khi đau:30 ngày:Sau ăn;MED010:2:Thoa 2 lần/ngày:30 ngày:Lưng
+PRE074|APT089|phatbui|D007|2024-11-10|Men gan bình thường|Tiếp tục theo dõi|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE075|APT090|quynhly|D003|2024-11-12|Migraine tần suất giảm|Duy trì điều trị|1|MED004:20:1 viên khi đau:20 ngày:Khi đau;MED016:30:1 viên/ngày:30 ngày:Phòng ngừa
+PRE076|APT091|anhnguyen|D001|2024-12-01|Chức năng tim tốt|Tiếp tục điều trị|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED011:30:1 viên/ngày:30 ngày:Tối
+PRE077|APT092|binhtran|D006|2024-12-05|Đường huyết ổn định|Duy trì điều trị|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng tối
+PRE078|APT093|cuongle|D007|2024-12-08|Không triệu chứng|Tái khám sau 6 tháng|0|
+PRE079|APT094|dungpham|D010|2024-12-10|Hen kiểm soát tốt|Tiếp tục điều trị|1|MED009:2:Khi cần:30 ngày:Khó thở
+PRE080|APT095|emvo|D005|2024-12-12|Da khỏe mạnh|Giữ vệ sinh da|0|
+PRE081|APT096|phuonghoang|D002|2024-12-15|Sức khỏe tốt|Tái khám định kỳ|1|MED018:30:1 viên sủi/ngày:30 ngày:Canxi
+PRE082|APT097|giangdo|D001|2024-12-18|Không triệu chứng|Tiếp tục điều trị|1|MED014:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE083|APT098|hienmai|D007|2024-12-20|Bình thường|Tái khám sau 3 tháng|0|
+PRE084|APT099|khanhluong|D003|2024-12-22|Triệu chứng cải thiện|Tiếp tục điều trị|1|MED017:60:1 viên 2 lần/ngày:30 ngày:Vitamin B
+PRE085|APT100|lamngo|D001|2024-12-28|Sức khỏe tốt cuối năm|Tiếp tục điều trị|1|MED013:30:1 viên/ngày:30 ngày:Trước ngủ;MED015:30:1 viên/ngày:30 ngày:Tối
+
+# Đơn thuốc năm 2025
+PRE086|APT101|myduong|D006|2025-01-05|Sức khỏe tốt|Duy trì chế độ ăn uống lành mạnh|1|MED020:30:1 viên/ngày:30 ngày:Sau ăn
+PRE087|APT102|namtruong|D006|2025-01-08|TSH ổn định|Tiếp tục điều trị|1|MED019:30:1 viên/ngày:30 ngày:Sáng trước ăn
+PRE088|APT103|oanhdang|D004|2025-01-10|Viêm khớp nhẹ|Vật lý trị liệu|1|MED004:20:1 viên khi đau:20 ngày:Sau ăn
+PRE089|APT104|phatbui|D007|2025-01-12|Men gan bình thường|Tiếp tục theo dõi|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE090|APT105|quynhly|D003|2025-01-15|Migraine điều chỉnh thuốc|Ngủ đủ giấc|1|MED004:20:1 viên khi đau:20 ngày:Khi đau;MED016:30:1 viên/ngày:30 ngày:Phòng ngừa
+PRE091|APT106|anhnguyen|D001|2025-02-01|EKG bình thường|Tiếp tục điều trị|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED011:30:1 viên/ngày:30 ngày:Tối
+PRE092|APT107|binhtran|D006|2025-02-05|HbA1c 6.9%|Kiểm soát tốt|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng tối
+PRE093|APT108|cuongle|D007|2025-02-08|Không triệu chứng|Duy trì điều trị|1|MED012:30:1 viên/ngày:30 ngày:Sáng trước ăn
+PRE094|APT109|dungpham|D010|2025-02-10|Hen ổn định|Tránh dị nguyên|1|MED009:2:Khi cần:30 ngày:Khó thở
+PRE095|APT110|emvo|D005|2025-02-12|Không dị ứng|Giữ vệ sinh da|0|
+PRE096|APT111|giangdo|D001|2025-03-01|Chức năng tim tốt|Tiếp tục điều trị|1|MED014:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE097|APT112|hienmai|D007|2025-03-05|Lành hoàn toàn|Tái khám sau 6 tháng|0|
+PRE098|APT113|khanhluong|D003|2025-03-08|Đau đầu giảm|Thư giãn|1|MED001:20:1 viên khi đau:20 ngày:Khi đau
+PRE099|APT114|lamngo|D001|2025-03-10|Cholesterol tốt|Duy trì điều trị|1|MED013:30:1 viên/ngày:30 ngày:Trước ngủ;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE100|APT115|myduong|D006|2025-04-02|Sức khỏe tốt|Duy trì|1|MED020:30:1 viên/ngày:30 ngày:Sau ăn
+PRE101|APT116|namtruong|D006|2025-04-05|Giáp ổn định|Không điều chỉnh|1|MED019:30:1 viên/ngày:30 ngày:Sáng
+PRE102|APT117|oanhdang|D004|2025-04-08|Thoái hóa cột sống|Vật lý trị liệu|1|MED004:30:1 viên khi đau:30 ngày:Sau ăn
+PRE103|APT118|phatbui|D007|2025-04-10|Gan tốt|Tiếp tục theo dõi|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE104|APT119|quynhly|D003|2025-04-12|Migraine ổn định|Duy trì điều trị|1|MED004:20:1 viên khi đau:20 ngày:Khi đau
+PRE105|APT120|anhnguyen|D001|2025-05-01|Tim khỏe|Tiếp tục điều trị|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED011:30:1 viên/ngày:30 ngày:Tối
+PRE106|APT121|binhtran|D006|2025-05-05|Đường huyết tốt|Duy trì điều trị|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng tối
+PRE107|APT122|cuongle|D007|2025-05-08|Dạ dày tốt|Tái khám sau 6 tháng|0|
+PRE108|APT123|dungpham|D010|2025-05-10|Hen kiểm soát|Tiếp tục điều trị|1|MED009:2:Khi cần:30 ngày:Khó thở
+PRE109|APT124|emvo|D005|2025-05-12|Da khỏe|Giữ vệ sinh|0|
+PRE110|APT125|giangdo|D001|2025-06-01|Tim tốt|Tiếp tục điều trị|1|MED014:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE111|APT126|hienmai|D007|2025-06-05|Không triệu chứng|Tái khám sau 6 tháng|0|
+PRE112|APT127|khanhluong|D003|2025-06-08|Cải thiện|Tiếp tục điều trị|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE113|APT128|lamngo|D001|2025-06-10|Lipid tốt|Duy trì điều trị|1|MED013:30:1 viên/ngày:30 ngày:Trước ngủ;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE114|APT129|myduong|D006|2025-07-02|Khỏe mạnh|Duy trì|1|MED020:30:1 viên/ngày:30 ngày:Sau ăn
+PRE115|APT130|namtruong|D006|2025-07-05|Giáp bình thường|Tiếp tục|1|MED019:30:1 viên/ngày:30 ngày:Sáng
+PRE116|APT131|oanhdang|D004|2025-08-01|Viêm khớp nhẹ|Vật lý trị liệu|1|MED004:20:1 viên khi đau:20 ngày:Sau ăn
+PRE117|APT132|phatbui|D007|2025-08-05|Gan ổn định|Theo dõi|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE118|APT133|quynhly|D003|2025-08-08|Giảm tần suất|Duy trì|1|MED004:20:1 viên khi đau:20 ngày:Khi đau
+PRE119|APT134|anhnguyen|D001|2025-09-01|Chức năng tim tốt|Tiếp tục|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED011:30:1 viên/ngày:30 ngày:Tối
+PRE120|APT135|binhtran|D006|2025-09-05|Đường huyết ổn|Duy trì|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng tối
+PRE121|APT136|cuongle|D007|2025-09-08|Dạ dày khỏe|Tái khám 6 tháng|0|
+PRE122|APT137|dungpham|D010|2025-09-10|Hen tốt|Tiếp tục|1|MED009:2:Khi cần:30 ngày:Khó thở
+PRE123|APT138|emvo|D005|2025-09-12|Da tốt|Giữ vệ sinh|0|
+PRE124|APT139|giangdo|D001|2025-10-01|Tim khỏe mạnh|Tiếp tục|1|MED014:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE125|APT140|hienmai|D007|2025-10-05|Bình thường|Tái khám 6 tháng|0|
+PRE126|APT141|khanhluung|D003|2025-10-08|Tốt hơn|Tiếp tục|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE127|APT142|lamngo|D001|2025-10-10|Cholesterol ổn|Duy trì|1|MED013:30:1 viên/ngày:30 ngày:Trước ngủ;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE128|APT143|myduong|D006|2025-11-02|Sức khỏe tốt|Duy trì|1|MED020:30:1 viên/ngày:30 ngày:Sau ăn
+PRE129|APT144|namtruong|D006|2025-11-05|TSH tốt|Tiếp tục|1|MED019:30:1 viên/ngày:30 ngày:Sáng
+PRE130|APT145|oanhdang|D004|2025-11-08|Giảm đau|Vật lý trị liệu|1|MED004:20:1 viên khi đau:20 ngày:Sau ăn
+PRE131|APT146|phatbui|D007|2025-11-10|Gan khỏe|Theo dõi|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE132|APT147|quynhly|D003|2025-11-12|Ổn định tốt|Duy trì|1|MED004:20:1 viên khi đau:20 ngày:Khi đau
+PRE133|APT148|anhnguyen|D001|2025-12-01|Sức khỏe tốt, chuẩn bị cho năm mới|Tiếp tục điều trị, tái khám đầu năm|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED011:30:1 viên/ngày:30 ngày:Tối
+PRE134|APT149|binhtran|D006|2025-12-05|HbA1c 6.8%, kiểm soát tốt|Duy trì chế độ ăn uống và tập thể dục|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng tối
+PRE135|APT150|cuongle|D007|2025-12-08|Không vấn đề|Tái khám sau 6 tháng|0|
+
+# Đơn thuốc cho appointment với bác sĩ mới - 2024
+PRE136|APT221|anhnguyen|D011|2024-03-08|Chức năng tim tốt|Tiếp tục điều trị hiện tại|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED011:30:1 viên/ngày:30 ngày:Tối
+PRE137|APT222|binhtran|D026|2024-03-15|Đái tháo đường type 2|Kiểm soát chế độ ăn|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng tối cùng ăn
+PRE138|APT223|cuongle|D029|2024-03-22|Viêm dạ dày nhẹ|Ăn nhẹ, tránh cay nóng|1|MED012:30:1 viên/ngày:30 ngày:Sáng trước ăn
+PRE139|APT224|dungpham|D038|2024-03-25|Hen phế quản|Tránh khói bụi|1|MED009:2:Khi cần:30 ngày:Khó thở;MED016:20:1 viên/ngày:20 ngày:Phòng ngừa
+PRE140|APT225|emvo|D023|2024-03-28|Dị ứng tiếp xúc|Tránh chất gây dị ứng|1|MED007:14:1 viên/ngày:14 ngày:Tối;MED010:1:Bôi 2 lần/ngày:14 ngày:Vùng dị ứng
+PRE141|APT226|giangdo|D012|2024-04-02|Tim hoạt động tốt|Tiếp tục điều trị|1|MED014:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE142|APT227|hienmai|D030|2024-04-05|GERD|Nâng cao đầu giường khi ngủ|1|MED012:30:1 viên/ngày:30 ngày:Sáng trước ăn
+PRE143|APT228|khanhluong|D017|2024-04-08|Đau đầu vận mạch|Nghỉ ngơi đầy đủ|1|MED004:20:1 viên khi đau:20 ngày:Khi đau;MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE144|APT229|lamngo|D013|2024-04-12|ECG bình thường|Tiếp tục theo dõi|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE145|APT230|myduong|D027|2024-04-15|TSH bình thường|Duy trì liều thuốc|1|MED019:30:1 viên/ngày:30 ngày:Sáng trước ăn
+PRE146|APT231|namtruong|D028|2024-04-18|Hormone ổn định|Tiếp tục điều trị|1|MED019:30:1 viên/ngày:30 ngày:Sáng trước ăn
+PRE147|APT232|oanhdang|D020|2024-04-22|Viêm khớp vai|Vật lý trị liệu|1|MED004:20:1 viên khi đau:20 ngày:Sau ăn;MED010:2:Thoa 3 lần/ngày:30 ngày:Vai
+PRE148|APT233|phatbui|D031|2024-04-25|Gan tốt|Tiếp tục theo dõi|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE149|APT234|quynhly|D018|2024-04-28|Migraine|Tránh stress|1|MED004:20:1 viên khi đau:20 ngày:Khi đau;MED016:30:1 viên/ngày:30 ngày:Phòng ngừa
+PRE150|APT235|anhnguyen|D013|2024-05-02|Chức năng tim tốt|Duy trì điều trị|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED011:30:1 viên/ngày:30 ngày:Tối
+PRE151|APT236|binhtran|D027|2024-05-05|HbA1c 6.9%|Kiểm soát tốt|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng tối
+PRE152|APT237|cuongle|D031|2024-05-08|Dạ dày ổn định|Duy trì chế độ ăn|1|MED012:30:1 viên/ngày:30 ngày:Sáng trước ăn
+PRE153|APT238|dungpham|D039|2024-05-12|Hen kiểm soát|Tiếp tục điều trị|1|MED009:2:Khi cần:30 ngày:Khó thở
+PRE154|APT239|emvo|D024|2024-05-15|Mụn nhẹ|Giữ da sạch|1|MED007:14:1 viên/ngày:14 ngày:Tối
+PRE155|APT240|giangdo|D011|2024-05-18|Không triệu chứng mới|Tiếp tục điều trị|1|MED014:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE156|APT241|hienmai|D029|2024-05-22|Không tái phát|Tái khám 6 tháng|0|
+PRE157|APT242|khanhluong|D019|2024-05-25|Căng thẳng thần kinh|Thư giãn|1|MED001:20:1 viên khi đau:20 ngày:Khi đau;MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE158|APT243|lamngo|D012|2024-05-28|Cholesterol tốt|Duy trì điều trị|1|MED013:30:1 viên/ngày:30 ngày:Trước ngủ;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE159|APT244|myduong|D026|2024-06-02|Hemoglobin cải thiện|Tiếp tục bổ sung sắt|1|MED020:60:1 viên/ngày:60 ngày:Sau ăn
+PRE160|APT245|namtruong|D027|2024-06-05|Giáp ổn định|Không điều chỉnh|1|MED019:30:1 viên/ngày:30 ngày:Sáng
+PRE161|APT246|oanhdang|D021|2024-06-08|Thoái hóa đốt sống|Vật lý trị liệu|1|MED004:30:1 viên khi đau:30 ngày:Sau ăn;MED010:2:Thoa 2 lần/ngày:30 ngày:Lưng
+PRE162|APT247|phatbui|D030|2024-06-12|Men gan bình thường|Tiếp tục theo dõi|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE163|APT248|quynhly|D017|2024-06-15|Migraine ổn định|Duy trì điều trị|1|MED004:20:1 viên khi đau:20 ngày:Khi đau
+PRE164|APT249|anhnguyen|D011|2024-07-01|Tim khỏe|Tiếp tục điều trị|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED011:30:1 viên/ngày:30 ngày:Tối
+PRE165|APT250|binhtran|D028|2024-07-05|Hormone tốt|Duy trì điều trị|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng tối
+PRE166|APT251|cuongle|D029|2024-07-08|Không triệu chứng|Tái khám 6 tháng|0|
+PRE167|APT252|dungpham|D040|2024-07-12|Phổi sạch|Tiếp tục điều trị|1|MED009:2:Khi cần:30 ngày:Khó thở
+PRE168|APT253|emvo|D025|2024-07-15|Da khỏe|Giữ vệ sinh|0|
+PRE169|APT254|giangdo|D013|2024-07-18|Chức năng tim tốt|Tiếp tục điều trị|1|MED014:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE170|APT255|hienmai|D031|2024-07-22|Dạ dày tốt|Tái khám 6 tháng|0|
+PRE171|APT256|khanhluong|D018|2024-07-25|Giảm tần suất|Duy trì điều trị|1|MED004:20:1 viên khi đau:20 ngày:Khi đau
+PRE172|APT257|lamngo|D011|2024-07-28|ECG tốt|Tiếp tục điều trị|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE173|APT258|myduong|D027|2024-08-02|Sức khỏe tốt|Duy trì|1|MED020:30:1 viên/ngày:30 ngày:Sau ăn
+PRE174|APT259|namtruong|D026|2024-08-05|TSH ổn định|Tiếp tục|1|MED019:30:1 viên/ngày:30 ngày:Sáng
+PRE175|APT260|oanhdang|D022|2024-08-08|Viêm khớp nhẹ|Vật lý trị liệu|1|MED004:20:1 viên khi đau:20 ngày:Sau ăn
+PRE176|APT261|phatbui|D029|2024-08-12|Gan khỏe|Theo dõi|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE177|APT262|quynhly|D019|2024-08-15|Migraine|Duy trì|1|MED004:20:1 viên khi đau:20 ngày:Khi đau;MED016:30:1 viên/ngày:30 ngày:Phòng ngừa
+PRE178|APT263|anhnguyen|D012|2024-09-01|Tim tốt|Tiếp tục|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED011:30:1 viên/ngày:30 ngày:Tối
+PRE179|APT264|binhtran|D027|2024-09-05|Đường huyết ổn|Duy trì|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng tối
+PRE180|APT265|cuongle|D030|2024-09-08|Bình thường|Tái khám 6 tháng|0|
+PRE181|APT266|dungpham|D038|2024-09-12|Hen kiểm soát|Tiếp tục|1|MED009:2:Khi cần:30 ngày:Khó thở
+PRE182|APT267|emvo|D023|2024-09-15|Da khỏe|Giữ vệ sinh|0|
+PRE183|APT268|giangdo|D011|2024-09-18|Không triệu chứng|Tiếp tục|1|MED014:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE184|APT269|hienmai|D031|2024-09-22|Tốt|Tái khám 6 tháng|0|
+PRE185|APT270|khanhluong|D017|2024-09-25|Cải thiện|Tiếp tục|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+
+# Đơn thuốc cho appointment với bác sĩ mới - 2025
+PRE186|APT271|lamngo|D013|2025-01-10|Tim mạch khỏe|Duy trì điều trị|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE187|APT272|myduong|D026|2025-01-15|Hemoglobin bình thường|Duy trì chế độ ăn|1|MED020:30:1 viên/ngày:30 ngày:Sau ăn
+PRE188|APT273|namtruong|D028|2025-01-18|Hormone ổn định|Tiếp tục điều trị|1|MED019:30:1 viên/ngày:30 ngày:Sáng
+PRE189|APT274|oanhdang|D020|2025-01-22|Viêm khớp nhẹ|Vật lý trị liệu|1|MED004:20:1 viên khi đau:20 ngày:Sau ăn
+PRE190|APT275|phatbui|D029|2025-01-25|Gan tốt|Theo dõi|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE191|APT276|quynhly|D018|2025-01-28|Migraine ổn định|Duy trì|1|MED004:20:1 viên khi đau:20 ngày:Khi đau
+PRE192|APT277|anhnguyen|D011|2025-02-05|Chức năng tim tốt|Tiếp tục|1|MED006:30:1 viên/ngày:30 ngày:Sáng;MED011:30:1 viên/ngày:30 ngày:Tối
+PRE193|APT278|binhtran|D027|2025-02-10|HbA1c tốt|Duy trì|1|MED005:60:1 viên 2 lần/ngày:30 ngày:Sáng tối
+PRE194|APT279|cuongle|D031|2025-02-15|Không triệu chứng|Tái khám 6 tháng|0|
+PRE195|APT280|dungpham|D039|2025-02-20|Phổi khỏe|Tiếp tục|1|MED009:2:Khi cần:30 ngày:Khó thở
+PRE196|APT281|emvo|D024|2025-02-25|Da tốt|Giữ vệ sinh|0|
+PRE197|APT282|giangdo|D012|2025-03-05|Tim khỏe|Tiếp tục|1|MED014:30:1 viên/ngày:30 ngày:Sáng;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE198|APT283|hienmai|D030|2025-03-10|Dạ dày tốt|Tái khám 6 tháng|0|
+PRE199|APT284|khanhluong|D019|2025-03-15|Giảm triệu chứng|Tiếp tục|1|MED004:20:1 viên khi đau:20 ngày:Khi đau
+PRE200|APT285|lamngo|D011|2025-03-20|Lipid ổn|Duy trì|1|MED013:30:1 viên/ngày:30 ngày:Trước ngủ;MED015:30:1 viên/ngày:30 ngày:Tối
+PRE201|APT286|myduong|D027|2025-04-05|Khỏe mạnh|Duy trì|1|MED020:30:1 viên/ngày:30 ngày:Sau ăn
+PRE202|APT287|namtruong|D026|2025-04-10|Giáp bình thường|Tiếp tục|1|MED019:30:1 viên/ngày:30 ngày:Sáng
+PRE203|APT288|oanhdang|D021|2025-04-15|Cải thiện|Vật lý trị liệu|1|MED004:20:1 viên khi đau:20 ngày:Sau ăn
+PRE204|APT289|phatbui|D031|2025-04-20|Men gan tốt|Theo dõi|1|MED017:30:1 viên/ngày:30 ngày:Vitamin B
+PRE205|APT290|quynhly|D018|2025-04-25|Migraine|Duy trì|1|MED004:20:1 viên khi đau:20 ngày:Khi đau
+
