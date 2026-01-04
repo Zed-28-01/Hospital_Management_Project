@@ -283,7 +283,12 @@ namespace HMS
                 m_doctors, std::back_inserter(results),
                 [&specialization](const auto &d)
                 {
-                    return Utils::containsIgnoreCase(d.getSpecialization(), specialization);
+                    // Check if doctor has this specialization (supports partial match)
+                    auto specs = d.getSpecializations();
+                    return std::any_of(specs.begin(), specs.end(),
+                        [&specialization](const std::string& spec) {
+                            return Utils::containsIgnoreCase(spec, specialization);
+                        });
                 }
             );
 
@@ -334,10 +339,15 @@ namespace HMS
             std::set<std::string> uniqueSpecs;
             for (const auto &d : m_doctors)
             {
-                std::string spec = Utils::trim(d.getSpecialization());
-                if (!spec.empty())
+                // Get all specializations for each doctor
+                auto specs = d.getSpecializations();
+                for (const auto &spec : specs)
                 {
-                    uniqueSpecs.insert(spec);
+                    std::string trimmedSpec = Utils::trim(spec);
+                    if (!trimmedSpec.empty())
+                    {
+                        uniqueSpecs.insert(trimmedSpec);
+                    }
                 }
             }
 
