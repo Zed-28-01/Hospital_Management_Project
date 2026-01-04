@@ -1,6 +1,4 @@
-# Hospital Management System - Sample Medicine Data
-# Format: medicineID|name|genericName|category|manufacturer|description|unitPrice|quantity|reorderLevel|expiryDate|dosageForm|strength
-
+# medicineID|name|genericName|category|manufacturer|unitPrice|quantity|reorderLevel|expiryDate
 MED001|Paracetamol 500mg|Acetaminophen|Giảm đau hạ sốt|Pharma Việt Nam|Giảm đau nhẹ đến trung bình, hạ sốt|5000|500|100|2026-12-31|Viên nén|500mg
 MED002|Amoxicillin 250mg|Amoxicillin|Kháng sinh|MedPharm|Kháng sinh phổ rộng điều trị nhiễm khuẩn|15000|200|50|2025-08-15|Viên nang|250mg
 MED003|Omeprazole 20mg|Omeprazole|Tiêu hóa|GastroCare|Thuốc ức chế bơm proton, trào ngược dạ dày|12000|300|75|2025-11-30|Viên nang|20mg
@@ -25,4 +23,4 @@ MED021|Ranitidine 150mg|Ranitidine Hydrochloride|Tiêu hóa|GastroCare|Thuốc g
 MED022|Loperamide 2mg|Loperamide Hydrochloride|Tiêu hóa|DigestEase|Thuốc điều trị tiêu chảy cấp|6000|180|40|2026-03-25|Viên nang|2mg
 MED023|Dexamethasone 0.5mg|Dexamethasone|Chống viêm|SteroCare|Corticosteroid mạnh điều trị viêm và dị ứng nặng|12000|120|30|2025-10-20|Viên nén|0.5mg
 MED024|Chlorpheniramine 4mg|Chlorpheniramine Maleate|Chống dị ứng|AllergyFree|Thuốc chống histamin thế hệ 1|5000|300|60|2026-06-05|Viên nén|4mg
-MED025|Ciprofloxacin 500mg|Ciprofloxacin Hydrochloride|Kháng sinh|MedPharm|Kháng sinh fluoroquinolone điều trị nhiễm khuẩn|20000|150|35|2025-08-30|Viên nén|500mg
+MED025|Ciprofloxacin 500mg|Ciprofloxacin Hydrochloride|Kháng sinh|MedPharm|Kháng sinh fluoroquinolone điều trị nhiễm khuẩn|20000|20|35|2025-08-30|Viên nén|500mg
