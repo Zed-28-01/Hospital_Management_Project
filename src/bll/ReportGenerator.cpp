@@ -248,12 +248,12 @@ namespace HMS
       // Validate date
       if (!Utils::isValidDateInternal(date))
       {
-        report.title = "Daily Report - Invalid Date";
-        report.content = "Error: Invalid date format. Expected YYYY-MM-DD.";
+        report.title = "Báo cáo ngày - Lỗi ngày tháng";
+        report.content = "Lỗi: Định dạng ngày không hợp lệ. Yêu cầu DD-MM-YYYY";
         return report;
       }
 
-      report.title = "DAILY REPORT - " + Utils::formatDateDisplay(date);
+      report.title = "BÁO CÁO NGÀY - " + Utils::formatDateDisplay(date);
 
       Repositories repos;
       auto appointments = repos.appointments->getByDate(date);
@@ -266,23 +266,23 @@ namespace HMS
       content << std::string(50, '=') << "\n";
       content << report.title << "\n";
       content << std::string(50, '=') << "\n";
-      content << "Generated: " << Utils::getCurrentDateTime() << "\n";
+      content << "Ngày tạo : " << Utils::getCurrentDateTime() << "\n";
 
-      content << formatSectionHeader("OVERVIEW");
-      content << formatStatLine("Total Appointments",
+      content << formatSectionHeader("TỔNG QUAN");
+      content << formatStatLine("Tổng số cuộc hẹn",
                                 report.statistics.totalAppointments);
-      content << formatStatLine("Scheduled",
+      content << formatStatLine("Đã đặt lịch",
                                 report.statistics.scheduledAppointments);
-      content << formatStatLine("Completed",
+      content << formatStatLine("Đã hoàn thành",
                                 report.statistics.completedAppointments);
-      content << formatStatLine("Cancelled",
+      content << formatStatLine("Đã hủy",
                                 report.statistics.cancelledAppointments);
-      content << formatStatLine("No Show", report.statistics.noShowAppointments);
+      content << formatStatLine("Vắng mặt", report.statistics.noShowAppointments);
 
-      content << formatSectionHeader("REVENUE");
-      content << formatStatLine("Total Revenue", report.statistics.totalRevenue);
-      content << formatStatLine("Paid", report.statistics.paidRevenue);
-      content << formatStatLine("Unpaid", report.statistics.unpaidRevenue);
+      content << formatSectionHeader("DOANH THU");
+      content << formatStatLine("Tổng doanh thu", report.statistics.totalRevenue);
+      content << formatStatLine("Đã thanh toán", report.statistics.paidRevenue);
+      content << formatStatLine("Chưa thanh toán", report.statistics.unpaidRevenue);
 
       report.content = content.str();
       return report;
@@ -299,13 +299,13 @@ namespace HMS
       // Validate date
       if (!Utils::isValidDateInternal(startDate))
       {
-        report.title = "Weekly Report - Invalid Date";
-        report.content = "Error: Invalid date format. Expected YYYY-MM-DD.";
+        report.title = "Báo cáo tuần - Lỗi ngày ";
+        report.content = "Lỗi: Định dạng ngày không hợp lệ. Yêu cầu DD-MM-YYYY.";
         return report;
       }
 
       report.endDate = calculateWeekEnd(startDate);
-      report.title = "WEEKLY REPORT";
+      report.title = "BÁO CÁO TUẦN";
 
       Repositories repos;
       auto appointments =
@@ -318,34 +318,34 @@ namespace HMS
       std::ostringstream content;
       content << std::string(50, '=') << "\n";
       content << report.title << "\n";
-      content << "From " << Utils::formatDateDisplay(startDate) << " to "
+      content << "TỪ " << Utils::formatDateDisplay(startDate) << " ĐẾN "
               << Utils::formatDateDisplay(report.endDate) << "\n";
       content << std::string(50, '=') << "\n";
-      content << "Generated: " << Utils::getCurrentDateTime() << "\n";
+      content << "TẠO NGÀY: " << Utils::getCurrentDateTime() << "\n";
 
-      content << formatSectionHeader("OVERVIEW");
-      content << formatStatLine("Total Appointments",
+      content << formatSectionHeader("TỔNG QUAN");
+      content << formatStatLine("Tổng số cuộc hẹn",
                                 report.statistics.totalAppointments);
-      content << formatStatLine("Scheduled",
+      content << formatStatLine("Đã lên lịch",
                                 report.statistics.scheduledAppointments);
-      content << formatStatLine("Completed",
+      content << formatStatLine("Hoàn thành",
                                 report.statistics.completedAppointments);
-      content << formatStatLine("Cancelled",
+      content << formatStatLine("Đã hủy",
                                 report.statistics.cancelledAppointments);
-      content << formatStatLine("No Show", report.statistics.noShowAppointments);
+      content << formatStatLine("Vắng mặt", report.statistics.noShowAppointments);
 
       content << formatStatLine(
-          "Completion Rate",
+          "Tỷ lệ hoàn thành",
           std::to_string(static_cast<int>(report.statistics.getCompletionRate())) +
               "%");
 
-      content << formatSectionHeader("REVENUE");
-      content << formatStatLine("Total Revenue", report.statistics.totalRevenue);
-      content << formatStatLine("Paid", report.statistics.paidRevenue);
-      content << formatStatLine("Unpaid", report.statistics.unpaidRevenue);
+      content << formatSectionHeader("DOANH THU");
+      content << formatStatLine("Tổng doanh thu", report.statistics.totalRevenue);
+      content << formatStatLine("Đã thanh toán", report.statistics.paidRevenue);
+      content << formatStatLine("Chưa thanh toán", report.statistics.unpaidRevenue);
 
       content << formatStatLine(
-          "Payment Rate",
+          "Tỷ lệ thanh toán",
           std::to_string(static_cast<int>(report.statistics.getPaymentRate())) +
               "%");
 
@@ -363,15 +363,15 @@ namespace HMS
       // Validate month and year
       if (month < 1 || month > 12)
       {
-        report.title = "Monthly Report - Invalid Month";
-        report.content = "Error: Invalid month. Expected 1-12.";
+        report.title = "Báo cáo tháng - Lỗi tháng";
+        report.content = "Lỗi: Tháng không hợp lệ (1-12).";
         return report;
       }
 
       if (year < 1900 || year > 2100)
       {
-        report.title = "Monthly Report - Invalid Year";
-        report.content = "Error: Invalid year.";
+        report.title = "Báo cáo tháng - Lỗi năm";
+        report.content = "Lỗi: Năm không hợp lệ.";
         return report;
       }
 
@@ -380,10 +380,10 @@ namespace HMS
       report.endDate = endDate;
 
       static const char *monthNames[] = {
-          "January", "February", "March", "April", "May", "June",
-          "July", "August", "September", "October", "November", "December"};
+          "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+          "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"};
 
-      report.title = "MONTHLY REPORT - " + std::string(monthNames[month - 1]) +
+      report.title = "BÁO CÁO THÁNG - " + std::string(monthNames[month - 1]) +
                      " " + std::to_string(year);
 
       Repositories repos;
@@ -416,38 +416,38 @@ namespace HMS
       content << std::string(50, '=') << "\n";
       content << report.title << "\n";
       content << std::string(50, '=') << "\n";
-      content << "Generated: " << Utils::getCurrentDateTime() << "\n";
+      content << "Tạo ngày: " << Utils::getCurrentDateTime() << "\n";
 
-      content << formatSectionHeader("OVERVIEW");
-      content << formatStatLine("Total Appointments",
+      content << formatSectionHeader("TỔNG QUAN");
+      content << formatStatLine("Tổng số cuộc hẹn",
                                 report.statistics.totalAppointments);
-      content << formatStatLine("Scheduled",
+      content << formatStatLine("Đã đặt lịch",
                                 report.statistics.scheduledAppointments);
-      content << formatStatLine("Completed",
+      content << formatStatLine("Hoàn thành",
                                 report.statistics.completedAppointments);
-      content << formatStatLine("Cancelled",
+      content << formatStatLine("Đã hủy",
                                 report.statistics.cancelledAppointments);
-      content << formatStatLine("No Show", report.statistics.noShowAppointments);
+      content << formatStatLine("Vắng mặt", report.statistics.noShowAppointments);
 
       content << formatStatLine(
-          "Completion Rate",
+          "Tỷ lệ hoàn thành",
           std::to_string(static_cast<int>(report.statistics.getCompletionRate())) +
               "%");
 
-      content << formatSectionHeader("REVENUE");
-      content << formatStatLine("Total Revenue", report.statistics.totalRevenue);
-      content << formatStatLine("Paid", report.statistics.paidRevenue);
-      content << formatStatLine("Unpaid", report.statistics.unpaidRevenue);
+      content << formatSectionHeader("DOANH THU");
+      content << formatStatLine("Tổng doanh thu", report.statistics.totalRevenue);
+      content << formatStatLine("Đã thanh toán", report.statistics.paidRevenue);
+      content << formatStatLine("Chưa thanh toán", report.statistics.unpaidRevenue);
 
       content << formatStatLine(
-          "Payment Rate",
+          "Tỷ lệ thanh toán",
           std::to_string(static_cast<int>(report.statistics.getPaymentRate())) +
               "%");
 
       // Appointments by Specialization
       if (!report.statistics.appointmentsBySpecialization.empty())
       {
-        content << formatSectionHeader("BY SPECIALIZATION");
+        content << formatSectionHeader("THEO CHUYÊN KHOA");
         for (const auto &[spec, count] :
              report.statistics.appointmentsBySpecialization)
         {
@@ -472,12 +472,12 @@ namespace HMS
       // Validate dates
       if (!Utils::isValidDateInternal(startDate) || !Utils::isValidDateInternal(endDate))
       {
-        report.title = "Revenue Report - Invalid Dates";
-        report.content = "Error: Invalid date format. Expected YYYY-MM-DD.";
+        report.title = "Báo cáo doanh thu - Lỗi ngày tháng";
+        report.content = "Lỗi: Định dạng ngày không hợp lệ. Yêu cầu DD-MM-YYYY.";
         return report;
       }
 
-      report.title = "REVENUE REPORT";
+      report.title = "BÁO CÁO DOANH THU";
 
       Repositories repos;
       auto appointments = repos.appointments->getByDateRange(startDate, endDate);
@@ -551,29 +551,29 @@ namespace HMS
       std::ostringstream content;
       content << std::string(50, '=') << "\n";
       content << report.title << "\n";
-      content << "From " << Utils::formatDateDisplay(startDate) << " to "
+      content << "Từ " << Utils::formatDateDisplay(startDate) << " to "
               << Utils::formatDateDisplay(endDate) << "\n";
       content << std::string(50, '=') << "\n";
-      content << "Generated: " << Utils::getCurrentDateTime() << "\n";
+      content << "Ngày tạo: " << Utils::getCurrentDateTime() << "\n";
 
-      content << formatSectionHeader("CONSULTATION REVENUE");
-      content << formatStatLine("Completed Appointments", completedCount);
-      content << formatStatLine("Total Revenue", totalRevenue);
-      content << formatStatLine("Paid Revenue", paidRevenue);
-      content << formatStatLine("Unpaid Revenue", totalRevenue - paidRevenue);
+      content << formatSectionHeader("DOANH THU KHÁM BỆNH");
+      content << formatStatLine("Hoàn thành", completedCount);
+      content << formatStatLine("Tổng doanh thu", totalRevenue);
+      content << formatStatLine("Đã thanh toán", paidRevenue);
+      content << formatStatLine("Chưa thanh toán", totalRevenue - paidRevenue);
 
       double collectionRate = safeDivide(paidRevenue, totalRevenue) * 100.0;
-      content << formatStatLine("Collection Rate",
+      content << formatStatLine("Tỷ lệ thanh toán",
                                 std::to_string(static_cast<int>(collectionRate)) +
                                     "%");
 
-      content << formatSectionHeader("PHARMACY REVENUE");
-      content << formatStatLine("Dispensed Prescriptions",
+      content << formatSectionHeader("DOANH THU NHÀ THUỐC");
+      content << formatStatLine("Đơn thuốc đã cấp",
                                 static_cast<int>(dispensedPrescriptions.size()));
-      content << formatStatLine("Pharmacy Revenue", pharmacyRevenue);
+      content << formatStatLine("Doanh thu thuốc", pharmacyRevenue);
 
-      content << formatSectionHeader("TOTAL");
-      content << formatStatLine("Combined Revenue", totalRevenue + pharmacyRevenue);
+      content << formatSectionHeader("TỔNG");
+      content << formatStatLine("Doanh thu tổng", totalRevenue + pharmacyRevenue);
 
       // Top Earning Doctors
       std::vector<std::pair<std::string, double>> sortedDoctors(
@@ -582,7 +582,7 @@ namespace HMS
                 [](const auto &a, const auto &b)
                 { return a.second > b.second; });
 
-      content << formatSectionHeader("TOP EARNING DOCTORS");
+      content << formatSectionHeader("BÁC SĨ CÓ DOANH THU CAO");
       int rank = 1;
       for (const auto &[doctorID, revenue] : sortedDoctors)
       {
@@ -606,7 +606,7 @@ namespace HMS
       report.type = ReportType::PATIENT_STATISTICS;
       report.reportID = generateReportID(report.type);
       report.generatedDate = Utils::getCurrentDate();
-      report.title = "PATIENT STATISTICS REPORT";
+      report.title = "BÁO CÁO THỐNG KÊ BỆNH NHÂN";
 
       Repositories repos;
       auto patients = repos.patients->getAll();
@@ -635,26 +635,26 @@ namespace HMS
       content << std::string(50, '=') << "\n";
       content << report.title << "\n";
       content << std::string(50, '=') << "\n";
-      content << "Generated: " << Utils::getCurrentDateTime() << "\n";
+      content << "Ngày tạo: " << Utils::getCurrentDateTime() << "\n";
 
-      content << formatSectionHeader("PATIENT OVERVIEW");
-      content << formatStatLine("Total Registered",
+      content << formatSectionHeader("TỔNG QUAN BỆNH NHÂN");
+      content << formatStatLine("Tổng số đăng ký",
                                 report.statistics.totalPatients);
-      content << formatStatLine("Active (with appointments)", activePatients);
+      content << formatStatLine("Đang có lịch hẹn", activePatients);
 
       double activeRate =
           safeDivide(static_cast<double>(activePatients),
                      static_cast<double>(report.statistics.totalPatients)) *
           100.0;
-      content << formatStatLine("Activity Rate",
+      content << formatStatLine("Tỷ lệ hoạt động",
                                 std::to_string(static_cast<int>(activeRate)) + "%");
 
-      content << formatSectionHeader("APPOINTMENT STATISTICS");
-      content << formatStatLine("Total Appointments",
+      content << formatSectionHeader("THỐNG KÊ CUỘC HẸN");
+      content << formatStatLine("Tổng số cuộc hẹn",
                                 static_cast<int>(appointments.size()));
       std::ostringstream avgOss;
       avgOss << std::fixed << std::setprecision(1) << avgAppointmentsPerPatient;
-      content << formatStatLine("Avg per Active Patient", avgOss.str());
+      content << formatStatLine("Trung bình bệnh nhân hoạt động", avgOss.str());
 
       report.content = content.str();
       return report;
@@ -675,12 +675,12 @@ namespace HMS
       // Validate dates
       if (!Utils::isValidDateInternal(startDate) || !Utils::isValidDateInternal(endDate))
       {
-        report.title = "Doctor Performance Report - Invalid Dates";
-        report.content = "Error: Invalid date format. Expected YYYY-MM-DD.";
+        report.title = "Báo cáo hiệu suất bác sĩ - Lỗi ngày tháng";
+        report.content = "Lỗi: Định dạng ngày không hợp lệ. Yêu cầu DD-MM-YYYY";
         return report;
       }
 
-      report.title = "DOCTOR PERFORMANCE REPORT";
+      report.title = "BÁO CÁO HIỆU SUẤT BÁC SĨ";
 
       Repositories repos;
       auto allDoctors = repos.doctors->getAll();
@@ -701,8 +701,8 @@ namespace HMS
         }
         else
         {
-          report.title = "Doctor Performance Report - Doctor Not Found";
-          report.content = "Error: Doctor with ID " + doctorID + " not found.";
+          report.title = "Báo cáo hiệu suất - Không tìm thấy bác sĩ";
+          report.content = "Lỗi: Không tìm thấy bác sĩ với ID " + doctorID;
           return report;
         }
       }
@@ -757,10 +757,10 @@ namespace HMS
       std::ostringstream content;
       content << std::string(50, '=') << "\n";
       content << report.title << "\n";
-      content << "From " << Utils::formatDateDisplay(startDate) << " to "
+      content << "Từ " << Utils::formatDateDisplay(startDate) << " đến "
               << Utils::formatDateDisplay(endDate) << "\n";
       content << std::string(50, '=') << "\n";
-      content << "Generated: " << Utils::getCurrentDateTime() << "\n";
+      content << "Tạo ngày: " << Utils::getCurrentDateTime() << "\n";
 
       for (const auto &doc : targetDoctors)
       {
@@ -768,20 +768,20 @@ namespace HMS
 
         content << formatSectionHeader(doc.getName() + " (" +
                                        doc.getSpecialization() + ")");
-        content << formatStatLine("Total Appointments", stats.total);
-        content << formatStatLine("Completed", stats.completed);
-        content << formatStatLine("Cancelled", stats.cancelled);
-        content << formatStatLine("No Show", stats.noShow);
+        content << formatStatLine("Tổng cuộc hẹn", stats.total);
+        content << formatStatLine("Đã hoàn thành", stats.completed);
+        content << formatStatLine("Đã hủy", stats.cancelled);
+        content << formatStatLine("Vắng mặt", stats.noShow);
 
         double completionRate = safeDivide(static_cast<double>(stats.completed),
                                            static_cast<double>(stats.total)) *
                                 100.0;
-        content << formatStatLine("Completion Rate",
+        content << formatStatLine("Tỷ lệ hoàn thành",
                                   std::to_string(static_cast<int>(completionRate)) +
                                       "%");
 
-        content << formatStatLine("Total Revenue", stats.revenue);
-        content << formatStatLine("Unique Patients",
+        content << formatStatLine("Doanh thu", stats.revenue);
+        content << formatStatLine("Bệnh nhân riêng",
                                   static_cast<int>(stats.uniquePatients.size()));
       }
 
@@ -803,12 +803,12 @@ namespace HMS
       // Validate dates
       if (!Utils::isValidDateInternal(startDate) || !Utils::isValidDateInternal(endDate))
       {
-        report.title = "Appointment Analysis - Invalid Dates";
-        report.content = "Error: Invalid date format. Expected YYYY-MM-DD.";
+        report.title = "Báo cáo cuộc hẹn -  Lỗi ngày tháng";
+        report.content = "Lỗi: Định dạng ngày không hợp lệ. Yêu cầu DD-MM-YYYY";
         return report;
       }
 
-      report.title = "APPOINTMENT ANALYSIS REPORT";
+      report.title = "BÁO CÁO CUỘC HẸN";
 
       Repositories repos;
       auto appointments = repos.appointments->getByDateRange(startDate, endDate);
@@ -839,15 +839,15 @@ namespace HMS
       std::ostringstream content;
       content << std::string(50, '=') << "\n";
       content << report.title << "\n";
-      content << "From " << Utils::formatDateDisplay(startDate) << " to "
+      content << "Từ " << Utils::formatDateDisplay(startDate) << " đến "
               << Utils::formatDateDisplay(endDate) << "\n";
       content << std::string(50, '=') << "\n";
-      content << "Generated: " << Utils::getCurrentDateTime() << "\n";
+      content << "Ngày tạo: " << Utils::getCurrentDateTime() << "\n";
 
-      content << formatSectionHeader("OVERVIEW");
-      content << formatStatLine("Total Appointments",
+      content << formatSectionHeader("TỔNG QUAN");
+      content << formatStatLine("Tổng cuộc hẹn",
                                 report.statistics.totalAppointments);
-      content << formatStatLine("Days with Appointments",
+      content << formatStatLine("Số ngày có lịch hẹn",
                                 static_cast<int>(appointmentsByDate.size()));
 
       double avgPerDay =
@@ -855,18 +855,18 @@ namespace HMS
                      static_cast<double>(appointmentsByDate.size()));
       std::ostringstream avgOss;
       avgOss << std::fixed << std::setprecision(1) << avgPerDay;
-      content << formatStatLine("Avg per Day", avgOss.str());
-      content << formatStatLine("Busiest Day",
+      content << formatStatLine("Trung bình ngày", avgOss.str());
+      content << formatStatLine("Ngày nhiều nhất",
                                 busiestDay + " (" + std::to_string(maxCount) + ")");
 
-      content << formatSectionHeader("STATUS BREAKDOWN");
-      content << formatStatLine("Scheduled",
+      content << formatSectionHeader("PHÂN TÍCH TRẠNG THÁI");
+      content << formatStatLine("Đã đặt lịch",
                                 report.statistics.scheduledAppointments);
-      content << formatStatLine("Completed",
+      content << formatStatLine("Đã hoàn thành",
                                 report.statistics.completedAppointments);
-      content << formatStatLine("Cancelled",
+      content << formatStatLine("Đã hủy",
                                 report.statistics.cancelledAppointments);
-      content << formatStatLine("No Show", report.statistics.noShowAppointments);
+      content << formatStatLine("Vắng mặt", report.statistics.noShowAppointments);
 
       // No-show rate calculated manually (not available in Statistics)
       double noShowRate =
@@ -875,10 +875,10 @@ namespace HMS
           100.0;
 
       content << formatStatLine(
-          "Completion Rate",
+          "Tỷ lệ hoàn thành",
           std::to_string(static_cast<int>(report.statistics.getCompletionRate())) +
               "%");
-      content << formatStatLine("No Show Rate",
+      content << formatStatLine("Tỷ lệ vắng mặt",
                                 std::to_string(static_cast<int>(noShowRate)) + "%");
 
       report.content = content.str();
@@ -922,9 +922,9 @@ namespace HMS
         report.type = type;
         report.reportID = generateReportID(type);
         report.generatedDate = Utils::getCurrentDate();
-        report.title = "Custom Report";
+        report.title = "Báo cáo tùy chỉnh";
         report.content =
-            "Custom report with " + std::to_string(filters.size()) + " filters.";
+            "Báo cáo tùy chỉnh với " + std::to_string(filters.size()) + " bộ lọc.";
         return report;
       }
       }
@@ -969,9 +969,9 @@ namespace HMS
     std::string ReportGenerator::exportToText(const Report &report)
     {
       std::ostringstream oss;
-      oss << "Report ID: " << report.reportID << "\n";
-      oss << "Generated: " << report.generatedDate << "\n";
-      oss << "Period: " << report.startDate << " to " << report.endDate << "\n\n";
+      oss << "ID báo cáo: " << report.reportID << "\n";
+      oss << "Tạo ngày: " << report.generatedDate << "\n";
+      oss << "Từ: " << report.startDate << "  " << report.endDate << "\n\n";
       oss << report.content;
       return oss.str();
     }
@@ -979,20 +979,20 @@ namespace HMS
     std::string ReportGenerator::exportToCSV(const Report &report)
     {
       std::ostringstream oss;
-      oss << "Report ID,Title,Generated Date,Start Date,End Date\n";
+      oss << "Mã báo cáo,Tiêu đề,Ngày tạo,Ngày bắt đầu,Ngày kết thúc\n";
       oss << report.reportID << "," << report.title << "," << report.generatedDate
           << "," << report.startDate << "," << report.endDate << "\n\n";
 
       // Export statistics as CSV
-      oss << "Metric,Value\n";
-      oss << "Total Appointments," << report.statistics.totalAppointments << "\n";
-      oss << "Completed," << report.statistics.completedAppointments << "\n";
-      oss << "Cancelled," << report.statistics.cancelledAppointments << "\n";
-      oss << "No Show," << report.statistics.noShowAppointments << "\n";
-      oss << "Total Revenue," << std::fixed << std::setprecision(2)
+      oss << "Chỉ số,Giá trị\n";
+      oss << "Tổng cuộc hẹn," << report.statistics.totalAppointments << "\n";
+      oss << "Hoàn thành," << report.statistics.completedAppointments << "\n";
+      oss << "Đã hủy," << report.statistics.cancelledAppointments << "\n";
+      oss << "Vắng mặt," << report.statistics.noShowAppointments << "\n";
+      oss << "Tổng doanh thu," << std::fixed << std::setprecision(2)
           << report.statistics.totalRevenue << "\n";
-      oss << "Paid Revenue," << report.statistics.paidRevenue << "\n";
-      oss << "Unpaid Revenue," << report.statistics.unpaidRevenue << "\n";
+      oss << "Đã thu," << report.statistics.paidRevenue << "\n";
+      oss << "Chưa thu," << report.statistics.unpaidRevenue << "\n";
 
       return oss.str();
     }
