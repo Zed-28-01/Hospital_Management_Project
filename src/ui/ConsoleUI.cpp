@@ -866,52 +866,36 @@ namespace HMS
 
         void ConsoleUI::viewDoctorSchedule()
         {
-            while (true)
+            DisplayHelper::clearScreen();
+            DisplayHelper::printHeader("LỊCH LÀM VIỆC");
+
+            std::cout << "1. Lọc theo ngày cụ thể\n";
+            std::cout << "0. Quay lại\n\n";
+
+            int choice = DisplayHelper::getIntInput("Nhập lựa chọn", 0, 1);
+            if (choice == 0)
+                return;
+
+            if (choice == 1)
             {
+                std::string date = selectDate();
+                if (date.empty())
+                    return;
+
+                auto filtered = m_facade->getMySchedule(date);
                 DisplayHelper::clearScreen();
                 DisplayHelper::printHeader("LỊCH LÀM VIỆC");
+                std::cout << "Lịch hẹn ngày " << DisplayHelper::formatDate(date) << ":\n\n";
 
-                // Show all upcoming appointments by default
-                auto appointments = m_facade->getMyUpcomingAppointments();
-                if (appointments.empty())
+                if (filtered.empty())
                 {
-                    DisplayHelper::printNoData("lịch hẹn sắp tới");
+                    DisplayHelper::printNoData("lịch hẹn cho ngày này");
                 }
                 else
                 {
-                    std::cout << "Tất cả lịch hẹn sắp tới:\n\n";
-                    DisplayHelper::printAppointmentTable(appointments);
+                    DisplayHelper::printAppointmentTable(filtered);
                 }
-
-                std::cout << "\n";
-                std::cout << "1. Lọc theo ngày cụ thể\n";
-                std::cout << "0. Quay lại\n\n";
-
-                std::string choice = DisplayHelper::getInput("Nhập lựa chọn");
-                if (choice == "0" || choice.empty())
-                    return;
-
-                if (choice == "1")
-                {
-                    std::string date = selectDate();
-                    if (date.empty())
-                        continue;
-
-                    auto filtered = m_facade->getMySchedule(date);
-                    DisplayHelper::clearScreen();
-                    DisplayHelper::printHeader("LỊCH LÀM VIỆC");
-                    std::cout << "Lịch hẹn ngày " << DisplayHelper::formatDate(date) << ":\n\n";
-
-                    if (filtered.empty())
-                    {
-                        DisplayHelper::printNoData("lịch hẹn cho ngày này");
-                    }
-                    else
-                    {
-                        DisplayHelper::printAppointmentTable(filtered);
-                    }
-                    DisplayHelper::pause();
-                }
+                DisplayHelper::pause();
             }
         }
 
@@ -1064,10 +1048,6 @@ namespace HMS
             if (specialization.empty())
                 return;
 
-            std::string schedule = DisplayHelper::getInput("Nhập lịch làm việc (vd: Mon-Fri 8:00-17:00)");
-            if (schedule.empty())
-                return;
-
             double consultationFee = DisplayHelper::getDoubleInput("Nhập phí khám (VND)");
             if (consultationFee < 0)
             {
@@ -1075,6 +1055,8 @@ namespace HMS
                 DisplayHelper::pause();
                 return;
             }
+
+            std::cout << "\nLưu ý: Tất cả bác sĩ làm việc Thứ 2-CN: 08:00-17:00\n\n";
 
             if (!DisplayHelper::confirm("Xác nhận thêm bác sĩ?"))
             {
@@ -1084,7 +1066,7 @@ namespace HMS
             }
 
             if (m_facade->addDoctor(username, password, name, phone, gender, dateOfBirth,
-                                    specialization, schedule, consultationFee))
+                                    specialization, consultationFee))
             {
                 DisplayHelper::printSuccess("Thêm bác sĩ thành công.");
             }
@@ -1182,10 +1164,10 @@ namespace HMS
             }
 
             DisplayHelper::printDoctorInfo(doctor.value());
-            std::cout << "\n(Để trống trường không muốn thay đổi)\n\n";
+            std::cout << "\n(Để trống trường không muốn thay đổi)\n";
+            std::cout << "Lưu ý: Lịch làm việc cố định là Thứ 2-CN: 08:00-17:00\n\n";
 
             std::string specialization = DisplayHelper::getInput("Chuyên khoa mới");
-            std::string schedule = DisplayHelper::getInput("Lịch làm việc mới");
             double consultationFee = DisplayHelper::getDoubleInput("Phí khám mới");
 
             if (!DisplayHelper::confirm("Xác nhận cập nhật?"))
@@ -1195,7 +1177,7 @@ namespace HMS
                 return;
             }
 
-            if (m_facade->updateDoctor(doctorId, specialization, schedule, consultationFee))
+            if (m_facade->updateDoctor(doctorId, specialization, consultationFee))
             {
                 DisplayHelper::printSuccess("Cập nhật thành công.");
             }
@@ -2464,9 +2446,12 @@ namespace HMS
             }
             filename += extension;
 
-            if (m_facade->exportReport(reportContent, filename, format))
+            // Prepend the reports directory path
+            std::string filepath = "data/reports/" + filename;
+
+            if (m_facade->exportReport(reportContent, filepath, format))
             {
-                DisplayHelper::printSuccess("Xuất báo cáo thành công: data/reports/" + filename);
+                DisplayHelper::printSuccess("Xuất báo cáo thành công: " + filepath);
             }
             else
             {

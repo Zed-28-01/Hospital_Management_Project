@@ -1,0 +1,29 @@
+Report ID: 
+Generated: 
+Period:  to 
+
+Report ID: RPT-W0002
+Generated: 2026-01-04
+Period: 2024-02-20 to 2024-02-26
+
+==================================================
+WEEKLY REPORT
+From 2024-02-20 to 2024-02-26
+==================================================
+Generated: 2026-01-04 10:43
+
+OVERVIEW
+--------
+  Total Appointments:      4
+  Scheduled:               0
+  Completed:               3
+  Cancelled:               0
+  No Show:                 1
+  Completion Rate:         75%
+
+REVENUE
+-------
+  Total Revenue:           1500000 VND
+  Paid:                    1500000 VND
+  Unpaid:                  0 VND
+  Payment Rate:            100%

@@ -614,7 +614,7 @@ namespace HMS
             std::cout << std::format("{:<20}: {}\n", "Giới tính", genderToString(doctor.getGender()));
             std::cout << std::format("{:<20}: {}\n", "Ngày sinh", formatDate(doctor.getDateOfBirth()));
             std::cout << std::format("{:<20}: {}\n", "Chuyên khoa", doctor.getSpecialization());
-            std::cout << std::format("{:<20}: {}\n", "Lịch làm việc", doctor.getSchedule());
+            std::cout << std::format("{:<20}: {}\n", "Lịch làm việc", "Thứ 2-CN: 08:00-17:00");
             std::cout << std::format("{:<20}: {}\n", "Phí khám", formatMoney(doctor.getConsultationFee()));
 
             printThinSeparator(60);

@@ -121,7 +121,7 @@ protected:
         const std::string &name = "Dr. Test")
     {
         return Doctor(id, "user_" + id, name, "0987654321", Gender::MALE,
-                      "1980-01-01", "General Medicine", "Mon-Fri 9:00-17:00",
+                      "1980-01-01", "General Medicine",
                       500000.0);
     }
 

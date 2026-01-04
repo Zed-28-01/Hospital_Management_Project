@@ -93,9 +93,9 @@ protected:
   void seedTestData() {
     // Add doctors
     Doctor doc1("D001", "doctor1", "Dr. John Smith", "0123456789", Gender::MALE,
-                "1980-01-15", "Cardiology", "Mon-Fri", 500000.0);
+                "1980-01-15", "Cardiology", 500000.0);
     Doctor doc2("D002", "doctor2", "Dr. Jane Doe", "0987654321", Gender::FEMALE,
-                "1985-05-20", "Neurology", "Mon-Sat", 600000.0);
+                "1985-05-20", "Neurology", 600000.0);
     DoctorRepository::getInstance()->add(doc1);
     DoctorRepository::getInstance()->add(doc2);
 
