@@ -168,6 +168,7 @@ Hospital_Management_Project/
 │   └── dependabot.yml
 │
 ├── .vscode/                        # Cài đặt VS Code
+|   ├── c_cpp_properties.json
 │   └── settings.json
 │
 ├── docs/                           # Tài liệu
@@ -175,9 +176,12 @@ Hospital_Management_Project/
 │   ├── ARCHITECTURE_vi.md          # Tài liệu kiến trúc (tiếng Việt)
 │   ├── BUILD.md                    # Hướng dẫn build (tiếng Anh)
 │   ├── BUILD_vi.md                 # Hướng dẫn build (tiếng Việt)
-│   └── CLASS_DIAGRAM.md            # Class diagrams
+|   └── diagrams/
+│       ├── architecture-overview.md
+│       └── architecture-detailed.md
 │
 ├── data/                           # File dữ liệu
+|   ├── README.md
 │   ├── Account.txt                 # Tài khoản người dùng
 │   ├── Patient.txt                 # Hồ sơ bệnh nhân
 │   ├── Doctor.txt                  # Hồ sơ bác sĩ
@@ -213,6 +217,9 @@ Hospital_Management_Project/
 │   │   ├── PatientRepository.h
 │   │   ├── DoctorRepository.h
 │   │   ├── AppointmentRepository.h
+│   │   ├── DepartmentRepository.h
+│   │   ├── MedicineRepository.h
+│   │   ├── PrescriptionRepository.h
 │   │   └── FileHelper.h
 │   │
 │   ├── bll/                        # Tầng Business Logic
@@ -237,6 +244,9 @@ Hospital_Management_Project/
 │   │   └── Utils.h                 # Các hàm tiện ích
 │   │
 │   └── advance/                     # Tính năng nâng cao
+│       ├── Department.h
+│       ├── Medicine.h
+│       ├── Prescription.h
 │       └── ReportGenerator.h       # Công cụ tạo báo cáo
 │
 ├── src/                            # Source files
@@ -247,13 +257,20 @@ Hospital_Management_Project/
 │   │   ├── Doctor.cpp
 │   │   ├── Admin.cpp
 │   │   ├── Account.cpp
-│   │   └── Appointment.cpp
+│   │   ├── Appointment.cpp
+│   │   ├── Department.cpp
+│   │   ├── Medicine.cpp
+│   │   ├── Statistics.cpp
+│   │   └── Prescription.cpp
 │   │
 │   ├── dal/                        # Triển khai Data Access
 │   │   ├── AccountRepository.cpp
 │   │   ├── PatientRepository.cpp
 │   │   ├── DoctorRepository.cpp
 │   │   ├── AppointmentRepository.cpp
+│   │   ├── DepartmentRepository.cpp
+│   │   ├── MedicineRepository.cpp
+│   │   ├── PrescriptionRepository.cpp
 │   │   └── FileHelper.cpp
 │   │
 │   ├── bll/                        # Triển khai Business Logic
@@ -261,7 +278,11 @@ Hospital_Management_Project/
 │   │   ├── PatientService.cpp
 │   │   ├── DoctorService.cpp
 │   │   ├── AppointmentService.cpp
-│   │   └── AdminService.cpp
+│   │   ├── AdminService.cpp
+│   │   ├── DepartmentService.cpp
+│   │   ├── MedicineService.cpp
+│   │   ├── PrescriptionService.cpp
+│   │   └── ReportGenerator.cpp
 │   │
 │   ├── ui/                         # Triển khai Presentation
 │   │   ├── HMSFacade.cpp
@@ -277,16 +298,24 @@ Hospital_Management_Project/
 ├── test/                           # File test
 │   │
 │   ├── model/                      # Unit tests cho Model
-│   │   ├── PersonTest.cpp
-│   │   ├── PatientTest.cpp
+│   │   ├── AccountTest.cpp
+│   │   ├── AdminTest.cpp
+│   │   ├── AppointmentTest.cpp
+│   │   ├── DepartmentTest.cpp
 │   │   ├── DoctorTest.cpp
-│   │   └── AppointmentTest.cpp
+│   │   ├── MedicineTest.cpp
+│   │   ├── PatientTest.cpp
+│   │   ├── PrescriptionTest.cpp
+│   │   └── StatisticsTest.cpp
 │   │
 │   ├── dal/                        # Unit tests cho DAL
 │   │   ├── AccountRepositoryTest.cpp
 │   │   ├── PatientRepositoryTest.cpp
 │   │   ├── DoctorRepositoryTest.cpp
 │   │   ├── AppointmentRepositoryTest.cpp
+│   │   ├── DepartmentRepositoryTest.cpp
+│   │   ├── MedicineRepositoryTest.cpp
+│   │   ├── PrescriptionRepositoryTest.cpp
 │   │   └── FileHelperTest.cpp
 │   │
 │   ├── bll/                        # Unit tests cho BLL
@@ -294,7 +323,11 @@ Hospital_Management_Project/
 │   │   ├── PatientServiceTest.cpp
 │   │   ├── DoctorServiceTest.cpp
 │   │   ├── AppointmentServiceTest.cpp
-│   │   └── AdminServiceTest.cpp
+│   │   ├── AdminServiceTest.cpp
+│   │   ├── DepartmentServiceTest.cpp
+│   │   ├── MedicineServiceTest.cpp
+│   │   ├── PrescriptionServiceTest.cpp
+│   │   └── ReportGeneratorServiceTest.cpp
 │   │
 │   ├── integration/                # Integration tests
 │   │   ├── AuthFlowTest.cpp
@@ -306,14 +339,18 @@ Hospital_Management_Project/
 │   │   ├── Account_test.txt
 │   │   ├── Patient_test.txt
 │   │   ├── Doctor_test.txt
+│   │   ├── Department_test.txt
+│   │   ├── Medicine_test.txt
+│   │   ├── Prescription_test.txt
 │   │   └── Appointment_test.txt
-│   │
-│   └── test_main.cpp               # Test runner entry point
+|   |
+│   └── CMakeFiles/
 │
 ├── build/                          # Build output (git ignored)
 │
 ├── CMakeLists.txt                  # Cấu hình build
-├── README.md                       # Project README
+├── reset_data.sh
+├── run_with_sample_data.sh
 └── .gitignore                      # Git ignore rules
 ```
 
@@ -332,6 +369,9 @@ Hospital_Management_Project/
 | `Account.h/cpp` | Tài khoản người dùng với dữ liệu xác thực |
 | `Appointment.h/cpp` | Entity cuộc hẹn với chi tiết booking |
 | `Statistics.h` | Cấu trúc dữ liệu thống kê (không cần .cpp) |
+| `Department.h/cpp` | Entity khoa/phòng ban với phân công bác sĩ |
+| `Medicine.h/cpp` | Entity thuốc với quản lý tồn kho |
+| `Prescription.h/cpp` | Entity đơn thuốc với các mục và dispensing |
 
 ### 5.2 Tầng Data Access (`include/dal/`, `src/dal/`)
 
@@ -342,6 +382,9 @@ Hospital_Management_Project/
 | `PatientRepository.h/cpp` | Thao tác CRUD Patient + file persistence |
 | `DoctorRepository.h/cpp` | Thao tác CRUD Doctor + file persistence |
 | `AppointmentRepository.h/cpp` | Thao tác CRUD Appointment + queries theo patient/doctor |
+| `DepartmentRepository.h/cpp` | Thao tác CRUD Department + queries phân công bác sĩ |
+| `MedicineRepository.h/cpp` | Thao tác CRUD Medicine + queries tồn kho, cảnh báo hết hạn |
+| `PrescriptionRepository.h/cpp` | Thao tác CRUD Prescription + queries theo patient/doctor |
 | `FileHelper.h/cpp` | Các tiện ích file I/O cấp thấp |
 
 ### 5.3 Tầng Business Logic (`include/bll/`, `src/bll/`)
@@ -353,8 +396,8 @@ Hospital_Management_Project/
 | `DoctorService.h/cpp` | Business logic bác sĩ, quản lý lịch làm việc |
 | `AppointmentService.h/cpp` | Logic booking, kiểm tra slot trống, quản lý trạng thái |
 | `AdminService.h/cpp` | Thao tác admin, tạo thống kê |
-| `MedicineService.h/cpp` | Quản lý thuốc, tồn kho, cảnh báo hết hạn |
-| `DepartmentService.h/cpp` | Quản lý khoa, phân công bác sĩ |
+| `DepartmentService.h/cpp` | Quản lý khoa/phòng ban, phân công bác sĩ |
+| `MedicineService.h/cpp` | CRUD thuốc, quản lý tồn kho, cảnh báo |
 | `PrescriptionService.h/cpp` | Tạo đơn thuốc, xuất thuốc, cập nhật kho |
 | `ReportGenerator.h/cpp` | Tạo báo cáo hàng ngày/tuần/tháng, xuất các định dạng |
 
