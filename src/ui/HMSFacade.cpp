@@ -237,6 +237,10 @@ std::optional<Model::Doctor> HMSFacade::getDoctorByID(const std::string& doctorI
     return m_doctorService->getDoctorByID(doctorID);
 }
 
+std::optional<Model::Doctor> HMSFacade::getDoctorByUsername(const std::string& username) {
+    return m_doctorService->getDoctorByUsername(username);
+}
+
 std::vector<std::string> HMSFacade::getAvailableSlots(const std::string& doctorID,
                                                       const std::string& date) {
     return m_appointmentService->getAvailableSlots(doctorID, date);

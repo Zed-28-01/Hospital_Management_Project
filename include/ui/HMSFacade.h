@@ -258,6 +258,13 @@ public:
     std::optional<Model::Doctor> getDoctorByID(const std::string& doctorID);
 
     /**
+     * @brief Get doctor by username
+     * @param username The doctor's username
+     * @return Doctor if found, nullopt otherwise
+     */
+    std::optional<Model::Doctor> getDoctorByUsername(const std::string& username);
+
+    /**
      * @brief Get available slots for a doctor
      * @param doctorID Doctor's ID
      * @param date Date (YYYY-MM-DD)

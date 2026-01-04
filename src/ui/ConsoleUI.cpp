@@ -869,6 +869,19 @@ namespace HMS
             DisplayHelper::clearScreen();
             DisplayHelper::printHeader("LỊCH LÀM VIỆC");
 
+            // Show all upcoming appointments first
+            auto appointments = m_facade->getMyUpcomingAppointments();
+            if (appointments.empty())
+            {
+                DisplayHelper::printNoData("lịch hẹn sắp tới");
+            }
+            else
+            {
+                std::cout << "Tất cả lịch hẹn sắp tới:\n\n";
+                DisplayHelper::printAppointmentTable(appointments);
+            }
+
+            std::cout << "\n";
             std::cout << "1. Lọc theo ngày cụ thể\n";
             std::cout << "0. Quay lại\n\n";
 
@@ -1056,7 +1069,14 @@ namespace HMS
                 return;
             }
 
-            std::cout << "\nLưu ý: Tất cả bác sĩ làm việc Thứ 2-CN: 08:00-17:00\n\n";
+            // Ask if user wants to assign to a department
+            std::string departmentID;
+            if (DisplayHelper::confirm("Bạn có muốn phân công bác sĩ này vào khoa?"))
+            {
+                departmentID = selectDepartment();
+                // Empty departmentID is OK - means user cancelled or wants to assign later
+            }
+
 
             if (!DisplayHelper::confirm("Xác nhận thêm bác sĩ?"))
             {
@@ -1069,6 +1089,24 @@ namespace HMS
                                     specialization, consultationFee))
             {
                 DisplayHelper::printSuccess("Thêm bác sĩ thành công.");
+
+                // If department was selected, assign the doctor to it
+                if (!departmentID.empty())
+                {
+                    // Get the newly created doctor's ID
+                    auto doctor = m_facade->getDoctorByUsername(username);
+                    if (doctor.has_value())
+                    {
+                        if (m_facade->assignDoctorToDepartment(doctor->getDoctorID(), departmentID))
+                        {
+                            DisplayHelper::printSuccess("Đã phân công bác sĩ vào khoa thành công.");
+                        }
+                        else
+                        {
+                            DisplayHelper::printWarning("Thêm bác sĩ thành công nhưng phân công vào khoa thất bại.");
+                        }
+                    }
+                }
             }
             else
             {
@@ -1170,6 +1208,14 @@ namespace HMS
             std::string specialization = DisplayHelper::getInput("Chuyên khoa mới");
             double consultationFee = DisplayHelper::getDoubleInput("Phí khám mới");
 
+            // Ask if user wants to change department assignment
+            std::string newDepartmentID;
+            if (DisplayHelper::confirm("Bạn có muốn thay đổi khoa phòng cho bác sĩ này?"))
+            {
+                newDepartmentID = selectDepartment();
+                // Empty newDepartmentID is OK - means user cancelled
+            }
+
             if (!DisplayHelper::confirm("Xác nhận cập nhật?"))
             {
                 DisplayHelper::printInfo("Đã hủy.");
@@ -1177,9 +1223,24 @@ namespace HMS
                 return;
             }
 
-            if (m_facade->updateDoctor(doctorId, specialization, consultationFee))
+            bool updateSuccess = m_facade->updateDoctor(doctorId, specialization, consultationFee);
+
+            if (updateSuccess)
             {
-                DisplayHelper::printSuccess("Cập nhật thành công.");
+                DisplayHelper::printSuccess("Cập nhật thông tin bác sĩ thành công.");
+
+                // If department was selected, update department assignment
+                if (!newDepartmentID.empty())
+                {
+                    if (m_facade->assignDoctorToDepartment(doctorId, newDepartmentID))
+                    {
+                        DisplayHelper::printSuccess("Đã thay đổi khoa phòng thành công.");
+                    }
+                    else
+                    {
+                        DisplayHelper::printWarning("Cập nhật thông tin thành công nhưng thay đổi khoa phòng thất bại.");
+                    }
+                }
             }
             else
             {
