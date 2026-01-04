@@ -1,5 +1,22 @@
 # Hệ Thống Quản Lý Bệnh Viện - Hướng Dẫn Build
 
+## ⚠️ LƯU Ý QUAN TRỌNG VỀ MÚI GIỜ ⚠️
+
+**Ứng dụng YÊU CẦU múi giờ Việt Nam (Asia/Ho_Chi_Minh) để các tính năng đặt lịch hẹn hoạt động chính xác!**
+
+### Thiết Lập Múi Giờ (BẮT BUỘC)
+
+```bash
+# KHUYẾN NGHỊ: Thiết lập múi giờ vĩnh viễn
+export TZ='Asia/Ho_Chi_Minh'
+echo "export TZ='Asia/Ho_Chi_Minh'" >> ~/.bashrc
+source ~/.bashrc
+```
+
+**Nếu không thiết lập múi giờ, các chức năng đặt lịch, kiểm tra thời gian sẽ không hoạt động đúng!**
+
+---
+
 ## Yêu Cầu Hệ Thống
 
 - **CMake** >= 3.10
@@ -13,12 +30,23 @@ Cấu hình devcontainer đã bao gồm tất cả các yêu cầu này.
 ## Bắt Đầu Nhanh
 
 ```bash
-# Từ thư mục gốc của project
+# Bước 1: Thiết lập múi giờ (BẮT BUỘC - chỉ làm 1 lần)
+export TZ='Asia/Ho_Chi_Minh'
+echo "export TZ='Asia/Ho_Chi_Minh'" >> ~/.bashrc
+source ~/.bashrc
+
+# Bước 2: Build ứng dụng
+cd /workspaces/Hospital_Management_Project
 mkdir -p build && cd build
 cmake ..
 make HospitalApp
-./HospitalApp
+
+# Bước 3: Chạy ứng dụng từ thư mục GỐC của project
+cd ..
+./build/HospitalApp
 ```
+
+**⚠️ LƯU Ý:** Phải chạy `./build/HospitalApp` từ thư mục gốc của project, KHÔNG phải từ thư mục `build/`
 
 ---
 
@@ -53,6 +81,9 @@ make HospitalTests
 # Build tất cả
 make all
 
+# Build nhanh với nhiều CPU cores
+make -j$(nproc)
+
 # Xóa các build artifacts
 make clean
 ```
@@ -60,25 +91,21 @@ make clean
 ### Chạy Ứng Dụng
 
 ```bash
-# Từ thư mục build
-./HospitalApp
+# ⚠️ QUAN TRỌNG: Chạy từ thư mục GỐC của project, KHÔNG phải từ build/
+cd /workspaces/Hospital_Management_Project
+./build/HospitalApp
 ```
 
-**Lưu ý về Múi Giờ:** Ứng dụng sử dụng thời gian hệ thống để kiểm tra các khung giờ đặt lịch. Nếu server chạy ở múi giờ UTC, bạn cần thiết lập múi giờ Việt Nam:
-
-```bash
-# Cách 1: Chạy với múi giờ Việt Nam (mỗi lần chạy)
-TZ='Asia/Ho_Chi_Minh' ./HospitalApp
-
-# Cách 2: Thiết lập vĩnh viễn trong shell (khuyến nghị)
-echo "export TZ='Asia/Ho_Chi_Minh'" >> ~/.bashrc
-source ~/.bashrc
-./HospitalApp
-```
+**Tại sao phải chạy từ thư mục gốc?**
+- Ứng dụng sử dụng đường dẫn `data/` để lưu trữ dữ liệu
+- Nếu chạy từ `build/`, ứng dụng sẽ không tìm thấy các file dữ liệu
 
 ### Chạy Tests
 
 ```bash
+# Chạy từ thư mục build
+cd /workspaces/Hospital_Management_Project/build
+
 # Chạy tất cả tests
 ./HospitalTests
 
@@ -89,9 +116,6 @@ source ~/.bashrc
 ./HospitalTests --gtest_filter=PatientTest.*
 
 # Chạy với CTest
-ctest
-
-# Chạy với CTest chi tiết
 ctest --verbose
 ```
 
@@ -127,39 +151,54 @@ Build targets:
 
 ## Quy Trình Phát Triển
 
-### Thêm File Source Mới
+### Rebuild Sau Khi Thay Đổi Code
 
-1. Thêm header file vào thư mục `include/<layer>/` phù hợp
-2. Thêm source file vào thư mục `src/<layer>/` tương ứng
-3. Chạy lại `cmake ..` (hoặc CMake sẽ tự động phát hiện file mới)
-4. Build với `make`
+```bash
+cd /workspaces/Hospital_Management_Project/build
+make HospitalApp
+cd ..
+./build/HospitalApp
+```
 
-### Thêm Tests Mới
+### Clean Build (Khi Gặp Lỗi)
 
-1. Tạo file test trong thư mục `test/<layer>/` phù hợp
-2. Tuân theo quy ước đặt tên của Google Test
-3. Rebuild tests với `make HospitalTests`
+```bash
+cd /workspaces/Hospital_Management_Project
+rm -rf build
+mkdir build && cd build
+cmake ..
+make HospitalApp
+cd ..
+./build/HospitalApp
+```
 
 ### Cấu Trúc Thư Mục Source Files
 
 ```
 src/
-├── model/          # Triển khai Entity
+├── model/              # Triển khai Entity
 │   ├── Person.cpp
 │   ├── Patient.cpp
 │   ├── Doctor.cpp
 │   ├── Admin.cpp
 │   ├── Account.cpp
-│   └── Appointment.cpp
+│   ├── Appointment.cpp
+│   ├── Medicine.cpp
+│   ├── Department.cpp
+│   ├── Prescription.cpp
+│   └── Report.cpp
 │
-├── dal/            # Tầng Data Access
+├── dal/                # Tầng Data Access
 │   ├── AccountRepository.cpp
 │   ├── PatientRepository.cpp
 │   ├── DoctorRepository.cpp
 │   ├── AppointmentRepository.cpp
+│   ├── MedicineRepository.cpp
+│   ├── DepartmentRepository.cpp
+│   ├── PrescriptionRepository.cpp
 │   └── FileHelper.cpp
 │
-├── bll/            # Tầng Business Logic
+├── bll/                # Tầng Business Logic
 │   ├── AuthService.cpp
 │   ├── PatientService.cpp
 │   ├── DoctorService.cpp
@@ -170,406 +209,155 @@ src/
 │   ├── PrescriptionService.cpp
 │   └── ReportGenerator.cpp
 │
-├── ui/             # Tầng Presentation
+├── ui/                 # Tầng Presentation
 │   ├── HMSFacade.cpp
 │   ├── ConsoleUI.cpp
 │   ├── InputValidator.cpp
 │   └── DisplayHelper.cpp
 │
-├── common/         # Utilities
+├── common/             # Utilities
 │   └── Utils.cpp
 │
-└── main.cpp        # Entry point
+└── main.cpp            # Entry point
 ```
+
+### Cấu Trúc Thư Mục Data Files
+
+```
+data/
+├── Account.txt          # Tài khoản người dùng
+├── Patient.txt          # Thông tin bệnh nhân
+├── Doctor.txt           # Thông tin bác sĩ
+├── Appointment.txt      # Lịch hẹn khám
+├── Medicine.txt         # Danh mục thuốc
+├── Department.txt       # Danh mục khoa
+├── Prescription.txt     # Đơn thuốc
+└── Report.txt           # Báo cáo hệ thống
+```
+
+**Lưu ý:** CMake không còn copy data files vào thư mục `build/` nữa. Ứng dụng truy cập trực tiếp vào thư mục `data/` ở thư mục gốc của project để đảm bảo dữ liệu được lưu trữ vĩnh viễn.
 
 ---
 
 ## Các Vấn Đề Thường Gặp
 
-### 1. Lỗi phiên bản CMake
+### 1. Lỗi "Could not open file" khi chạy ứng dụng
 
-```
-CMake Error at CMakeLists.txt:1 (cmake_minimum_required):
-  CMake 3.10 or higher is required.
-```
+**Nguyên nhân:** Chạy ứng dụng từ thư mục sai.
 
-**Giải pháp:** Cập nhật CMake hoặc sử dụng devcontainer.
-
-### 2. Không tìm thấy GTest
-
-```
-CMake Error: Could not find GTest
-```
-
-**Giải pháp:** Cài đặt Google Test:
+**Giải pháp:** Phải chạy từ thư mục gốc của project:
 ```bash
-sudo apt-get install libgtest-dev
+cd /workspaces/Hospital_Management_Project
+./build/HospitalApp
 ```
 
-### 3. Tính năng C++23 không được hỗ trợ
+### 2. Các tính năng đặt lịch không hoạt động đúng
 
-```
-error: 'expected' is not a member of 'std'
-```
+**Nguyên nhân:** Chưa thiết lập múi giờ Việt Nam.
 
-**Giải pháp:** Sử dụng GCC 14 trở lên. Devcontainer đã được cấu hình sẵn với GCC 14.
-
-### 4. Lỗi linker cho undefined references
-
-Nếu bạn thấy lỗi undefined reference sau khi thêm source files mới:
-
+**Giải pháp:**
 ```bash
-# Clean và rebuild
+export TZ='Asia/Ho_Chi_Minh'
+echo "export TZ='Asia/Ho_Chi_Minh'" >> ~/.bashrc
+source ~/.bashrc
+```
+
+### 3. Lỗi "CMake Error: The source directory ... is a file"
+
+**Nguyên nhân:** Sử dụng lệnh `cmake ./HospitalApp` thay vì `make HospitalApp`.
+
+**Giải pháp:**
+```bash
 cd build
-rm -rf *
+cmake ..          # Chỉ chạy 1 lần để configure
+make HospitalApp  # Dùng lệnh này để build
+```
+
+### 4. Build bị lỗi sau khi thay đổi code
+
+**Giải pháp:** Clean build lại:
+```bash
+cd /workspaces/Hospital_Management_Project
+rm -rf build
+mkdir build && cd build
 cmake ..
-make all
-```
-
----
-
-## Tích Hợp VS Code
-
-Nếu sử dụng VS Code với devcontainer:
-
-1. Mở Command Palette (Ctrl+Shift+P)
-2. Chọn "CMake: Configure"
-3. Chọn "CMake: Build" hoặc nhấn F7
-4. Chạy với F5 (Debug) hoặc Ctrl+F5 (Run)
-
----
-
-## Release Build
-
-Để build bản release/production:
-
-```bash
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make all
-
-# Executable sẽ được tối ưu hóa
-./HospitalApp
-```
-
-Sự khác biệt giữa Debug và Release:
-
-| Chế Độ | Compiler Flags | Kích Thước | Tốc Độ | Debug Info |
-|--------|---------------|-----------|---------|-----------|
-| Debug | `-g -O0 -Wall -Wextra` | Lớn hơn | Chậm hơn | Có |
-| Release | `-O3 -DNDEBUG` | Nhỏ hơn | Nhanh hơn | Không |
-
----
-
-## Cài Đặt (Tùy Chọn)
-
-```bash
-# Cài đặt vào hệ thống (mặc định: /usr/local/bin)
-sudo make install
-
-# Cài đặt vào thư mục tùy chỉnh
-cmake -DCMAKE_INSTALL_PREFIX=/custom/path ..
-make install
-```
-
----
-
-## Debug và Testing
-
-### Debug với GDB
-
-```bash
-# Build với debug symbols
-cd build
-cmake -DCMAKE_BUILD_TYPE=Debug ..
 make HospitalApp
-
-# Chạy với GDB
-gdb ./HospitalApp
-
-# Trong GDB:
-(gdb) break main           # Đặt breakpoint tại main
-(gdb) run                  # Chạy chương trình
-(gdb) next                 # Chạy dòng tiếp theo
-(gdb) print variable_name  # In giá trị biến
-(gdb) continue             # Tiếp tục chạy
-(gdb) quit                 # Thoát GDB
-```
-
-### Memory Check với Valgrind
-
-```bash
-# Kiểm tra memory leaks
-valgrind --leak-check=full ./HospitalApp
-
-# Kiểm tra với tests
-valgrind --leak-check=full ./HospitalTests
-```
-
-### Coverage Testing
-
-```bash
-# Build với coverage flags
-cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="--coverage" ..
-make all
-
-# Chạy tests
-./HospitalTests
-
-# Tạo coverage report
-gcov *.cpp
-lcov --capture --directory . --output-file coverage.info
-genhtml coverage.info --output-directory coverage_html
 ```
 
 ---
 
-## Tối Ưu Hóa Build
+## Quick Reference - Các Lệnh Thường Dùng
 
-### Build Song Song
-
+### Setup Ban Đầu (Chỉ làm 1 lần)
 ```bash
-# Build với nhiều cores
-make -j4  # Sử dụng 4 cores
+# Thiết lập múi giờ vĩnh viễn
+export TZ='Asia/Ho_Chi_Minh'
+echo "export TZ='Asia/Ho_Chi_Minh'" >> ~/.bashrc
+source ~/.bashrc
 
-# Hoặc tự động phát hiện số cores
+# Build lần đầu
+cd /workspaces/Hospital_Management_Project
+mkdir -p build && cd build
+cmake ..
+make HospitalApp
+```
+
+### Chạy Ứng Dụng
+```bash
+# Luôn chạy từ thư mục gốc của project
+cd /workspaces/Hospital_Management_Project
+./build/HospitalApp
+```
+
+### Rebuild Sau Khi Sửa Code
+```bash
+cd /workspaces/Hospital_Management_Project/build
+make HospitalApp
+cd ..
+./build/HospitalApp
+```
+
+### Chạy Tests
+```bash
+cd /workspaces/Hospital_Management_Project/build
+./HospitalTests
+```
+
+### Clean Build (Khi có lỗi)
+```bash
+cd /workspaces/Hospital_Management_Project
+rm -rf build
+mkdir build && cd build
+cmake ..
+make HospitalApp
+cd ..
+./build/HospitalApp
+```
+
+### Build Song Song (Nhanh Hơn)
+```bash
+# Tự động sử dụng tất cả CPU cores
 make -j$(nproc)
 ```
 
-### Incremental Build
-
-CMake hỗ trợ incremental build - chỉ compile các file đã thay đổi:
-
-```bash
-# Chỉ cần chạy make, không cần clean
-cd build
-make
-```
-
-### Clean Build
-
-Khi cần build lại từ đầu:
-
-```bash
-# Cách 1: Clean trong thư mục build
-cd build
-make clean
-cmake ..
-make all
-
-# Cách 2: Xóa toàn bộ thư mục build
-cd ..
-rm -rf build
-mkdir build
-cd build
-cmake ..
-make all
-```
-
 ---
 
-## Các Target CMake Nâng Cao
-
-### Xem Tất Cả Targets
+## Kiểm Tra Nhanh Hệ Thống
 
 ```bash
-make help
-```
+# Kiểm tra múi giờ
+echo $TZ  # Kết quả phải là: Asia/Ho_Chi_Minh
 
-### Build Cụ Thể
-
-```bash
-# Build chỉ một source file
-make src/model/Patient.cpp.o
-
-# Build và xem verbose output
-make VERBOSE=1
-```
-
-### Install và Package
-
-```bash
-# Install vào hệ thống
-sudo make install
-
-# Gỡ cài đặt
-sudo make uninstall  # (nếu có target này)
-
-# Tạo package (cần cấu hình CPack)
-make package
-```
-
----
-
-## Troubleshooting Nâng Cao
-
-### Kiểm Tra Compiler
-
-```bash
-# Kiểm tra version GCC
-g++ --version
-
-# Kiểm tra C++23 features
-g++ -std=c++23 -E -dM - < /dev/null | grep __cplusplus
-```
-
-### Kiểm Tra CMake Cache
-
-```bash
-# Xem các biến CMake
-cmake -L
-cmake -LA  # Xem tất cả biến kể cả advanced
-
-# Xóa cache và reconfigure
-rm CMakeCache.txt
-cmake ..
-```
-
-### Debug CMake
-
-```bash
-# Chạy CMake với debug output
-cmake --debug-output ..
-
-# Hoặc với trace
-cmake --trace ..
-```
-
----
-
-## Best Practices
-
-### 1. Quy Trình Build Hàng Ngày
-
-```bash
-# Sáng: Pull code mới
-git pull origin main
-
-# Build và test
-cd build
-cmake ..
-make all
-./HospitalTests
-
-# Nếu có lỗi, clean build
-make clean
-cmake ..
-make all
-```
-
-### 2. Trước Khi Commit
-
-```bash
-# Chạy tất cả tests
-./HospitalTests
-
-# Kiểm tra memory leaks
-valgrind --leak-check=full ./HospitalTests
-
-# Chạy với sanitizers
-cmake -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined" ..
-make all
-./HospitalTests
-```
-
-### 3. Khi Gặp Lỗi Lạ
-
-```bash
-# 1. Clean build hoàn toàn
-cd ..
-rm -rf build
-mkdir build
-cd build
-cmake ..
-make all
-
-# 2. Kiểm tra compiler và flags
-cmake -LA | grep CMAKE_CXX
-
-# 3. Build từng target riêng
-make HospitalLib
-make HospitalApp
-make HospitalTests
-```
-
----
-
-## Cấu Trúc Build Output
-
-Sau khi build thành công:
-
-```
-build/
-├── CMakeCache.txt
-├── CMakeFiles/
-├── Makefile
-├── HospitalApp           # Executable chính
-├── HospitalTests         # Executable tests
-├── libHospitalLib.a      # Static library
-├── data/                 # Data files (được copy)
-│   ├── Account.txt
-│   ├── Patient.txt
-│   ├── Doctor.txt
-│   └── Appointment.txt
-└── test/
-    └── fixtures/         # Test data (được copy)
-```
-
----
-
-## Tham Khảo
-
-### CMake Documentation
-- [CMake Tutorial](https://cmake.org/cmake/help/latest/guide/tutorial/index.html)
-- [CMake Commands](https://cmake.org/cmake/help/latest/manual/cmake-commands.7.html)
-
-### Google Test Documentation
-- [Google Test Primer](https://google.github.io/googletest/primer.html)
-- [Advanced Testing](https://google.github.io/googletest/advanced.html)
-
-### C++23 Resources
-- [C++23 Features](https://en.cppreference.com/w/cpp/23)
-- [GCC C++23 Support](https://gcc.gnu.org/projects/cxx-status.html#cxx23)
-
----
-
-## Quick Reference
-
-### Lệnh Thường Dùng
-
-```bash
-# Build nhanh
-cd build && cmake .. && make -j$(nproc)
-
-# Clean và rebuild
-cd build && make clean && cmake .. && make all
-
-# Test nhanh
-cd build && make HospitalTests && ./HospitalTests
-
-# Run ứng dụng
-cd build && make HospitalApp && ./HospitalApp
-
-# Debug với GDB
-cd build && gdb ./HospitalApp
-```
-
-### Kiểm Tra Nhanh
-
-```bash
 # Kiểm tra compiler
-g++ --version
+g++ --version  # Phải >= 14
 
 # Kiểm tra CMake
-cmake --version
+cmake --version  # Phải >= 3.10
 
 # Kiểm tra Google Test
 dpkg -l | grep libgtest
-
-# Kiểm tra C++ standard
-echo | g++ -std=c++23 -x c++ -E -dM - | grep __cplusplus
 ```
 
 ---
 
-**Để biết thêm thông tin về kiến trúc và thiết kế hệ thống, hãy xem ARCHITECTURE_vi.md**
+**Để biết thêm thông tin về kiến trúc và thiết kế hệ thống, hãy xem [ARCHITECTURE_vi.md](ARCHITECTURE_vi.md)**
