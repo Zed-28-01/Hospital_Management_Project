@@ -67,7 +67,6 @@ TEST_F(DoctorServiceTest, CreateAndGetDoctorSuccess)
         Gender::MALE,
         "1980-01-01",
         "Cardiology",
-        "Mon-Fri",
         500000);
 
     bool created = service->createDoctor(doc);
@@ -90,7 +89,6 @@ TEST_F(DoctorServiceTest, CreateDoctorDuplicateIDFail)
         Gender::MALE,
         "1990-05-15",
         "General",
-        "All",
         100000);
 
     EXPECT_TRUE(service->createDoctor(doc));
@@ -107,7 +105,6 @@ TEST_F(DoctorServiceTest, CreateDoctorDuplicateUsernameFail)
         Gender::MALE,
         "1990-05-15",
         "General",
-        "All",
         100000);
 
     Model::Doctor doc2(
@@ -118,7 +115,6 @@ TEST_F(DoctorServiceTest, CreateDoctorDuplicateUsernameFail)
         Gender::FEMALE,
         "1985-03-20",
         "Cardiology",
-        "Mon-Fri",
         150000);
 
     EXPECT_TRUE(service->createDoctor(doc1));
@@ -135,7 +131,6 @@ TEST_F(DoctorServiceTest, CreateDoctorInvalidPhoneFail)
         Gender::MALE,
         "1990-05-15",
         "General",
-        "All",
         100000);
 
     EXPECT_FALSE(service->createDoctor(doc));
@@ -151,7 +146,6 @@ TEST_F(DoctorServiceTest, CreateDoctorInvalidDateFail)
         Gender::MALE,
         "1990",
         "General",
-        "All",
         100000);
 
     EXPECT_FALSE(service->createDoctor(doc));
@@ -167,7 +161,6 @@ TEST_F(DoctorServiceTest, CreateDoctorFutureDOBFail)
         Gender::MALE,
         "2099-01-01",
         "General",
-        "All",
         100000);
 
     EXPECT_FALSE(service->createDoctor(doc));
@@ -183,7 +176,6 @@ TEST_F(DoctorServiceTest, SearchDoctorsLogic)
         Gender::MALE,
         "1990-06-20",
         "Neurology",
-        "Mon",
         100000);
     Model::Doctor doc2(
         "TEST_D03",
@@ -193,7 +185,6 @@ TEST_F(DoctorServiceTest, SearchDoctorsLogic)
         Gender::FEMALE,
         "1992-03-10",
         "Dermatology",
-        "Tue",
         200000);
 
     service->createDoctor(doc1);
@@ -223,7 +214,6 @@ TEST_F(DoctorServiceTest, GetUpcomingAppointmentsFilter)
         Gender::MALE,
         "1980-05-15",
         "Time Management",
-        "All",
         100000);
     service->createDoctor(doc);
 
@@ -261,7 +251,6 @@ TEST_F(DoctorServiceTest, GetUpcomingAppointmentsSortedByDateTime)
         Gender::MALE,
         "1975-08-20",
         "Sorting",
-        "All",
         100000);
     service->createDoctor(doc);
 
@@ -300,7 +289,6 @@ TEST_F(DoctorServiceTest, GetAvailableSlotsLogic)
         Gender::MALE,
         "1985-04-10",
         "Scheduling",
-        "All",
         100000);
     service->createDoctor(doc);
 
@@ -355,7 +343,6 @@ TEST_F(DoctorServiceTest, StatisticsCalculation)
         Gender::MALE,
         "1970-12-25",
         "Statistics",
-        "All",
         100000);
     service->createDoctor(doc);
 
@@ -399,7 +386,6 @@ TEST_F(DoctorServiceTest, GetAppointmentsInRangeLogic)
         Gender::FEMALE,
         "1982-07-14",
         "Range",
-        "All",
         100000);
     service->createDoctor(doc);
 
@@ -417,19 +403,19 @@ TEST_F(DoctorServiceTest, GetAppointmentsInRangeLogic)
 
 TEST_F(DoctorServiceTest, ValidateDoctorEmptyFields)
 {
-    Model::Doctor emptyName("D1", "u1", "", "0123456789", Gender::MALE, "1990-01-01", "Spec", "All", 100);
+    Model::Doctor emptyName("D1", "u1", "", "0123456789", Gender::MALE, "1990-01-01", "Spec", 100);
     EXPECT_FALSE(service->validateDoctor(emptyName));
 
-    Model::Doctor emptyPhone("D2", "u2", "Name", "", Gender::MALE, "1990-01-01", "Spec", "All", 100);
+    Model::Doctor emptyPhone("D2", "u2", "Name", "", Gender::MALE, "1990-01-01", "Spec", 100);
     EXPECT_FALSE(service->validateDoctor(emptyPhone));
 
-    Model::Doctor emptySpec("D3", "u3", "Name", "0123456789", Gender::MALE, "1990-01-01", "", "All", 100);
+    Model::Doctor emptySpec("D3", "u3", "Name", "0123456789", Gender::MALE, "1990-01-01", "", 100);
     EXPECT_FALSE(service->validateDoctor(emptySpec));
 }
 
 TEST_F(DoctorServiceTest, ValidateDoctorNegativeFee)
 {
-    Model::Doctor doc("D_NEG", "u_neg", "Name", "0123456789", Gender::MALE, "1990-01-01", "Spec", "All", -100);
+    Model::Doctor doc("D_NEG", "u_neg", "Name", "0123456789", Gender::MALE, "1990-01-01", "Spec", -100);
     EXPECT_FALSE(service->validateDoctor(doc));
 }
 
@@ -443,7 +429,6 @@ TEST_F(DoctorServiceTest, DoctorExistsCheck)
         Gender::MALE,
         "1988-11-30",
         "Existence",
-        "All",
         100000);
 
     EXPECT_FALSE(service->doctorExists("TEST_EXISTS"));
@@ -461,7 +446,6 @@ TEST_F(DoctorServiceTest, UpdateDoctorSuccess)
         Gender::MALE,
         "1979-02-28",
         "Original",
-        "Mon-Fri",
         100000);
     service->createDoctor(doc);
 
@@ -473,7 +457,6 @@ TEST_F(DoctorServiceTest, UpdateDoctorSuccess)
         Gender::MALE,
         "1979-02-28",
         "Updated Spec",
-        "Mon-Sat",
         150000);
 
     EXPECT_TRUE(service->updateDoctor(updated));
@@ -494,7 +477,6 @@ TEST_F(DoctorServiceTest, UpdateNonExistentDoctorFail)
         Gender::MALE,
         "1995-09-05",
         "None",
-        "All",
         100000);
 
     EXPECT_FALSE(service->updateDoctor(doc));
@@ -510,7 +492,6 @@ TEST_F(DoctorServiceTest, UpdateDoctorUsernameConflictFail)
         Gender::MALE,
         "1979-02-28",
         "Original",
-        "Mon-Fri",
         100000);
 
     Model::Doctor doc2(
@@ -521,7 +502,6 @@ TEST_F(DoctorServiceTest, UpdateDoctorUsernameConflictFail)
         Gender::FEMALE,
         "1985-06-15",
         "Cardiology",
-        "Tue-Sat",
         120000);
 
     service->createDoctor(doc1);
@@ -536,7 +516,6 @@ TEST_F(DoctorServiceTest, UpdateDoctorUsernameConflictFail)
         Gender::MALE,
         "1979-02-28",
         "Updated Spec",
-        "Mon-Sat",
         150000);
 
     EXPECT_FALSE(service->updateDoctor(updated));
@@ -552,7 +531,6 @@ TEST_F(DoctorServiceTest, UpdateDoctorSameUsernameSuccess)
         Gender::MALE,
         "1980-01-01",
         "General",
-        "All",
         100000);
 
     service->createDoctor(doc);
@@ -566,7 +544,6 @@ TEST_F(DoctorServiceTest, UpdateDoctorSameUsernameSuccess)
         Gender::MALE,
         "1980-01-01",
         "Updated Spec",
-        "Mon-Fri",
         150000);
 
     EXPECT_TRUE(service->updateDoctor(updated));
@@ -586,7 +563,6 @@ TEST_F(DoctorServiceTest, DeleteDoctorSuccess)
         Gender::FEMALE,
         "1983-06-18",
         "Deletion",
-        "All",
         100000);
     service->createDoctor(doc);
 
@@ -610,7 +586,6 @@ TEST_F(DoctorServiceTest, GetDoctorByUsername)
         Gender::MALE,
         "1977-04-22",
         "Users",
-        "All",
         100000);
     service->createDoctor(doc);
 
@@ -632,7 +607,6 @@ TEST_F(DoctorServiceTest, GetDoctorsBySpecialization)
         Gender::MALE,
         "1980-01-01",
         "Cardiology",
-        "Mon",
         100000);
     Model::Doctor doc2(
         "SPEC_D2",
@@ -642,7 +616,6 @@ TEST_F(DoctorServiceTest, GetDoctorsBySpecialization)
         Gender::FEMALE,
         "1985-05-05",
         "Cardiology",
-        "Tue",
         120000);
     Model::Doctor doc3(
         "SPEC_D3",
@@ -652,7 +625,6 @@ TEST_F(DoctorServiceTest, GetDoctorsBySpecialization)
         Gender::MALE,
         "1990-10-10",
         "Neurology",
-        "Wed",
         150000);
 
     service->createDoctor(doc1);
@@ -671,9 +643,9 @@ TEST_F(DoctorServiceTest, GetDoctorsBySpecialization)
 
 TEST_F(DoctorServiceTest, GetAllSpecializations)
 {
-    Model::Doctor doc1("ALL_SPEC1", "u_as1", "D1", "0401234567", Gender::MALE, "1980-01-01", "Cardiology", "Mon", 100000);
-    Model::Doctor doc2("ALL_SPEC2", "u_as2", "D2", "0501234567", Gender::FEMALE, "1985-05-05", "Neurology", "Tue", 100000);
-    Model::Doctor doc3("ALL_SPEC3", "u_as3", "D3", "0601234567", Gender::MALE, "1990-10-10", "Cardiology", "Wed", 100000);
+    Model::Doctor doc1("ALL_SPEC1", "u_as1", "D1", "0401234567", Gender::MALE, "1980-01-01", "Cardiology", 100000);
+    Model::Doctor doc2("ALL_SPEC2", "u_as2", "D2", "0501234567", Gender::FEMALE, "1985-05-05", "Neurology", 100000);
+    Model::Doctor doc3("ALL_SPEC3", "u_as3", "D3", "0601234567", Gender::MALE, "1990-10-10", "Cardiology", 100000);
 
     service->createDoctor(doc1);
     service->createDoctor(doc2);
@@ -692,8 +664,8 @@ TEST_F(DoctorServiceTest, GetDoctorCount)
 {
     EXPECT_EQ(service->getDoctorCount(), 0);
 
-    Model::Doctor doc1("COUNT1", "u_c1", "D1", "0701234567", Gender::MALE, "1980-01-01", "Spec", "Mon", 100000);
-    Model::Doctor doc2("COUNT2", "u_c2", "D2", "0801234567", Gender::FEMALE, "1985-05-05", "Spec", "Tue", 100000);
+    Model::Doctor doc1("COUNT1", "u_c1", "D1", "0701234567", Gender::MALE, "1980-01-01", "Spec", 100000);
+    Model::Doctor doc2("COUNT2", "u_c2", "D2", "0801234567", Gender::FEMALE, "1985-05-05", "Spec", 100000);
 
     service->createDoctor(doc1);
     EXPECT_EQ(service->getDoctorCount(), 1);
@@ -709,7 +681,7 @@ TEST_F(DoctorServiceTest, GetDoctorAppointmentCount)
 {
     std::string docID = "TEST_APP_COUNT";
 
-    Model::Doctor doc(docID, "u_app_count", "Dr. Count", "0901234567", Gender::MALE, "1975-03-15", "Counting", "All", 100000);
+    Model::Doctor doc(docID, "u_app_count", "Dr. Count", "0901234567", Gender::MALE, "1975-03-15", "Counting", 100000);
     service->createDoctor(doc);
 
     EXPECT_EQ(service->getDoctorAppointmentCount(docID), 0);
@@ -728,7 +700,7 @@ TEST_F(DoctorServiceTest, GetTodayAppointments)
     std::string docID = "TEST_TODAY";
     std::string today = Utils::getCurrentDate();
 
-    Model::Doctor doc(docID, "u_today", "Dr. Today", "0912345670", Gender::MALE, "1980-08-08", "Today", "All", 100000);
+    Model::Doctor doc(docID, "u_today", "Dr. Today", "0912345670", Gender::MALE, "1980-08-08", "Today", 100000);
     service->createDoctor(doc);
 
     Model::Appointment todayApp("TODAY1", "Pat1", docID, today, "14:00", "Checkup", 100.0, false, AppointmentStatus::SCHEDULED, "");
@@ -751,7 +723,6 @@ TEST_F(DoctorServiceTest, CreateDoctorWithParameters)
         Gender::FEMALE,
         "1988-12-12",
         "Parameters",
-        "Mon-Fri",
         200000);
 
     ASSERT_TRUE(result.has_value());

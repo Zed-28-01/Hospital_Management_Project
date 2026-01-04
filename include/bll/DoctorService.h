@@ -80,7 +80,6 @@ public:
      * @param gender Gender
      * @param dateOfBirth Date of birth
      * @param specialization Medical specialization
-     * @param schedule Working schedule
      * @param consultationFee Consultation fee
      * @return Created doctor or nullopt if failed
      */
@@ -91,7 +90,6 @@ public:
         Gender gender,
         const std::string& dateOfBirth,
         const std::string& specialization,
-        const std::string& schedule,
         double consultationFee);
 
     /**

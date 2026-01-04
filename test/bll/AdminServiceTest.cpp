@@ -92,7 +92,7 @@ protected:
     {
         return Doctor(doctorID, username, name, "0123456789",
                       Gender::MALE, "1980-01-01", specialization,
-                      "Mon-Fri 9:00-17:00", consultationFee);
+                      consultationFee);
     }
 
     // Helper to create test patient

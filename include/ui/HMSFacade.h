@@ -258,6 +258,13 @@ public:
     std::optional<Model::Doctor> getDoctorByID(const std::string& doctorID);
 
     /**
+     * @brief Get doctor by username
+     * @param username The doctor's username
+     * @return Doctor if found, nullopt otherwise
+     */
+    std::optional<Model::Doctor> getDoctorByUsername(const std::string& username);
+
+    /**
      * @brief Get available slots for a doctor
      * @param doctorID Doctor's ID
      * @param date Date (YYYY-MM-DD)
@@ -357,7 +364,6 @@ public:
      * @param gender Gender string
      * @param dateOfBirth Date of birth
      * @param specialization Medical specialization
-     * @param schedule Working schedule
      * @param consultationFee Consultation fee
      * @return True if successful
      */
@@ -368,20 +374,17 @@ public:
                    const std::string& gender,
                    const std::string& dateOfBirth,
                    const std::string& specialization,
-                   const std::string& schedule,
                    double consultationFee);
 
     /**
      * @brief Update doctor info
      * @param doctorID Doctor's ID
      * @param specialization New specialization
-     * @param schedule New schedule
      * @param consultationFee New fee
      * @return True if successful
      */
     bool updateDoctor(const std::string& doctorID,
                       const std::string& specialization,
-                      const std::string& schedule,
                       double consultationFee);
 
     /**

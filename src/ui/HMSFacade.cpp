@@ -237,6 +237,10 @@ std::optional<Model::Doctor> HMSFacade::getDoctorByID(const std::string& doctorI
     return m_doctorService->getDoctorByID(doctorID);
 }
 
+std::optional<Model::Doctor> HMSFacade::getDoctorByUsername(const std::string& username) {
+    return m_doctorService->getDoctorByUsername(username);
+}
+
 std::vector<std::string> HMSFacade::getAvailableSlots(const std::string& doctorID,
                                                       const std::string& date) {
     return m_appointmentService->getAvailableSlots(doctorID, date);
@@ -325,7 +329,6 @@ bool HMSFacade::addDoctor(const std::string& username,
                           const std::string& gender,
                           const std::string& dateOfBirth,
                           const std::string& specialization,
-                          const std::string& schedule,
                           double consultationFee) {
     // First register account with DOCTOR role
     if (!m_authService->registerAccount(username, password, Role::DOCTOR)) {
@@ -334,13 +337,12 @@ bool HMSFacade::addDoctor(const std::string& username,
 
     // Then create doctor record
     auto result = m_doctorService->createDoctor(username, name, phone, stringToGender(gender),
-                                                 dateOfBirth, specialization, schedule, consultationFee);
+                                                 dateOfBirth, specialization, consultationFee);
     return result.has_value();
 }
 
 bool HMSFacade::updateDoctor(const std::string& doctorID,
                              const std::string& specialization,
-                             const std::string& schedule,
                              double consultationFee) {
     auto doctor = m_doctorService->getDoctorByID(doctorID);
     if (!doctor) {
@@ -350,9 +352,6 @@ bool HMSFacade::updateDoctor(const std::string& doctorID,
     // Only update fields that have new values (non-empty for strings, >= 0 for fee)
     if (!specialization.empty()) {
         doctor->setSpecialization(specialization);
-    }
-    if (!schedule.empty()) {
-        doctor->setSchedule(schedule);
     }
     // consultationFee < 0 means "keep original value" (getDoubleInput returns -1 for empty input)
     if (consultationFee >= 0) {

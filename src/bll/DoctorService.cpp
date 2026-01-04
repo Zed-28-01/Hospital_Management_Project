@@ -95,10 +95,10 @@ namespace HMS
         Result<Model::Doctor> DoctorService::createDoctor(
             const std::string &username, const std::string &name,
             const std::string &phone, Gender gender, const std::string &dateOfBirth,
-            const std::string &specialization, const std::string &schedule,
+            const std::string &specialization,
             double consultationFee)
         {
-            std::string id = m_doctorRepo->getNextId(); 
+            std::string id = m_doctorRepo->getNextId();
             Model::Doctor newDoc(id,
                                  username,
                                  name,
@@ -106,7 +106,6 @@ namespace HMS
                                  gender,
                                  dateOfBirth,
                                  specialization,
-                                 schedule,
                                  consultationFee);
 
             if (createDoctor(newDoc))

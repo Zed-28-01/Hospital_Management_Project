@@ -18,13 +18,11 @@ namespace HMS
                        Gender gender,
                        const std::string &dateOfBirth,
                        const std::string &specialization,
-                       const std::string &schedule,
                        double consultationFee)
             : Person(name, phone, gender, dateOfBirth),
               m_doctorID(doctorID),
               m_username(username),
               m_specialization(specialization),
-              m_schedule(schedule),
               m_consultationFee(consultationFee) {}
 
         // ==================== Getters ====================
@@ -48,11 +46,6 @@ namespace HMS
             return m_specialization;
         }
 
-        std::string Doctor::getSchedule() const
-        {
-            return m_schedule;
-        }
-
         double Doctor::getConsultationFee() const
         {
             return m_consultationFee;
@@ -62,11 +55,6 @@ namespace HMS
         void Doctor::setSpecialization(const std::string &specialization)
         {
             m_specialization = specialization;
-        }
-
-        void Doctor::setSchedule(const std::string &schedule)
-        {
-            m_schedule = schedule;
         }
 
         void Doctor::setConsultationFee(double fee)
@@ -87,14 +75,14 @@ namespace HMS
             std::cout << std::format("{:<18}: {}\n", "Gender", genderToString(m_gender));
             std::cout << std::format("{:<18}: {}\n", "Date of Birth", m_dateOfBirth);
             std::cout << std::format("{:<18}: {}\n", "Specialization", m_specialization);
-            std::cout << std::format("{:<18}: {}\n", "Schedule", m_schedule);
+            std::cout << std::format("{:<18}: {}\n", "Schedule", "Thứ 2-CN: 08:00-17:00");
             std::cout << std::format("{:<18}: {}\n", "Consultation Fee", Utils::formatMoney(m_consultationFee));
             std::cout << "========================================\n\n";
         }
 
         std::string Doctor::serialize() const
         {
-            return std::format("{}|{}|{}|{}|{}|{}|{}|{}|{:.0f}",
+            return std::format("{}|{}|{}|{}|{}|{}|{}|{:.0f}",
                                m_doctorID,
                                m_username,
                                m_name,
@@ -102,7 +90,6 @@ namespace HMS
                                genderToString(m_gender),
                                m_dateOfBirth,
                                m_specialization,
-                               m_schedule,
                                m_consultationFee);
         }
 
@@ -118,10 +105,10 @@ namespace HMS
             // Split by delimiter
             auto parts = Utils::split(line, Constants::FIELD_DELIMITER);
 
-            // Validate field count
-            if (parts.size() != 9)
+            // Support both old format (9 fields with schedule) and new format (8 fields without schedule)
+            if (parts.size() != 8 && parts.size() != 9)
             {
-                std::cerr << std::format("Error: Invalid doctor format. Expected 9 fields, got {}\n",
+                std::cerr << std::format("Error: Invalid doctor format. Expected 8 or 9 fields, got {}\n",
                                          parts.size());
                 return std::nullopt;
             }
@@ -136,8 +123,19 @@ namespace HMS
                 std::string genderStr = Utils::trim(parts[4]);
                 std::string dateOfBirth = Utils::trim(parts[5]);
                 std::string specialization = Utils::trim(parts[6]);
-                std::string schedule = Utils::trim(parts[7]);
-                double consultationFee = std::stod(Utils::trim(parts[8]));
+
+                // Handle backward compatibility: skip schedule field if present (old format)
+                double consultationFee;
+                if (parts.size() == 9)
+                {
+                    // Old format: parts[7] is schedule, parts[8] is fee
+                    consultationFee = std::stod(Utils::trim(parts[8]));
+                }
+                else
+                {
+                    // New format: parts[7] is fee directly
+                    consultationFee = std::stod(Utils::trim(parts[7]));
+                }
 
                 // Validate required fields are not empty
                 if (doctorID.empty() || username.empty() || name.empty())
@@ -187,7 +185,7 @@ namespace HMS
                 }
 
                 return Doctor(doctorID, username, name, phone, gender,
-                              dateOfBirth, specialization, schedule, consultationFee);
+                              dateOfBirth, specialization, consultationFee);
             }
             catch (const std::exception &e)
             {

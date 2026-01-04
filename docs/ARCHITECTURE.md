@@ -169,14 +169,20 @@ Hospital_Management_Project/
 │   └── dependabot.yml
 │
 ├── .vscode/                        # VS Code settings (existing)
+|   ├── c_cpp_properties.json
 │   └── settings.json
 │
 ├── docs/                           # Documentation (NEW)
-│   ├── ARCHITECTURE.md             # This document
-│   ├── CLASS_DIAGRAM.md            # Mermaid class diagrams
-│   └── API.md                      # Internal API documentation
+│   ├── ARCHITECTURE.md             # Architecture documentation (English)
+│   ├── ARCHITECTURE_vi.md          # Architecture documentation (Vietnamese)
+│   ├── BUILD.md                    # Build guide (English)
+│   ├── BUILD_vi.md                 # Build guide (Vietnamese)
+│   └── diagrams/                   # Architecture diagrams
+│       ├── architecture-overview.md
+│       └── architecture-detailed.md
 │
 ├── data/                           # Data files
+|   ├── README.md
 │   ├── Account.txt                 # User accounts
 │   ├── Patient.txt                 # Patient records
 │   ├── Doctor.txt                  # Doctor records
@@ -204,20 +210,17 @@ Hospital_Management_Project/
 │   │   ├── Admin.h
 │   │   ├── Account.h
 │   │   ├── Appointment.h
-│   │   ├── Statistics.h
-│   │   ├── Department.h            # Department entity
-│   │   ├── Medicine.h              # Medicine/inventory entity
-│   │   └── Prescription.h          # Prescription entity
+│   │   └── Statistics.h
 │   │
-│   ├── dal/                        # Data Access Layer
-│   │   ├── IRepository.h           # Repository interface (template)
+│   ├── dal/                            # Data Access Layer
+│   │   ├── IRepository.h               # Repository interface (template)
 │   │   ├── AccountRepository.h
 │   │   ├── PatientRepository.h
 │   │   ├── DoctorRepository.h
 │   │   ├── AppointmentRepository.h
-│   │   ├── DepartmentRepository.h  # Department data access
-│   │   ├── MedicineRepository.h    # Medicine data access
-│   │   ├── PrescriptionRepository.h # Prescription data access
+│   │   ├── DepartmentRepository.h      # Department data access
+│   │   ├── MedicineRepository.h        # Medicine data access
+│   │   ├── PrescriptionRepository.h    # Prescription data access
 │   │   └── FileHelper.h
 │   │
 │   ├── bll/                        # Business Logic Layer
@@ -242,6 +245,9 @@ Hospital_Management_Project/
 │   │   └── Utils.h                 # Utility functions
 │   │
 │   └── advance/                     # Advanced features
+│       ├── Department.h
+│       ├── Medicine.h
+│       ├── Prescription.h
 │       └── ReportGenerator.h       # Report generation utilities
 │
 ├── src/                            # Source files (RESTRUCTURED)
@@ -255,6 +261,7 @@ Hospital_Management_Project/
 │   │   ├── Appointment.cpp
 │   │   ├── Department.cpp
 │   │   ├── Medicine.cpp
+│   │   ├── Statistics.cpp
 │   │   └── Prescription.cpp
 │   │
 │   ├── dal/                        # Data Access implementations
@@ -292,16 +299,24 @@ Hospital_Management_Project/
 ├── test/                           # Test files (RESTRUCTURED)
 │   │
 │   ├── model/                      # Model unit tests
-│   │   ├── PersonTest.cpp
-│   │   ├── PatientTest.cpp
+│   │   ├── AccountTest.cpp
+│   │   ├── AdminTest.cpp
+│   │   ├── AppointmentTest.cpp
+│   │   ├── DepartmentTest.cpp
 │   │   ├── DoctorTest.cpp
-│   │   └── AppointmentTest.cpp
+│   │   ├── MedicineTest.cpp
+│   │   ├── PatientTest.cpp
+│   │   ├── PrescriptionTest.cpp
+│   │   └── StatisticsTest.cpp
 │   │
 │   ├── dal/                        # DAL unit tests
 │   │   ├── AccountRepositoryTest.cpp
 │   │   ├── PatientRepositoryTest.cpp
 │   │   ├── DoctorRepositoryTest.cpp
 │   │   ├── AppointmentRepositoryTest.cpp
+│   │   ├── DepartmentRepositoryTest.cpp
+│   │   ├── MedicineRepositoryTest.cpp
+│   │   ├── PrescriptionRepositoryTest.cpp
 │   │   └── FileHelperTest.cpp
 │   │
 │   ├── bll/                        # BLL unit tests
@@ -309,7 +324,11 @@ Hospital_Management_Project/
 │   │   ├── PatientServiceTest.cpp
 │   │   ├── DoctorServiceTest.cpp
 │   │   ├── AppointmentServiceTest.cpp
-│   │   └── AdminServiceTest.cpp
+│   │   ├── AdminServiceTest.cpp
+│   │   ├── DepartmentServiceTest.cpp
+│   │   ├── MedicineServiceTest.cpp
+│   │   ├── PrescriptionServiceTest.cpp
+│   │   └── ReportGeneratorServiceTest.cpp
 │   │
 │   ├── integration/                # Integration tests
 │   │   ├── AuthFlowTest.cpp
@@ -321,14 +340,18 @@ Hospital_Management_Project/
 │   │   ├── Account_test.txt
 │   │   ├── Patient_test.txt
 │   │   ├── Doctor_test.txt
+│   │   ├── Department_test.txt
+│   │   ├── Medicine_test.txt
+│   │   ├── Prescription_test.txt
 │   │   └── Appointment_test.txt
-│   │
-│   └── test_main.cpp               # Test runner entry point
+|   |
+│   └── CMakeFiles/
 │
 ├── build/                          # Build output (git ignored)
 │
 ├── CMakeLists.txt                  # Build configuration (UPDATED)
-├── README.md                       # Project README (existing)
+├── reset_data.sh
+├── run_with_sample_data.sh
 └── .gitignore                      # Git ignore rules (existing)
 ```
 

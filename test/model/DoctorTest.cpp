@@ -18,7 +18,6 @@ TEST(DoctorTest, ConstructorAndGetters)
         Gender::MALE,          // Gender
         "1980-01-01",          // DOB
         "Cardiology",          // Specialization
-        "Mon-Fri 08:00-17:00", // Schedule (String)
         500000.0               // Fee
     );
 
@@ -29,7 +28,6 @@ TEST(DoctorTest, ConstructorAndGetters)
     EXPECT_EQ(doc.getGender(), Gender::MALE);
     EXPECT_EQ(doc.getDateOfBirth(), "1980-01-01");
     EXPECT_EQ(doc.getSpecialization(), "Cardiology");
-    EXPECT_EQ(doc.getSchedule(), "Mon-Fri 08:00-17:00");
     EXPECT_DOUBLE_EQ(doc.getConsultationFee(), 500000.0);
 }
 
@@ -38,12 +36,10 @@ TEST(DoctorTest, SettersUpdateValuesCorrectly)
     Doctor doc;
 
     doc.setSpecialization("Neurology");
-    doc.setSchedule("Sat-Sun 09:00-12:00");
     doc.setConsultationFee(1000000.0);
 
     // Kiểm tra lại
     EXPECT_EQ(doc.getSpecialization(), "Neurology");
-    EXPECT_EQ(doc.getSchedule(), "Sat-Sun 09:00-12:00");
     EXPECT_DOUBLE_EQ(doc.getConsultationFee(), 1000000.0);
 }
 
@@ -52,7 +48,7 @@ TEST(DoctorTest, SerializeReturnsCorrectFormat)
     Doctor doc(
         "D002", "jane_doe", "Jane Doe", "0987654321",
         Gender::FEMALE, "1985-05-05", "Dermatology",
-        "Tue-Thu", 300000.0);
+        300000.0);
 
     std::string serialized = doc.serialize();
 
@@ -67,13 +63,13 @@ TEST(DoctorTest, SerializeReturnsCorrectFormat)
         if (c == '|')
             pipes++;
     }
-    EXPECT_EQ(pipes, 8);
+    EXPECT_EQ(pipes, 7); // Now 8 fields = 7 pipes
 }
 
 TEST(DoctorTest, DeserializeValidString)
 {
-
-    std::string data = "D003|doc_test|Dr. Test|0123456789|Male|1990-01-01|General|Mon-Wed|200000";
+    // Test new format (8 fields without schedule)
+    std::string data = "D003|doc_test|Dr. Test|0123456789|Male|1990-01-01|General|200000";
 
     auto result = Doctor::deserialize(data);
 
@@ -83,8 +79,14 @@ TEST(DoctorTest, DeserializeValidString)
     EXPECT_EQ(doc.getID(), "D003");
     EXPECT_EQ(doc.getName(), "Dr. Test");
     EXPECT_EQ(doc.getSpecialization(), "General");
-    EXPECT_EQ(doc.getSchedule(), "Mon-Wed"); // String
     EXPECT_DOUBLE_EQ(doc.getConsultationFee(), 200000.0);
+
+    // Test old format (9 fields with schedule) for backward compatibility
+    std::string oldData = "D004|doc_old|Dr. Old|0123456789|Male|1990-01-01|General|Mon-Wed|200000";
+    auto oldResult = Doctor::deserialize(oldData);
+    ASSERT_TRUE(oldResult.has_value());
+    EXPECT_EQ(oldResult->getID(), "D004");
+    EXPECT_DOUBLE_EQ(oldResult->getConsultationFee(), 200000.0);
 }
 
 TEST(DoctorTest, DeserializeEmptyStringReturnsNullopt)

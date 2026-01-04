@@ -79,9 +79,9 @@ protected:
     // --- Helpers ---
 
     void seedDoctor() {
-        // ID, Username, Name, Phone, Gender, DOB, Specialization, Schedule, Fee
+        // ID, Username, Name, Phone, Gender, DOB, Specialization, Fee
         Doctor d(VALID_DOC_ID, "dr_smith", "Dr. Smith", "0900000001",
-                 Gender::MALE, "1980-01-01", "Cardiology", "Mon-Fri", DOC_FEE);
+                 Gender::MALE, "1980-01-01", "Cardiology", DOC_FEE);
         docRepo->add(d);
     }
 
