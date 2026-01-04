@@ -402,10 +402,16 @@ private:
     std::string selectAppointment(const std::vector<Model::Appointment>& appointments);
 
     /**
-     * @brief Display date selection
+     * @brief Display date selection (future dates only)
      * @return Selected date in YYYY-MM-DD format
      */
     std::string selectDate();
+
+    /**
+     * @brief Display date selection (past dates only, for reports)
+     * @return Selected date in YYYY-MM-DD format
+     */
+    std::string selectPastDate();
 
     /**
      * @brief Display time slot selection

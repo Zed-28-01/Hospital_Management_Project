@@ -226,6 +226,38 @@ namespace HMS
             return 0;
         }
 
+        int daysBetweenDates(const std::string &futureDate, const std::string &currentDate)
+        {
+            if (!isValidDateInternal(futureDate) || !isValidDateInternal(currentDate))
+            {
+                return 0;
+            }
+
+            int year1 = std::stoi(futureDate.substr(0, 4));
+            int month1 = std::stoi(futureDate.substr(5, 2));
+            int day1 = std::stoi(futureDate.substr(8, 2));
+
+            int year2 = std::stoi(currentDate.substr(0, 4));
+            int month2 = std::stoi(currentDate.substr(5, 2));
+            int day2 = std::stoi(currentDate.substr(8, 2));
+
+            std::tm tm1 = {};
+            tm1.tm_year = year1 - 1900;
+            tm1.tm_mon = month1 - 1;
+            tm1.tm_mday = day1;
+
+            std::tm tm2 = {};
+            tm2.tm_year = year2 - 1900;
+            tm2.tm_mon = month2 - 1;
+            tm2.tm_mday = day2;
+
+            std::time_t time1 = std::mktime(&tm1);
+            std::time_t time2 = std::mktime(&tm2);
+
+            double seconds = std::difftime(time1, time2);
+            return static_cast<int>(seconds / 86400);
+        }
+
         bool isFutureDate(const std::string &date)
         {
             return compareDates(date, getCurrentDate()) > 0;
@@ -295,7 +327,7 @@ namespace HMS
 
             return true;
         }
-        
+
         // ==================== ID Generation ====================
 
         std::string generateID(const std::string &prefix)

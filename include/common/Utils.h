@@ -122,6 +122,14 @@ bool isValidTime(const std::string& time);
 int compareDates(const std::string& date1, const std::string& date2);
 
 /**
+ * @brief Calculate number of days between two dates
+ * @param futureDate The later date (YYYY-MM-DD)
+ * @param currentDate The earlier date (YYYY-MM-DD)
+ * @return Number of days (positive if futureDate > currentDate, negative if past)
+ */
+int daysBetweenDates(const std::string& futureDate, const std::string& currentDate);
+
+/**
  * @brief Check if date is in the future
  * @param date The date to check
  * @return True if date is in the future

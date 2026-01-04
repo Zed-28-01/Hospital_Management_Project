@@ -316,7 +316,8 @@ namespace HMS
                 m_patients, std::back_inserter(results),
                 [&keyword](const auto &p)
                 {
-                    return Utils::containsIgnoreCase(p.getName(), keyword) ||
+                    return Utils::containsIgnoreCase(p.getPatientID(), keyword) ||
+                           Utils::containsIgnoreCase(p.getName(), keyword) ||
                            Utils::containsIgnoreCase(p.getPhone(), keyword) ||
                            Utils::containsIgnoreCase(p.getAddress(), keyword);
                 }

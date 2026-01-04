@@ -289,6 +289,13 @@ public:
     std::optional<Model::Patient> getPatientByID(const std::string& patientID);
 
     /**
+     * @brief Get patient by username
+     * @param username Patient's username
+     * @return Patient if found, nullopt otherwise
+     */
+    std::optional<Model::Patient> getPatientByUsername(const std::string& username);
+
+    /**
      * @brief Add a new patient (for doctor)
      * @param name Patient's name
      * @param phone Phone number
@@ -591,6 +598,12 @@ public:
                             const std::string& date,
                             const std::string& diagnosis,
                             const std::string& instructions);
+
+    /**
+     * @brief Generate unique prescription ID
+     * @return New prescription ID
+     */
+    std::string generatePrescriptionID();
 
     /**
      * @brief Add item to prescription

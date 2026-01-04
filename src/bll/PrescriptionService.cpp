@@ -46,6 +46,11 @@ namespace HMS
 
     // ==================== Prescription Creation ====================
 
+    std::string PrescriptionService::generateNextID()
+    {
+      return m_prescriptionRepo->getNextId();
+    }
+
     bool PrescriptionService::createPrescription(
         const Model::Prescription &prescription)
     {

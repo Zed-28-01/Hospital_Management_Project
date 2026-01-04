@@ -255,6 +255,10 @@ std::optional<Model::Patient> HMSFacade::getPatientByID(const std::string& patie
     return m_patientService->getPatientByID(patientID);
 }
 
+std::optional<Model::Patient> HMSFacade::getPatientByUsername(const std::string& username) {
+    return m_patientService->getPatientByUsername(username);
+}
+
 bool HMSFacade::addPatient(const std::string& name,
                            const std::string& phone,
                            const std::string& gender,
@@ -503,6 +507,10 @@ BLL::DepartmentStats HMSFacade::getDepartmentStats(const std::string& department
 }
 
 // ==================== Prescription Management ====================
+std::string HMSFacade::generatePrescriptionID() {
+    return m_prescriptionService->generateNextID();
+}
+
 bool HMSFacade::createPrescription(const std::string& prescriptionID,
                                    const std::string& patientID,
                                    const std::string& doctorID,

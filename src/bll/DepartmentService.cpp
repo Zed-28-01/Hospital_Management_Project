@@ -175,12 +175,14 @@ namespace HMS
             }
 
             // Validate doctor exists
-            if (!m_doctorRepo->exists(doctorID))
+            auto doctorOpt = m_doctorRepo->getById(doctorID);
+            if (!doctorOpt.has_value())
             {
                 return false;
             }
 
             Model::Department dep = depOpt.value();
+            Model::Doctor doctor = doctorOpt.value();
 
             // Idempotent: return true if already assigned to this department
             if (dep.hasDoctor(doctorID))
@@ -199,7 +201,12 @@ namespace HMS
 
             // Add doctor to department
             dep.addDoctor(doctorID);
-            return m_departmentRepo->update(dep);
+
+            // Update doctor's specialization to match the new department
+            doctor.setSpecialization(dep.getName());
+
+            // Save both department and doctor changes
+            return m_departmentRepo->update(dep) && m_doctorRepo->update(doctor);
         }
 
         bool DepartmentService::unassignDoctor(const std::string &departmentID, const std::string &doctorID)
@@ -375,7 +382,7 @@ namespace HMS
                 stats.doctorNames.push_back(doc.getName());
             }
 
-            // Calculate appointment count and revenue from completed appointments
+            // Calculate appointment count and revenue from completed AND paid appointments
             auto appRepo = DAL::AppointmentRepository::getInstance();
             auto allApps = appRepo->getAll();
 
@@ -383,7 +390,7 @@ namespace HMS
             {
                 if (dep.hasDoctor(app.getDoctorID()))
                 {
-                    if (app.getStatus() == AppointmentStatus::COMPLETED)
+                    if (app.getStatus() == AppointmentStatus::COMPLETED && app.isPaid())
                     {
                         stats.appointmentCount++;
                         stats.totalRevenue += app.getPrice();

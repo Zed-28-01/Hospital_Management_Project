@@ -98,14 +98,16 @@ namespace HMS
 
             /**
              * @brief Deserialize a single PrescriptionItem
-             * Format: medicineID:medicineName:quantity:dosage:duration:instructions
+             * Supports two formats for backward compatibility:
+             * - Legacy (5 fields): medicineID:quantity:dosage:duration:instructions
+             * - New (6 fields): medicineID:medicineName:quantity:dosage:duration:instructions
              */
             Result<PrescriptionItem> deserializeItem(const std::string &itemStr)
             {
                 auto parts = Utils::split(itemStr, Constants::ITEM_FIELD_DELIMITER);
 
-                // Need at least 6 fields (medicineName was added to struct)
-                if (parts.size() < 6)
+                // Need at least 5 fields (legacy format without medicineName)
+                if (parts.size() < 5)
                 {
                     return std::nullopt;
                 }
@@ -113,12 +115,27 @@ namespace HMS
                 try
                 {
                     PrescriptionItem item;
-                    item.medicineID = Utils::trim(parts[0]);
-                    item.medicineName = Utils::trim(parts[1]);
-                    item.quantity = std::stoi(Utils::trim(parts[2]));
-                    item.dosage = Utils::trim(parts[3]);
-                    item.duration = Utils::trim(parts[4]);
-                    item.instructions = Utils::trim(parts[5]);
+
+                    if (parts.size() >= 6)
+                    {
+                        // New format with medicineName: medicineID:medicineName:quantity:dosage:duration:instructions
+                        item.medicineID = Utils::trim(parts[0]);
+                        item.medicineName = Utils::trim(parts[1]);
+                        item.quantity = std::stoi(Utils::trim(parts[2]));
+                        item.dosage = Utils::trim(parts[3]);
+                        item.duration = Utils::trim(parts[4]);
+                        item.instructions = Utils::trim(parts[5]);
+                    }
+                    else
+                    {
+                        // Legacy format without medicineName: medicineID:quantity:dosage:duration:instructions
+                        item.medicineID = Utils::trim(parts[0]);
+                        item.medicineName = "";  // Will be populated from MedicineRepository when needed
+                        item.quantity = std::stoi(Utils::trim(parts[1]));
+                        item.dosage = Utils::trim(parts[2]);
+                        item.duration = Utils::trim(parts[3]);
+                        item.instructions = Utils::trim(parts[4]);
+                    }
 
                     if (item.medicineID.empty() || item.quantity <= 0)
                     {

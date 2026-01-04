@@ -1402,6 +1402,32 @@ namespace HMS
             return date;
         }
 
+        std::string ConsoleUI::selectPastDate()
+        {
+            std::string date;
+            while (true)
+            {
+                std::string dateInput = DisplayHelper::getInput("Nhập ngày (DD-MM-YYYY, bỏ trống để quay lại)");
+                if (dateInput.empty())
+                    return "";
+
+                if (!InputValidator::validateDate(dateInput))
+                {
+                    std::cout << InputValidator::getDateError(dateInput) << "\n";
+                    continue;
+                }
+                if (!InputValidator::validatePastDate(dateInput))
+                {
+                    DisplayHelper::printError("Ngày phải là trong quá khứ (ít nhất 1 ngày trước).");
+                    continue;
+                }
+                // Convert to internal format (YYYY-MM-DD) for storage
+                date = ::HMS::Utils::dateFromInput(dateInput);
+                break;
+            }
+            return date;
+        }
+
         std::string ConsoleUI::selectTimeSlot(const std::vector<std::string> &slots)
         {
             if (slots.empty())
@@ -2291,7 +2317,7 @@ namespace HMS
             DisplayHelper::clearScreen();
             DisplayHelper::printHeader("BÁO CÁO NGÀY");
 
-            std::string date = selectDate();
+            std::string date = selectPastDate();
             if (date.empty())
                 return;
 
@@ -2306,7 +2332,7 @@ namespace HMS
             DisplayHelper::printHeader("BÁO CÁO TUẦN");
 
             std::cout << "Chọn ngày bắt đầu tuần:\n";
-            std::string startDate = selectDate();
+            std::string startDate = selectPastDate();
             if (startDate.empty())
                 return;
 
@@ -2339,14 +2365,22 @@ namespace HMS
             DisplayHelper::printHeader("BÁO CÁO DOANH THU");
 
             std::cout << "Chọn ngày bắt đầu:\n";
-            std::string startDate = selectDate();
+            std::string startDate = selectPastDate();
             if (startDate.empty())
                 return;
 
             std::cout << "Chọn ngày kết thúc:\n";
-            std::string endDate = selectDate();
+            std::string endDate = selectPastDate();
             if (endDate.empty())
                 return;
+
+            // Validate that endDate >= startDate
+            if (Utils::compareDates(endDate, startDate) < 0)
+            {
+                DisplayHelper::printError("Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.");
+                DisplayHelper::pause();
+                return;
+            }
 
             std::string report = m_facade->generateRevenueReport(startDate, endDate, "txt");
             std::cout << "\n" << report << "\n";
@@ -2376,7 +2410,7 @@ namespace HMS
             {
             case 1:
             {
-                std::string date = selectDate();
+                std::string date = selectPastDate();
                 if (date.empty())
                     return;
                 reportContent = m_facade->generateDailyReport(date, "txt");
@@ -2385,7 +2419,7 @@ namespace HMS
             }
             case 2:
             {
-                std::string startDate = selectDate();
+                std::string startDate = selectPastDate();
                 if (startDate.empty())
                     return;
                 reportContent = m_facade->generateWeeklyReport(startDate, "txt");
@@ -2402,43 +2436,26 @@ namespace HMS
             }
             case 4:
             {
-                std::string startDate = selectDate();
-                std::string endDate = selectDate();
+                std::string startDate = selectPastDate();
+                std::string endDate = selectPastDate();
                 if (startDate.empty() || endDate.empty())
                     return;
+                // Validate that endDate >= startDate
+                if (Utils::compareDates(endDate, startDate) < 0)
+                {
+                    DisplayHelper::printError("Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.");
+                    DisplayHelper::pause();
+                    return;
+                }
                 reportContent = m_facade->generateRevenueReport(startDate, endDate, "txt");
                 defaultFilename = "bao_cao_doanh_thu_" + startDate + "_" + endDate;
                 break;
             }
             }
 
-            std::cout << "\nChọn định dạng xuất:\n";
-            std::cout << "1. Text (.txt)\n";
-            std::cout << "2. CSV (.csv)\n";
-            std::cout << "3. HTML (.html)\n";
-            std::cout << "0. Quay lại\n\n";
-
-            int formatChoice = DisplayHelper::getIntInput("Chọn định dạng [0-3]", 0, 3);
-            if (formatChoice <= 0)
-                return;
-
-            std::string format;
-            std::string extension;
-            switch (formatChoice)
-            {
-            case 1:
-                format = "txt";
-                extension = ".txt";
-                break;
-            case 2:
-                format = "csv";
-                extension = ".csv";
-                break;
-            case 3:
-                format = "html";
-                extension = ".html";
-                break;
-            }
+            // Only TXT format is supported
+            std::string format = "txt";
+            std::string extension = ".txt";
 
             std::string filename = DisplayHelper::getInput("Nhập tên file (mặc định: " + defaultFilename + ")");
             if (filename.empty())
@@ -2508,27 +2525,6 @@ namespace HMS
             DisplayHelper::printHeader("KÊ ĐƠN THUỐC MỚI");
             std::cout << "(Nhấn Enter để quay lại)\n\n";
 
-            // Get patient
-            std::string patientID = selectPatient();
-            if (patientID.empty())
-                return;
-
-            // Get today's completed appointments for this patient
-            auto patient = m_facade->getPatientByID(patientID);
-            if (!patient.has_value())
-            {
-                DisplayHelper::printError("Không tìm thấy bệnh nhân.");
-                DisplayHelper::pause();
-                return;
-            }
-
-            // Get diagnosis
-            std::string diagnosis = DisplayHelper::getInput("Chẩn đoán");
-            if (diagnosis.empty())
-                return;
-
-            std::string instructions = DisplayHelper::getInput("Hướng dẫn chung (tùy chọn)");
-
             // Get current doctor ID
             std::string doctorID;
             auto doctors = m_facade->getAllDoctors();
@@ -2548,13 +2544,6 @@ namespace HMS
                 return;
             }
 
-            // Generate prescription ID
-            auto allPresc = m_facade->getDoctorPrescriptions(doctorID);
-            int nextNum = allPresc.size() + 1;
-            char idBuffer[10];
-            snprintf(idBuffer, sizeof(idBuffer), "PRE%03d", nextNum);
-            std::string prescriptionID = idBuffer;
-
             // Get current date
             time_t now = time(nullptr);
             tm *ltm = localtime(&now);
@@ -2563,8 +2552,67 @@ namespace HMS
                      1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday);
             std::string today = dateBuffer;
 
-            // Create prescription first
-            if (!m_facade->createPrescription(prescriptionID, patient->getUsername(), doctorID, "", today, diagnosis, instructions))
+            // Get today's appointments for this doctor (SCHEDULED or COMPLETED status)
+            auto allAppointments = m_facade->getMyUpcomingAppointments();
+            std::vector<Model::Appointment> todayAppointments;
+
+            for (const auto& apt : allAppointments)
+            {
+                if (apt.getDate() == today &&
+                    (apt.getStatus() == AppointmentStatus::SCHEDULED ||
+                     apt.getStatus() == AppointmentStatus::COMPLETED))
+                {
+                    todayAppointments.push_back(apt);
+                }
+            }
+
+            if (todayAppointments.empty())
+            {
+                DisplayHelper::printError("Không có lịch hẹn nào trong ngày hôm nay để kê đơn.");
+                DisplayHelper::pause();
+                return;
+            }
+
+            // Display today's appointments for selection
+            std::cout << "Chọn lịch hẹn để kê đơn thuốc:\n\n";
+            for (size_t i = 0; i < todayAppointments.size(); ++i)
+            {
+                const auto& apt = todayAppointments[i];
+                auto patient = m_facade->getPatientByUsername(apt.getPatientUsername());
+                std::string patientName = patient.has_value() ? patient->getName() : apt.getPatientUsername();
+                std::cout << std::format("{}. {} - {} ({})\n",
+                    i + 1,
+                    apt.getAppointmentID(),
+                    patientName,
+                    apt.getTime());
+            }
+            std::cout << "0. Quay lại\n\n";
+
+            int choice = DisplayHelper::getIntInput("Chọn lịch hẹn", 0, static_cast<int>(todayAppointments.size()));
+            if (choice == 0)
+                return;
+
+            const auto& selectedAppointment = todayAppointments[choice - 1];
+            std::string appointmentID = selectedAppointment.getAppointmentID();
+            std::string patientUsername = selectedAppointment.getPatientUsername();
+
+            // Get patient name for display
+            auto patient = m_facade->getPatientByUsername(patientUsername);
+            std::string patientName = patient.has_value() ? patient->getName() : patientUsername;
+            std::cout << "\nBệnh nhân: " << patientName << "\n";
+
+            // Get diagnosis
+            std::string diagnosis = DisplayHelper::getInput("Chẩn đoán");
+            if (diagnosis.empty())
+                return;
+
+            std::string instructions = DisplayHelper::getInput("Hướng dẫn chung (tùy chọn)");
+
+            // Generate prescription ID using facade
+            std::string prescriptionID = m_facade->generatePrescriptionID();
+
+            // Create prescription with appointment ID
+            if (!m_facade->createPrescription(prescriptionID, patientUsername, doctorID, appointmentID, today, diagnosis, instructions))
             {
                 DisplayHelper::printError("Tạo đơn thuốc thất bại.");
                 DisplayHelper::pause();
@@ -2724,7 +2772,7 @@ namespace HMS
                 return;
             }
 
-            auto prescriptions = m_facade->getPatientPrescriptions(profile->getPatientID());
+            auto prescriptions = m_facade->getPatientPrescriptions(profile->getUsername());
             if (prescriptions.empty())
             {
                 DisplayHelper::printNoData("đơn thuốc");

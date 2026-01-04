@@ -95,6 +95,12 @@ public:
     // ==================== Prescription Creation ====================
 
     /**
+     * @brief Generate next prescription ID in sequence (PRE001, PRE002, ...)
+     * @return Next available prescription ID
+     */
+    std::string generateNextID();
+
+    /**
      * @brief Create a new prescription
      * @param prescription The prescription data
      * @return True if successful
